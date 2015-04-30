@@ -1,0 +1,168 @@
+About TreeNET Reader (treenet_reader) - By Jean-François Grailet, April 30, 2015
+================================================================================
+
+Compilation
+===========
+
+You will need gcc and g++ on your Linux distribution to compile TreeNET Reader (treenet_reader). 
+To compile it, set Release/ as your working directory and execute the command:
+
+make
+
+If you need to recompile TreeNET Reader after some editing, type the following commands:
+
+make clean
+make
+
+Deployement on PlanetLab testbed
+================================
+
+If you intent to use TreeNET Reader on PlanetLab testbed, here is some advice.
+
+* Do not bother with compiling TreeNET Reader on PlanetLab nodes and rather compile it on your own 
+  computer. Then, you can upload the executable file (found in Release/) on a PlanetLab node and 
+  uses it as soon as you connect to it.
+
+* Of course, your executable should be compiled with an environement similar to that of the 
+  PlanetLab nodes. The oldest OS you should find on a PlanetLab node is usually Fedora 8 (at the 
+  time this file was written). A safe (but slow) method to compile TreeNET Reader for Fedora 8 is 
+  to run Fedora 8 as a virtual machine, put the sources on it, compile TreeNET Reader and retrieve 
+  the executable file.
+
+Usage
+=====
+
+N.B.: some options are the same as they were in ExploreNET v2.1. Therefore, their description is 
+the same as can be found on the following page:
+
+Source: http://nsrg.louisiana.edu/project/ntmaps/output/explorenet.html
+
+Whenever an option did not change since ExploreNET, it is signaled.
+
+./treenet_reader
+
+The options are:
+
+* -i (verbose: --input-file)
+  Option to provide a string giving one or several paths to input files containing inferred 
+  subnets. Target files should be strictly formatted, just like the files TreeNET ("Full") 
+  typically outputs. Separate the paths with commas.
+  
+* -e (verbose: --interface) (from ExploreNET v2.1)
+  Interface name through which probing/response packets exit/enter (default is the first 
+  non-loopback IPv4 interface in the active interface list). Use this option if your machine has 
+  multiple network interface cards and you opt for one interface over the others.
+  
+* -m (verbose: --attention-message)
+  Option to edit the message carried by the probes, typically "NOT AN ATTACK".
+
+* -f (verbose: --fix-flow-id) (from ExploreNET v2.1)
+  Use stable flow ID whenever possible [true|false] (default is true). Takes advantage of fixed 
+  flow ID against load balancers as in paris-traceroute whenever the destination address does not 
+  change.
+
+* -w (verbose: --probe-timeout-period) (from ExploreNET v2.1)
+  Maximum milliseconds amount to wait for a probe reply (default is 2500). If you think that the 
+  RTT to the destination is more than the default value then increase it.
+
+* -z (verbose: --probe-regulating-period) (from ExploreNET v2.1)
+  Minimum milliseconds amount to wait between two immediately consecutive probes (default is 50). 
+  Useful when routers apply rate limiting.
+  
+* -t (verbose: --concurrency-nb-threads)
+  Option to edit the amount of threads used while re-computing routes and performing alias 
+  resolution. Default is 256.
+
+* -l (verbose: --label-output-files)
+  If any output file is generated (new measures file or bipartite output file), this option can 
+  be used to set a "label". The output files will then be named as:
+  -[label] for the measurements output file
+  -Bipartite [label] (with a space) for the bipartite output file
+
+* -a (verbose: --set-refinement)
+  Option to change the policy of TreeNET Reader while parsing input files. By default, it checks 
+  that a newly parsed subnet does not overlap any previously parsed subnet, and if it is the case, 
+  it merges them. This policy, however, can drastically slow down the parsing with large data 
+  sets. To quickly parse input files, one can disable the merging policy by writing:
+  
+  -a FALSE
+  
+  in the command line.
+
+* -s (verbose: --statistics)
+  Flag to add to the command line to compute some statistics from the network tree. These are 
+  displayed at the very end of the execution of TreeNET Reader.
+  
+* -r (verbose: --recompute-routes)
+  Flag to add to the command line to trigger re-computation of the traceroutes to each (parsed) 
+  subnet as well as alias resolution hints.
+
+* -o (verbose: --output-file)
+  Flag to add to the command line to create a new output file with the data parsed (and maybe 
+  edited, if -r was used) by TreeNET Reader. The name of the output file is given with another 
+  option (-l); otherwise it is dd-mm-yyyy hh:mm:ss by default.
+
+* -n (verbose: --neighborhoods)
+  Flag to add to the command line to obtain analysis of the neighborhoods in the network tree 
+  (such analysis is done by default in TreeNET, but not in TreeNET Reader).
+
+* -b (verbose: --bipartite)
+  Flag to add to the command line to obtain a bipartite conversion of the network tree. The 
+  conversion will be automatically written in an output file Bipartite [label]; if -l was not 
+  used in the command line, the output file name will be Bipartite dd-mm-yyyy hh:mm:ss.
+
+* -v (verbose: --version)
+  Shows program version.
+
+* -? (verbose: --help)
+  Prints out all options of the program along its version.
+
+Other remarks
+=============
+
+* Most machines do not allow user to open sockets to send probes, which will prevent TreeNET 
+  Reader from recomputing routes. To overcome this, run TreeNET Reader as a super user (for 
+  example, with sudo).
+
+* Unlike TreeNET, there is no src/toolbase/ directory and the common/ and prober/ folders are in 
+  the same directory as other parts of the program.
+  
+* If you want to obtain all the details about parsed subnets, recomputed traceroutes and analysis 
+  of the tree, it is recommended to redirect the standard output to a file:
+  
+  ... > Output_file
+  
+  Note that the file might get quite big for a large amount of subnets (several Megaoctets).
+
+About bipartite conversion
+==========================
+
+Using option -b will convert the network tree (fully annotated, i.e. with inferred routers) into 
+a double bipartite graph: a first bipartite connects routers with subnets (routers on one side, 
+subnets on the other), and a second bipartite on top of this first bipartite connects routers with 
+"virtual" switches which are meant to connect routers of a same neighborhood together (such that 
+the final graph is fully connected).
+
+Bipartite conversion of the tree is meant to easily analyze the relationships which exist between 
+the subnets and the inferred routers. It is also a first step towards a Layer-2 device inference, 
+as routers inferred within a same neighborhood are reconnected together with a virtual switch 
+which might correspond to one or several switches in the real topology.
+
+The bipartite graph has also the advantage of summarizing the topology information, as it does not 
+feature the complete list of responsive interfaces for each subnets nor their routes, only 
+providing their CIDR notation.
+
+Furthermore, the bipartite graph can be parsed and analyzed by other pieces of software for 
+further analysis of the topology.
+
+Contact
+=======
+
+TreeNET Reader was written by Jean-François Grailet during the academic year 2014-2015 in the 
+context of a master thesis at the University of Liège (Belgium).
+
+Permanent contact: jefgrailet@hotmail.com
+
+TreeNET Reader uses parts of ExploreNET, a subnet inference tool conceived and implemented by 
+Mehmet Engin Tozal, currently assistant teacher at the University of Louisiana at Lafayette (USA).
+
