@@ -39,22 +39,22 @@ public:
     AliasResolver(std::list<InetAddress*> IPsToProbe, 
                   InetAddress &localIPAddress,
                   string &attentionMessage,
-			      bool useFixedFlowID = true,
-			      const TimeVal &timeoutPeriod = DirectProber::DEFAULT_TIMEOUT_PERIOD,
-			      const TimeVal &probeRegulatorPausePeriod = DirectProber::DEFAULT_PROBE_REGULATOR_PAUSE_PERIOD,
-			      unsigned short lowerBoundICMPid = DirectICMPProber::DEFAULT_LOWER_ICMP_IDENTIFIER,
-			      unsigned short upperBoundICMPid = DirectICMPProber::DEFAULT_UPPER_ICMP_IDENTIFIER,
-			      unsigned short lowerBoundICMPseq = DirectICMPProber::DEFAULT_LOWER_ICMP_SEQUENCE,
-			      unsigned short upperBoundICMPseq = DirectICMPProber::DEFAULT_UPPER_ICMP_SEQUENCE,
-			      unsigned short maxThreads = 16);
-	~AliasResolver();
-	
-	// Method to start the probing
-	void resolve();
-	
-	// Method to get a token (used by AliasResolverUnit)
-	unsigned long int getProbeToken();
-	
+                  bool useFixedFlowID = true,
+                  const TimeVal &timeoutPeriod = DirectProber::DEFAULT_TIMEOUT_PERIOD,
+                  const TimeVal &probeRegulatorPausePeriod = DirectProber::DEFAULT_PROBE_REGULATOR_PAUSE_PERIOD,
+                  unsigned short lowerBoundICMPid = DirectICMPProber::DEFAULT_LOWER_ICMP_IDENTIFIER,
+                  unsigned short upperBoundICMPid = DirectICMPProber::DEFAULT_UPPER_ICMP_IDENTIFIER,
+                  unsigned short lowerBoundICMPseq = DirectICMPProber::DEFAULT_LOWER_ICMP_SEQUENCE,
+                  unsigned short upperBoundICMPseq = DirectICMPProber::DEFAULT_UPPER_ICMP_SEQUENCE,
+                  unsigned short maxThreads = 16);
+    ~AliasResolver();
+    
+    // Method to start the probing
+    void resolve();
+    
+    // Method to get a token (used by AliasResolverUnit)
+    unsigned long int getProbeToken();
+    
 private:
 
     // Very own private fields
@@ -64,12 +64,11 @@ private:
     // Private fields with prober parameters + maximum amount of threads running at the same time
     InetAddress &localIPAddress;
     string &attentionMessage;
-	bool useFixedFlowID;
-	const TimeVal &timeoutPeriod, &probeRegulatorPausePeriod;
+    bool useFixedFlowID;
+    const TimeVal &timeoutPeriod, &probeRegulatorPausePeriod;
     unsigned short lowerBoundICMPid, upperBoundICMPid;
     unsigned short lowerBoundICMPseq, upperBoundICMPseq;
     unsigned short maxThreads;
 };
 
 #endif /* ALIASRESOLVER_H_ */
-

@@ -16,13 +16,12 @@ using std::string;
 class UnresponsiveIPException: public NTmapException
 {
 public:
-	UnresponsiveIPException(const InetAddress &destinationIP, const string &msg = "Probing the IP address did not return any response");
-	virtual ~UnresponsiveIPException() throw();
-	InetAddress & getDestinationIP() { return destinationIP; }
-	void setDestinationIP(InetAddress &destinationIP) { this->destinationIP = destinationIP; }
+    UnresponsiveIPException(const InetAddress &destinationIP, const string &msg = "Probing the IP address did not return any response");
+    virtual ~UnresponsiveIPException() throw();
+    InetAddress & getDestinationIP() { return destinationIP; }
+    void setDestinationIP(InetAddress &destinationIP) { this->destinationIP = destinationIP; }
 private:
-	InetAddress destinationIP;
+    InetAddress destinationIP;
 };
 
 #endif /* UNRESPONSIVEIPEXCEPTION_H_ */
-

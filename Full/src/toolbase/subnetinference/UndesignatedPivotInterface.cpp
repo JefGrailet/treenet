@@ -16,4 +16,3 @@ destinationIPdistance(dstHop)
 }
 
 UndesignatedPivotInterface::~UndesignatedPivotInterface() throw() {}
-

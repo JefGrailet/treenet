@@ -25,16 +25,16 @@ class LinkSwitchRouter
 {
 public:
 
-	LinkSwitchRouter(BipartiteSwitch *eSwitch, BipartiteRouter *router);
-	~LinkSwitchRouter();
+    LinkSwitchRouter(BipartiteSwitch *eSwitch, BipartiteRouter *router);
+    ~LinkSwitchRouter();
 
-	// Accessors
-	inline BipartiteSwitch *getSwitch() { return eSwitch; }
-	inline BipartiteRouter *getRouter() { return router; }
-	
-	// Returns a notation for this link (e.g. "E1 - R2")
-	string toString();
-	
+    // Accessors
+    inline BipartiteSwitch *getSwitch() { return eSwitch; }
+    inline BipartiteRouter *getRouter() { return router; }
+    
+    // Returns a notation for this link (e.g. "E1 - R2")
+    string toString();
+    
 private:
 
     // Associated router and subnet
@@ -44,4 +44,3 @@ private:
 };
 
 #endif /* LINKSWITCHROUTER_H_ */
-

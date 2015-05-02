@@ -17,19 +17,19 @@
 class ProbeRecordCache
 {
 private:
-	static const unsigned int MAX_PROBE_RECORD_CACHE_SIZE;
-	
+    static const unsigned int MAX_PROBE_RECORD_CACHE_SIZE;
+    
 public:
-	ProbeRecordCache();
-	virtual ~ProbeRecordCache();
-	
-	bool insertProbeClone(const ProbeRecord *record);
-	ProbeRecord *fakeProbe(const InetAddress &dstIP, unsigned char reqTTL, bool usingFixedFlowID);
-	
-	inline void clear() { probeRecorDQ.clear(); }
-	
+    ProbeRecordCache();
+    virtual ~ProbeRecordCache();
+    
+    bool insertProbeClone(const ProbeRecord *record);
+    ProbeRecord *fakeProbe(const InetAddress &dstIP, unsigned char reqTTL, bool usingFixedFlowID);
+    
+    inline void clear() { probeRecorDQ.clear(); }
+    
 private:
-	std::deque<ProbeRecord> probeRecorDQ;
+    std::deque<ProbeRecord> probeRecorDQ;
 };
 
 #endif /* PROBERECORDCACHE_H_ */

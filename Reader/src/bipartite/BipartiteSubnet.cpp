@@ -50,4 +50,3 @@ void BipartiteSubnet::removeConnectionTo(string labelRouter)
         }
     }
 }
-

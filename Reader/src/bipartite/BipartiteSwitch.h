@@ -35,18 +35,18 @@ class BipartiteSwitch
 {
 public:
 
-	BipartiteSwitch(string label);
-	~BipartiteSwitch();
+    BipartiteSwitch(string label);
+    ~BipartiteSwitch();
 
-	// Accessors
-	inline string getLabel() const { return label; }
-	inline list<LinkSwitchRouter*> *getLinks() { return &links; }
-	
-	// Methods to handle the links
-	bool isConnectedTo(string routerLabel);
-	void removeConnectionTo(string routerLabel);
-	inline void addLink(LinkSwitchRouter *link) { links.push_back(link); }
-	
+    // Accessors
+    inline string getLabel() const { return label; }
+    inline list<LinkSwitchRouter*> *getLinks() { return &links; }
+    
+    // Methods to handle the links
+    bool isConnectedTo(string routerLabel);
+    void removeConnectionTo(string routerLabel);
+    inline void addLink(LinkSwitchRouter *link) { links.push_back(link); }
+    
 private:
 
     // Label
@@ -58,4 +58,3 @@ private:
 };
 
 #endif /* BIPARTITESWITCH_H_ */
-

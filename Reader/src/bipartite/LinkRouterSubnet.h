@@ -25,19 +25,19 @@ class LinkRouterSubnet
 {
 public:
 
-	LinkRouterSubnet(BipartiteRouter *router, BipartiteSubnet *subnet);
-	~LinkRouterSubnet();
+    LinkRouterSubnet(BipartiteRouter *router, BipartiteSubnet *subnet);
+    ~LinkRouterSubnet();
 
-	// Accessors
-	inline BipartiteRouter *getRouter() { return router; }
-	inline BipartiteSubnet *getSubnet() { return subnet; }
-	
-	// Boolean method returning true if the link is made of "real" (inferred) components
-	bool isRealLink();
-	
-	// Returns a notation for this link (e.g. "R3 - S5")
-	string toString();
-	
+    // Accessors
+    inline BipartiteRouter *getRouter() { return router; }
+    inline BipartiteSubnet *getSubnet() { return subnet; }
+    
+    // Boolean method returning true if the link is made of "real" (inferred) components
+    bool isRealLink();
+    
+    // Returns a notation for this link (e.g. "R3 - S5")
+    string toString();
+    
 private:
 
     // Associated router and subnet
@@ -47,4 +47,3 @@ private:
 };
 
 #endif /* LINKROUTERSUBNET_H_ */
-

@@ -1,0 +1,11 @@
+Total of covered IPs: 392258
+Total of responsive interfaces: 58310
+Ratio responsive to covered IPs: 14.8652%
+Total of inferred subnets: 2451
+Total of credible subnets: 2179
+Ratio of credible subnets: 88.9025%
+Total of neighborhoods: 456
+Total of neighborhoods with only leaves: 275 (60.307%)
+Total of neighborhoods with complete linkage: 337 (73.9035%)
+Total of neighborhoods with partial linkage: 424 (92.9825%)
+Total of neighborhoods which labels all appear in inferred subnets: 288 (63.1579%)

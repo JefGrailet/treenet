@@ -4,50 +4,62 @@ About TreeNET - By Jean-François Grailet, April 30, 2015
 Overview of the program
 =======================
 
-TreeNET is a subnet-based topology discovery software which is built upon the subnet inference 
-software ExploreNET. Not only TreeNET provides refinement techniques for subnets inferred by 
-ExploreNET, but it also builds a structure (which we will refer to as "network tree") which is 
-used to locate subnets with respect to each other. The intuition is that close subnets (e.g. which 
-can reach each other with a TTL of at most 1) forms a neighborhood, inside which lies a mesh of 
-routers (and Ethernet switches). The network tree aims at hightlighting these neighborhoods, on 
-the basis of the inferred subnets and the traceroutes to each of them. With this network tree, 
-TreeNET is also able to perform alias resolution to discover one or several routers. The final, 
+TreeNET is a subnet-based topology discovery software which is built upon the 
+subnet inference software ExploreNET. Not only TreeNET provides refinement 
+techniques for subnets inferred by ExploreNET, but it also builds a structure 
+(which we will refer to as "network tree") which is used to locate subnets 
+with respect to each other. The intuition is that close subnets (e.g. which 
+can reach each other with a TTL of at most 1) forms a neighborhood, inside 
+which lies a mesh of routers (and Ethernet switches). The network tree aims 
+at hightlighting these neighborhoods, on the basis of the inferred subnets and 
+the traceroutes to each of them. With this network tree, TreeNET is also able 
+to perform alias resolution to discover one or several routers. The final, 
 fully annotated tree can be interpreted as a whole topology.
 
 About TreeNET and TreeNET Reader
 ================================
 
-TreeNET actually comes in two pieces of software: TreeNET "Full", which provides TreeNET as a 
-measurement/topology discovery tool, and TreeNET "Reader" which is meant to parse files outputted 
-by TreeNET "Full" to analyze them and merge them.
+TreeNET actually comes in two pieces of software: TreeNET "Full", which 
+provides TreeNET as a measurement/topology discovery tool, and TreeNET 
+"Reader" which is meant to parse files outputted by TreeNET "Full" to analyze 
+them and merge them.
 
-In particular, TreeNET Reader comes with the traceroute/alias resolution tools present in TreeNET 
-"Full" such that it can re-compute the routes and alias resolution hints for the subnets it parsed 
-(usually from several files).
+In particular, TreeNET Reader comes with the traceroute/alias resolution tools 
+present in TreeNET "Full" such that it can re-compute the routes and alias 
+resolution hints for the subnets it parsed (usually from several files).
 
-Indeed, a network tree is relevant only if it uses traceroutes computed from a same vantage point. 
-As TreeNET needs to be deployed on several machines to infer subnets within a large network, 
-TreeNET Reader allows one to re-compute all traceroutes and alias resolution hints from the same 
-vantage point for all measurements (when provided together).
+Indeed, a network tree is relevant only if it uses traceroutes computed from a 
+same vantage point. As TreeNET needs to be deployed on several machines to 
+infer subnets within a large network, TreeNET Reader allows one to re-compute 
+all traceroutes and alias resolution hints from the same vantage point for all 
+measurements (when provided together).
 
-TreeNET Reader is also able to convert a fully built/annotated network tree into a bipartite graph 
-for further analysis (with other softwares).
+TreeNET Reader is also able to convert a fully built/annotated network tree 
+into a bipartite graph for further analysis (with other softwares).
 
 Content of this folder
 ======================
 
-As the names suggest, Full/ contains all sources for TreeNET as a measurement tool (simply named 
-"TreeNET") while /Reader provides all the sources of TreeNET Reader. Both folders come with their 
-own README files, detailing compilation and usage.
+As the names suggest, Full/ contains all sources for TreeNET as a measurement 
+tool (simply named "TreeNET") while /Reader provides all the sources of 
+TreeNET Reader. Both folders come with their own README files, detailing 
+compilation and usage.
+
+The third and last sub-folder, Measurements/, contains measurements of four 
+autonomous systems (or ASes) which were computed between March 23th and April 
+24th. You can learn more about them by reading the README file at the root of 
+this folder.
 
 Contact
 =======
 
-TreeNET and TreeNET Reader were both written by Jean-François Grailet during the academic year 
-2014-2015 in the context of a master thesis at the University of Liège (Belgium).
+TreeNET and TreeNET Reader were both written by Jean-François Grailet during 
+the academic year 2014-2015 in the context of a master thesis at the 
+University of Liège (Belgium).
 
 Permanent contact: jefgrailet@hotmail.com
 
-TreeNET uses parts of ExploreNET, a subnet inference tool conceived and implemented by Mehmet 
-Engin Tozal, currently assistant teacher at the University of Louisiana at Lafayette (USA).
-
+TreeNET and TreeNET Reader uses parts of ExploreNET (basic components and 
+subnet inference tools for the former), a subnet inference tool conceived and 
+implemented by Mehmet Engin Tozal, currently assistant teacher at the 
+University of Louisiana at Lafayette (USA).

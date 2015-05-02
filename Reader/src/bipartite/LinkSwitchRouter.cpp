@@ -27,4 +27,3 @@ string LinkSwitchRouter::toString()
     string routerStr = router->getLabel();
     return switchStr + " - " + routerStr;
 }
-

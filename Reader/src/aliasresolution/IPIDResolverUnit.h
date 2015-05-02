@@ -36,21 +36,21 @@ public:
     static Mutex resolverMutex;
     
     // Constructor
-	IPIDResolverUnit(AliasResolver *parent,
-	                 InetAddress *IPToProbe,
-	                 InetAddress &localIPAddress,
+    IPIDResolverUnit(AliasResolver *parent,
+                     InetAddress *IPToProbe,
+                     InetAddress &localIPAddress,
                      string &attentionMessage,
-			         bool useFixedFlowID = true,
-			         const TimeVal &timeoutPeriod = DirectProber::DEFAULT_TIMEOUT_PERIOD,
-			         const TimeVal &probeRegulatorPausePeriod = DirectProber::DEFAULT_PROBE_REGULATOR_PAUSE_PERIOD,
-			         unsigned short lowerBoundICMPid = DirectICMPProber::DEFAULT_LOWER_ICMP_IDENTIFIER,
-			         unsigned short upperBoundICMPid = DirectICMPProber::DEFAULT_UPPER_ICMP_IDENTIFIER,
-			         unsigned short lowerBoundICMPseq = DirectICMPProber::DEFAULT_LOWER_ICMP_SEQUENCE,
-			         unsigned short upperBoundICMPseq = DirectICMPProber::DEFAULT_UPPER_ICMP_SEQUENCE) throw (SocketException);
-	
-	// Destructor and run method
-	~IPIDResolverUnit();
-	void run();
+                     bool useFixedFlowID = true,
+                     const TimeVal &timeoutPeriod = DirectProber::DEFAULT_TIMEOUT_PERIOD,
+                     const TimeVal &probeRegulatorPausePeriod = DirectProber::DEFAULT_PROBE_REGULATOR_PAUSE_PERIOD,
+                     unsigned short lowerBoundICMPid = DirectICMPProber::DEFAULT_LOWER_ICMP_IDENTIFIER,
+                     unsigned short upperBoundICMPid = DirectICMPProber::DEFAULT_UPPER_ICMP_IDENTIFIER,
+                     unsigned short lowerBoundICMPseq = DirectICMPProber::DEFAULT_LOWER_ICMP_SEQUENCE,
+                     unsigned short upperBoundICMPseq = DirectICMPProber::DEFAULT_UPPER_ICMP_SEQUENCE) throw (SocketException);
+    
+    // Destructor and run method
+    ~IPIDResolverUnit();
+    void run();
     
 private:
     
@@ -60,12 +60,11 @@ private:
     
     DirectProber *prober;
     InetAddress &localIPAddress;
-	bool useFixedFlowID;
-	
-	// Probing methods
+    bool useFixedFlowID;
+    
+    // Probing methods
     ProbeRecord *probe(const InetAddress &dst, unsigned char TTL);
 
 };
 
 #endif /* IPIDRESOLVERUNIT_H_ */
-

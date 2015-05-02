@@ -20,14 +20,13 @@ class InvalidSubnetException: public NTmapException
 {
 public:
 
-	InvalidSubnetException(const string &subnetString,
-	                       const string &msg = "This subnet is not suitable for a network tree");
-	virtual ~InvalidSubnetException() throw();
-	string getSubnetString() { return subnetString; }
-	
+    InvalidSubnetException(const string &subnetString,
+                           const string &msg = "This subnet is not suitable for a network tree");
+    virtual ~InvalidSubnetException() throw();
+    string getSubnetString() { return subnetString; }
+    
 private:
-	string subnetString;
+    string subnetString;
 };
 
 #endif /* INVALIDSUBNETEXCEPTION_H_ */
-

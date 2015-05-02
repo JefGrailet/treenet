@@ -30,4 +30,3 @@ void ReverseDNSResolverUnit::run()
         IPToProbe->setStoredHostName(hostName);
     }
 }
-

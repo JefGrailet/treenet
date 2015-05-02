@@ -30,45 +30,45 @@ bipSubnet(NULL)
 
 SubnetSite::~SubnetSite()
 {
-	clearIPlist();
-	if(route != 0)
-	    delete[] route;
+    clearIPlist();
+    if(route != 0)
+        delete[] route;
 }
 
 void SubnetSite::clearIPlist()
 {
-	for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
-	{
-		delete (*i);
-	}
-	IPlist.clear();
+    for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
+    {
+        delete (*i);
+    }
+    IPlist.clear();
 }
 
 int SubnetSite::getInferredSubnetSize()
 {
-	int size = 0;
-	for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
-	{
-		size++;
-	}
-	return size;
+    int size = 0;
+    for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
+    {
+        size++;
+    }
+    return size;
 }
 
 string SubnetSite::getInferredNetworkAddressString()
 {
-	if(inferredSubnetPrefix > 32)
-	{
-		return string("");
-	}
-	else if(inferredSubnetPrefix == 32)
-	{
-		return (*(inferredSubnetBaseIP.getHumanReadableRepresentation())) + "/32";
-	}
-	else
-	{
-		NetworkAddress na(inferredSubnetBaseIP, inferredSubnetPrefix);
-		return (*(na.getHumanReadableRepresentation()));
-	}
+    if(inferredSubnetPrefix > 32)
+    {
+        return string("");
+    }
+    else if(inferredSubnetPrefix == 32)
+    {
+        return (*(inferredSubnetBaseIP.getHumanReadableRepresentation())) + "/32";
+    }
+    else
+    {
+        NetworkAddress na(inferredSubnetBaseIP, inferredSubnetPrefix);
+        return (*(na.getHumanReadableRepresentation()));
+    }
 }
 
 bool SubnetSite::compare(SubnetSite *ss1, SubnetSite *ss2)
@@ -97,8 +97,8 @@ void SubnetSite::completeRefinedData()
     unsigned char shortestTTL = 0, greatestTTL = 0;
     InetAddress contrapivotCandidate(0);
     for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
-	{
-	    SubnetSiteNode *cur = (*i);
+    {
+        SubnetSiteNode *cur = (*i);
 
         if(greatestTTL == 0 || cur->TTL > greatestTTL)
             greatestTTL = cur->TTL;
@@ -108,15 +108,15 @@ void SubnetSite::completeRefinedData()
             contrapivotCandidate = cur->ip;
             shortestTTL = cur->TTL;
         }
-	}
+    }
 
     this->TTL1 = shortestTTL;
-	this->TTL2 = greatestTTL;
-	
-	if(shortestTTL == (greatestTTL - 1))
-	{
-	    this->contrapivot = contrapivotCandidate;
-	}
+    this->TTL2 = greatestTTL;
+    
+    if(shortestTTL == (greatestTTL - 1))
+    {
+        this->contrapivot = contrapivotCandidate;
+    }
 }
 
 void SubnetSite::adaptTTLs(unsigned short pivotTTL)
@@ -129,14 +129,14 @@ void SubnetSite::adaptTTLs(unsigned short pivotTTL)
         shorterTTL = true;
     
     for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
-	{
-	    SubnetSiteNode *cur = (*i);
-	    
-	    if(shorterTTL)
+    {
+        SubnetSiteNode *cur = (*i);
+        
+        if(shorterTTL)
             cur->TTL -= (this->TTL1 - baseTTL);
         else
             cur->TTL += (baseTTL - this->TTL1);
-	}
+    }
 }
 
 bool SubnetSite::contains(InetAddress i)
@@ -152,12 +152,12 @@ bool SubnetSite::contains(InetAddress i)
 
 bool SubnetSite::hasLiveInterface(InetAddress li)
 {
-	for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
-	{
-		if((*i)->ip == li)
-		    return true;
-	}
-	return false;
+    for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
+    {
+        if((*i)->ip == li)
+            return true;
+    }
+    return false;
 }
 
 bool SubnetSite::hasRouteLabel(InetAddress rl, unsigned short TTL)
@@ -343,4 +343,3 @@ unsigned int SubnetSite::getCapacity()
     
     return (unsigned int) pow(2, power);
 }
-

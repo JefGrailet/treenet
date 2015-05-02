@@ -17,12 +17,12 @@ ParisTracerouteTask::ParisTracerouteTask(ostream *o,
                                          SubnetSite *ss,
                                          InetAddress &lIPa,
                                          string &msg,
-			                             const TimeVal &tp,
-			                             const TimeVal &prpp,
-			                             unsigned short lbii,
-			                             unsigned short ubii,
-			                             unsigned short lbis,
-			                             unsigned short ubis) throw (SocketException):
+                                         const TimeVal &tp,
+                                         const TimeVal &prpp,
+                                         unsigned short lbii,
+                                         unsigned short ubii,
+                                         unsigned short lbis,
+                                         unsigned short ubis) throw (SocketException):
 out(o),
 toDelete(td),
 subnet(ss),
@@ -46,9 +46,9 @@ ParisTracerouteTask::~ParisTracerouteTask()
 ProbeRecord *ParisTracerouteTask::probe(const InetAddress &dst, unsigned char TTL)
 {
     ProbeRecord *record = NULL;
-	record = prober->doubleProbe(this->localIPAddress, dst, TTL, true, false, 0);
+    record = prober->doubleProbe(this->localIPAddress, dst, TTL, true, false, 0);
 
-	return record;
+    return record;
 }
 
 void ParisTracerouteTask::abort()
@@ -163,4 +163,3 @@ void ParisTracerouteTask::run()
     
     ostreamMutex.unlock();
 }
-

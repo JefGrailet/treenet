@@ -21,13 +21,13 @@ SubnetRefiner::SubnetRefiner(ostream *o,
                              InetAddress &lIPa,
                              string &msg,
                              bool uffID,
-			                 const TimeVal &tp,
-			                 const TimeVal &prpp,
-			                 unsigned short lbii,
-			                 unsigned short ubii,
-			                 unsigned short lbis,
-			                 unsigned short ubis,
-			                 unsigned short mt):
+                             const TimeVal &tp,
+                             const TimeVal &prpp,
+                             unsigned short lbii,
+                             unsigned short ubii,
+                             unsigned short lbis,
+                             unsigned short ubis,
+                             unsigned short mt):
 out(o),         
 set(s),
 localIPAddress(lIPa),
@@ -70,19 +70,19 @@ void SubnetRefiner::expand(SubnetSite *ss)
     }
     
     unsigned short knownIPs[initSize];
-	for(unsigned int i = 0; i < initSize; i++)
-	    knownIPs[i] = 0;
-	
-	std::list<SubnetSiteNode*> *IPsList = ss->getSubnetIPList();
-	unsigned short nbValidIPs = 0;
-	for(list<SubnetSiteNode*>::iterator it = IPsList->begin(); it != IPsList->end(); ++it)
-	{
-	    /*
-	     * Ignores nodes for which the registered prefix is smaller than the prefix of this site.
-	     * This condition is present in the original ExploreNET.
-	     */
-	
-	    if((*it)->prefix >= ss->getInferredSubnetPrefixLength())
+    for(unsigned int i = 0; i < initSize; i++)
+        knownIPs[i] = 0;
+    
+    std::list<SubnetSiteNode*> *IPsList = ss->getSubnetIPList();
+    unsigned short nbValidIPs = 0;
+    for(list<SubnetSiteNode*>::iterator it = IPsList->begin(); it != IPsList->end(); ++it)
+    {
+        /*
+         * Ignores nodes for which the registered prefix is smaller than the prefix of this site.
+         * This condition is present in the original ExploreNET.
+         */
+    
+        if((*it)->prefix >= ss->getInferredSubnetPrefixLength())
         {
             knownIPs[(*it)->ip.getULongAddress() - initLowerBorder.getULongAddress()] = 1;
             nbValidIPs++;
@@ -167,14 +167,14 @@ void SubnetRefiner::expand(SubnetSite *ss)
                                                             maxThreads,
                                                             localIPAddress,
                                                             attentionMessage,
-			                                                useFixedFlowID,
-			                                                timeoutPeriod,
-			                                                probeRegulatorPausePeriod,
-			                                                lowerBoundICMPid,
-			                                                upperBoundICMPid,
-			                                                lowerBoundICMPseq,
-			                                                upperBoundICMPseq);
-	    
+                                                            useFixedFlowID,
+                                                            timeoutPeriod,
+                                                            probeRegulatorPausePeriod,
+                                                            lowerBoundICMPid,
+                                                            upperBoundICMPid,
+                                                            lowerBoundICMPseq,
+                                                            upperBoundICMPseq);
+        
         unsigned short result = dispatcher->dispatch();
         
         /*
@@ -195,18 +195,18 @@ void SubnetRefiner::expand(SubnetSite *ss)
             InetAddress pivot = dispatcher->getResponsiveIPs()->front();
             
             InetAddress contrapivot = IPsList->front()->ip;
-	        ss->setRefinementStatus(SubnetSite::ACCURATE_SUBNET);
-	        ss->setRefinementGreatestTTL(reqTTL + 1);
-	        ss->setRefinementContrapivot(contrapivot);
-	        ss->setInferredSubnetPrefixLength(prefix);
-	        ss->insert(new SubnetSiteNode(pivot, 
-	                                      prefix, 
-	                                      reqTTL + 1, 
-	                                      SubnetSiteNode::UNKNOWN_ALIAS_SX));
-	        
-	        (*out) << "Known IP " << contrapivot << " was the contra-pivot" << endl << endl;
-	        delete dispatcher;
-		    return;
+            ss->setRefinementStatus(SubnetSite::ACCURATE_SUBNET);
+            ss->setRefinementGreatestTTL(reqTTL + 1);
+            ss->setRefinementContrapivot(contrapivot);
+            ss->setInferredSubnetPrefixLength(prefix);
+            ss->insert(new SubnetSiteNode(pivot, 
+                                          prefix, 
+                                          reqTTL + 1, 
+                                          SubnetSiteNode::UNKNOWN_ALIAS_SX));
+            
+            (*out) << "Known IP " << contrapivot << " was the contra-pivot" << endl << endl;
+            delete dispatcher;
+            return;
         }
         else if(result == ProbesDispatcher::FOUND_RESPONSIVE_IPS)
         {
@@ -230,20 +230,20 @@ void SubnetRefiner::expand(SubnetSite *ss)
             
             // Selected contra-pivot is by default the lowest address (first in the list)
             InetAddress contrapivot = candidates->front();
-	        ss->setRefinementShortestTTL(reqTTL - 1);
-	        ss->setRefinementContrapivot(contrapivot);
-	        ss->setInferredSubnetPrefixLength(prefix);
-	        ss->insert(new SubnetSiteNode(contrapivot, 
-	                                      prefix, 
-	                                      reqTTL - 1, 
-	                                      SubnetSiteNode::UNKNOWN_ALIAS_SX));
+            ss->setRefinementShortestTTL(reqTTL - 1);
+            ss->setRefinementContrapivot(contrapivot);
+            ss->setInferredSubnetPrefixLength(prefix);
+            ss->insert(new SubnetSiteNode(contrapivot, 
+                                          prefix, 
+                                          reqTTL - 1, 
+                                          SubnetSiteNode::UNKNOWN_ALIAS_SX));
             
             if(nbCandidates == 1)
             {
                 ss->setRefinementStatus(SubnetSite::ACCURATE_SUBNET);
-		        (*out) << "Contra-pivot is " << contrapivot << endl << endl;
-		        delete dispatcher;
-		        return;
+                (*out) << "Contra-pivot is " << contrapivot << endl << endl;
+                delete dispatcher;
+                return;
             }
             else
             {
@@ -274,7 +274,7 @@ void SubnetRefiner::expand(SubnetSite *ss)
                 }
                 (*out) << endl;
                 delete dispatcher;
-		        return;
+                return;
             }
         }
         else if(result == ProbesDispatcher::FOUND_PROOF_TO_DISCARD_ALTERNATIVE)
@@ -300,25 +300,25 @@ void SubnetRefiner::fill(SubnetSite *ss)
     
     InetAddress lowerBorder, upperBorder;
     std::list<SubnetSiteNode*> *IPsList = ss->getSubnetIPList();
-	unsigned char prefixLength = ss->getInferredSubnetPrefixLength();
-	if(prefixLength > 32)
-	    return;
-	
-	// For some reason, this occured on PlanetLab... by security, we stop here.
-	if(prefixLength == 0)
-	    return;
-	
-	// Checks if we dont have already the maximum number of elements
-	unsigned int maxSize = (unsigned int) pow(2.0, (double) (32 - (unsigned int) prefixLength));
-	if(maxSize == IPsList->size())
-	{
-	    return;
-	}
-	
-	// Array to quickly check if an IP is known or not
-	unsigned short knownIPs[maxSize];
-	for(unsigned int i = 0; i < maxSize; i++)
-	    knownIPs[i] = 0;
+    unsigned char prefixLength = ss->getInferredSubnetPrefixLength();
+    if(prefixLength > 32)
+        return;
+    
+    // For some reason, this occured on PlanetLab... by security, we stop here.
+    if(prefixLength == 0)
+        return;
+    
+    // Checks if we dont have already the maximum number of elements
+    unsigned int maxSize = (unsigned int) pow(2.0, (double) (32 - (unsigned int) prefixLength));
+    if(maxSize == IPsList->size())
+    {
+        return;
+    }
+    
+    // Array to quickly check if an IP is known or not
+    unsigned short knownIPs[maxSize];
+    for(unsigned int i = 0; i < maxSize; i++)
+        knownIPs[i] = 0;
 
     /*
      * By design, there should be no /32 subnet any longer by now, so using NetworkAddress 
@@ -361,14 +361,14 @@ void SubnetRefiner::fill(SubnetSite *ss)
                                                         maxThreads,
                                                         localIPAddress,
                                                         attentionMessage,
-		                                                useFixedFlowID,
-		                                                timeoutPeriod,
-		                                                probeRegulatorPausePeriod,
-		                                                lowerBoundICMPid,
-		                                                upperBoundICMPid,
-		                                                lowerBoundICMPseq,
-		                                                upperBoundICMPseq);
-	    
+                                                        useFixedFlowID,
+                                                        timeoutPeriod,
+                                                        probeRegulatorPausePeriod,
+                                                        lowerBoundICMPid,
+                                                        upperBoundICMPid,
+                                                        lowerBoundICMPseq,
+                                                        upperBoundICMPseq);
+        
     unsigned short result = dispatcher->dispatch();
     if(result == ProbesDispatcher::FOUND_RESPONSIVE_IPS)
     {
@@ -411,12 +411,12 @@ void SubnetRefiner::shadowExpand(SubnetSite *ss)
     }
     
     // Determines "beforeAndAfter" boolean (same spirit as in expand())
-	bool beforeAndAfter = true;
-	unsigned short nbValid = 0;
-	std::list<SubnetSiteNode*> *IPsList = ss->getSubnetIPList();
-	for(list<SubnetSiteNode*>::iterator it = IPsList->begin(); it != IPsList->end(); ++it)
-	{
-	    if((*it)->prefix >= ss->getInferredSubnetPrefixLength())
+    bool beforeAndAfter = true;
+    unsigned short nbValid = 0;
+    std::list<SubnetSiteNode*> *IPsList = ss->getSubnetIPList();
+    for(list<SubnetSiteNode*>::iterator it = IPsList->begin(); it != IPsList->end(); ++it)
+    {
+        if((*it)->prefix >= ss->getInferredSubnetPrefixLength())
         {
             nbValid++;
             if(nbValid > 1)
@@ -469,4 +469,3 @@ void SubnetRefiner::shadowExpand(SubnetSite *ss)
     
     ss->setInferredSubnetPrefixLength(finalPrefix);
 }
-

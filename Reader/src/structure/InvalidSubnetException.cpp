@@ -18,4 +18,3 @@ subnetString(ss)
 }
 
 InvalidSubnetException::~InvalidSubnetException() throw() {}
-

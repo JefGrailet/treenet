@@ -69,60 +69,60 @@ using std::list;
 void usage(ostream *out, string programName)
 {
     std::size_t lastSlashPos = programName.rfind('/');
-	(*out) << "Usage: " << endl;
-	if(lastSlashPos == string::npos)
-	{
-		(*out) << programName << endl;
-	}
-	else
-	{
-		(*out) << programName.substr(lastSlashPos+1) << endl;
-	}
-	
-	(*out) << "\t-i" << "\t\t" << "--input-file" << "\t\t\t" << "input file(s) path (subnet list produced by TreeNET)" << endl;
-	(*out) << "\t\t\t\t\t\t\tIf multiple files, separate them with commas." << endl;
-	
-	(*out) << "\t-e" << "\t\t" << "--interface" << "\t\t\t" << "interface name through which probing/response packets exit/enter" << endl;
-	(*out) << "\t\t\t\t\t\t\t(default is the first non-loopback IPv4 interface)" << endl;
-	
-	(*out) << "\t-m" << "\t\t" << "--attention-message" << "\t\t" << "probe attention message (default is \"NOT an ATTACK\")" << endl;
+    (*out) << "Usage: " << endl;
+    if(lastSlashPos == string::npos)
+    {
+        (*out) << programName << endl;
+    }
+    else
+    {
+        (*out) << programName.substr(lastSlashPos+1) << endl;
+    }
+    
+    (*out) << "\t-i" << "\t\t" << "--input-file" << "\t\t\t" << "input file(s) path (subnet list produced by TreeNET)" << endl;
+    (*out) << "\t\t\t\t\t\t\tIf multiple files, separate them with commas." << endl;
+    
+    (*out) << "\t-e" << "\t\t" << "--interface" << "\t\t\t" << "interface name through which probing/response packets exit/enter" << endl;
+    (*out) << "\t\t\t\t\t\t\t(default is the first non-loopback IPv4 interface)" << endl;
+    
+    (*out) << "\t-m" << "\t\t" << "--attention-message" << "\t\t" << "probe attention message (default is \"NOT an ATTACK\")" << endl;
 
-	(*out) << "\t-f" << "\t\t" << "--fix-flow-id" << "\t\t\t" << "use stable flow ID whenever possible [true|false] (default is true)" << endl;
-	
-	(*out) << "\t-w" << "\t\t" << "--probe-timeout-period" << "\t\t" 
-	<< "maximum milliseconds amount to wait for a probe reply (default is 2500)" << endl;
-	
-	(*out) << "\t-z" << "\t\t" << "--probe-regulating-period" << "\t" 
-	<< "minimum milliseconds amount to wait between two immediately consecutive probes" << endl;
-	(*out) << "\t\t\t\t\t\t\t(default is 50)" << endl;
-	
-	(*out) << "\t-t" << "\t\t" << "--concurrency-nb-threads" << "\t" 
-	<< "amount of threads being used while probing (default is 256)" << endl;
-	
-	(*out) << "\t-l" << "\t\t" << "--label-output-files" << "\t\t" 
-	<< "label used for output files (default is dd-mm-yyyy hh:mm:ss)" << endl;
-	
-	(*out) << "\t-a" << "\t\t" << "--set-refinement" << "\t\t" 
-	<< "does merging/sorting at each insertion in the subnet set (default is true)" << endl;
-	
-	(*out) << "\t-s" << "\t\t" << "--statistics" << "\t\t\t" << "display various statistics about the inferred subnets" << endl;
-	
-	(*out) << "\t-r" << "\t\t" << "--recompute-routes" << "\t\t" << "recompute route to each parsed subnet (+ alias info)" << endl;
-	
-	(*out) << "\t-o" << "\t\t" << "--output-file" << "\t\t\t" << "write parsed subnet set in a new output "
-	<< "[label]" << endl;
-	
-	(*out) << "\t-n" << "\t\t" << "--neighborhoods" << "\t\t\t" << "display neighborhood analysis" << endl;
-	
-	(*out) << "\t-b" << "\t\t" << "--bipartite" << "\t\t\t" << "generate bipartite graph (given as an output file ";
-	(*out) << "Bipartite [label])" << endl;
-	
-	(*out) << "\t-v" << "\t\t" << "--version" << "\t\t\t" << "program version" << endl;
-	(*out) << "\t-?" << "\t\t" << "--help" << "\t\t\t\t" << "help" << endl;
-	(*out) << "TreeNET and TreeNET Reader were written by Jean-Francois Grailet (Academic year 2014 - 2015)" << endl;
-	(*out) << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
-	
-	out->flush();
+    (*out) << "\t-f" << "\t\t" << "--fix-flow-id" << "\t\t\t" << "use stable flow ID whenever possible [true|false] (default is true)" << endl;
+    
+    (*out) << "\t-w" << "\t\t" << "--probe-timeout-period" << "\t\t" 
+    << "maximum milliseconds amount to wait for a probe reply (default is 2500)" << endl;
+    
+    (*out) << "\t-z" << "\t\t" << "--probe-regulating-period" << "\t" 
+    << "minimum milliseconds amount to wait between two immediately consecutive probes" << endl;
+    (*out) << "\t\t\t\t\t\t\t(default is 50)" << endl;
+    
+    (*out) << "\t-t" << "\t\t" << "--concurrency-nb-threads" << "\t" 
+    << "amount of threads being used while probing (default is 256)" << endl;
+    
+    (*out) << "\t-l" << "\t\t" << "--label-output-files" << "\t\t" 
+    << "label used for output files (default is dd-mm-yyyy hh:mm:ss)" << endl;
+    
+    (*out) << "\t-a" << "\t\t" << "--set-refinement" << "\t\t" 
+    << "does merging/sorting at each insertion in the subnet set (default is true)" << endl;
+    
+    (*out) << "\t-s" << "\t\t" << "--statistics" << "\t\t\t" << "display various statistics about the inferred subnets" << endl;
+    
+    (*out) << "\t-r" << "\t\t" << "--recompute-routes" << "\t\t" << "recompute route to each parsed subnet (+ alias info)" << endl;
+    
+    (*out) << "\t-o" << "\t\t" << "--output-file" << "\t\t\t" << "write parsed subnet set in a new output "
+    << "[label]" << endl;
+    
+    (*out) << "\t-n" << "\t\t" << "--neighborhoods" << "\t\t\t" << "display neighborhood analysis" << endl;
+    
+    (*out) << "\t-b" << "\t\t" << "--bipartite" << "\t\t\t" << "generate bipartite graph (given as an output file ";
+    (*out) << "Bipartite [label])" << endl;
+    
+    (*out) << "\t-v" << "\t\t" << "--version" << "\t\t\t" << "program version" << endl;
+    (*out) << "\t-?" << "\t\t" << "--help" << "\t\t\t\t" << "help" << endl;
+    (*out) << "TreeNET and TreeNET Reader were written by Jean-Francois Grailet (Academic year 2014 - 2015)" << endl;
+    (*out) << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
+    
+    out->flush();
 }
 
 /**
@@ -137,14 +137,14 @@ void printHeaderLines(ostream *out)
     // First line (titles of columns)
     (*out) << setw(17) << left << "Subnet status" << setw(20) << left << "Network Number" 
     << setw(6) << "Size" << " : " << "  [ IP - Hop Distance List ]";
-	(*out) << endl;
-	
-	// Second line (dashes)
-	(*out) << setw(17) << left << "---------------" << setw(20) << left << "------------------" 
-	<< setw(6) << "----" << " : " << "  --------------------------";
-	(*out) << endl;
-	
-	out->flush();
+    (*out) << endl;
+    
+    // Second line (dashes)
+    (*out) << setw(17) << left << "---------------" << setw(20) << left << "------------------" 
+    << setw(6) << "----" << " : " << "  --------------------------";
+    (*out) << endl;
+    
+    out->flush();
 }
 
 /**
@@ -158,10 +158,10 @@ void printSubnetSite(ostream *out, SubnetSite *site)
 {
     // N.B.: at this point in the code, site is assumed to be non null
 
-	string subnetStatusStr = "N/A";
-	string NNstr = "N/A";
-	string data = "";
-	string sizeStr = "N/A";
+    string subnetStatusStr = "N/A";
+    string NNstr = "N/A";
+    string data = "";
+    string sizeStr = "N/A";
 
     unsigned short siteStatus = site->getStatus();
     switch(siteStatus)
@@ -194,249 +194,249 @@ void printSubnetSite(ostream *out, SubnetSite *site)
         
         if(count < sizeMinus1)
         {
-	        data += ",";
-	        
-	        // Ensures one pair IP - hop distance is displayed per line
-	        data += "\n";
-	        data += "                                                  ";
+            data += ",";
+            
+            // Ensures one pair IP - hop distance is displayed per line
+            data += "\n";
+            data += "                                                  ";
         }
         count++;
     }
     data += " ]";
     
-	(*out) << setw(17) << left << subnetStatusStr << setw(20) << left << NNstr 
-	<< setw(6) << left << sizeStr << " : " << data;
+    (*out) << setw(17) << left << subnetStatusStr << setw(20) << left << NNstr 
+    << setw(6) << left << sizeStr << " : " << data;
 }
 
 // Main function
 
 int main(int argc, char *argv[])
 {
-	InetAddress localIPAddress;
-	string attentionMessage = string("NOT an ATTACK (mail: Jean-Francois.Grailet@student.ulg.ac.be)");
-	string inputFilePath;
-	TimeVal timeoutPeriod(2, TimeVal::HALF_A_SECOND);
-	TimeVal probeRegulatingPeriod(0, 50000);
-	unsigned short nbThreads = 256;
-	string labelOutputFiles = "";
-	bool useFixedFlowID = true;
-	bool recomputeRoutes = false;
-	bool newOutputFile = false;
-	bool analyzeNeighborhoods = false;
-	bool generateBipartite = false;
-	bool computeStatistics = false;
-	bool setRefinement = true;
+    InetAddress localIPAddress;
+    string attentionMessage = string("NOT an ATTACK (mail: Jean-Francois.Grailet@student.ulg.ac.be)");
+    string inputFilePath;
+    TimeVal timeoutPeriod(2, TimeVal::HALF_A_SECOND);
+    TimeVal probeRegulatingPeriod(0, 50000);
+    unsigned short nbThreads = 256;
+    string labelOutputFiles = "";
+    bool useFixedFlowID = true;
+    bool recomputeRoutes = false;
+    bool newOutputFile = false;
+    bool analyzeNeighborhoods = false;
+    bool generateBipartite = false;
+    bool computeStatistics = false;
+    bool setRefinement = true;
 
-	int opt = 0;
-	int longIndex = 0;
-	
-	const char* const shortOpts = "i:e:m:f:w:z:t:l:a:sronbv?";
-	const struct option longOpts[] = {
-			{"input-file", required_argument, 0, 'i'},
-			{"interface", required_argument, 0, 'e'},
-			{"attention-message", required_argument, 0, 'm'},
-			{"fix-flow-id", required_argument, 0, 'f'},
-			{"probe-timeout-period", required_argument, 0, 'w'},
-			{"probe-regulating-period", required_argument, 0, 'z'},
-			{"concurrency-nb-threads", required_argument, 0, 't'},
-			{"label-output-files", required_argument, 0, 'l'},
-			{"set-refinement", required_argument, 0, 'a'},
-			{"statistics", no_argument, NULL, 's'},
-			{"recompute-routes", no_argument, NULL, 'r'},
-			{"output-file", no_argument, NULL, 'o'},
-			{"neighborhoods", no_argument, NULL, 'n'},
-			{"bipartite", no_argument, NULL, 'b'},
-			{"version", no_argument, NULL, 'v'},
-		    {"help", no_argument, NULL, '?'}
-	};
+    int opt = 0;
+    int longIndex = 0;
+    
+    const char* const shortOpts = "i:e:m:f:w:z:t:l:a:sronbv?";
+    const struct option longOpts[] = {
+            {"input-file", required_argument, 0, 'i'},
+            {"interface", required_argument, 0, 'e'},
+            {"attention-message", required_argument, 0, 'm'},
+            {"fix-flow-id", required_argument, 0, 'f'},
+            {"probe-timeout-period", required_argument, 0, 'w'},
+            {"probe-regulating-period", required_argument, 0, 'z'},
+            {"concurrency-nb-threads", required_argument, 0, 't'},
+            {"label-output-files", required_argument, 0, 'l'},
+            {"set-refinement", required_argument, 0, 'a'},
+            {"statistics", no_argument, NULL, 's'},
+            {"recompute-routes", no_argument, NULL, 'r'},
+            {"output-file", no_argument, NULL, 'o'},
+            {"neighborhoods", no_argument, NULL, 'n'},
+            {"bipartite", no_argument, NULL, 'b'},
+            {"version", no_argument, NULL, 'v'},
+            {"help", no_argument, NULL, '?'}
+    };
 
     // User arguments
-	string optargSTR;
-	unsigned long val;
-	unsigned long sec;
-	unsigned long microSec;
-	while((opt = getopt_long(argc, argv, shortOpts, longOpts, &longIndex)) != -1)
-	{
-	    /*
-	     * Beware: use the line optargSTR = string(optarg); ONLY for flags WITH arguments !! 
-	     * Otherwise, it prevents the code from recognizing -v, -? and -g (because they need 
-	     * no argument) and make it throw an exception... To avoid this, a second switch is used.
-	     *
-	     * (this is noteworthy, as this error is still present in ExploreNET v2.1)
-	     */
-	    
-	    switch(opt)
-	    {
-	        case 's':
-	        case 'r':
-	        case 'o':
-	        case 'n':
-	        case 'b':
-	        case 'v':
-	        case '?':
-	            break;
-	        default:
-		        optargSTR = string(optarg);
-		        
-		        /*
-		        * For future readers: optarg is of type extern char*, and is defined in getopt.h.
-		        * Therefore, you will not find the declaration of this variable in this file.
-		        */
-		        
-		        break;
-		}
-		
-		// Now we can actually treat the options.
-		int gotNb = 0;
-		switch(opt)
-		{
-		    case 'e':
-			    try
-			    {
-				    localIPAddress = InetAddress::getLocalAddressByInterfaceName(optargSTR);
-			    }
-			    catch (InetAddressException &e)
-			    {
-				    cout << "Cannot obtain any IP address assigned to the interface \"" + optargSTR + "\"" << endl;
-				    return 1;
-			    }
-			    break;
-		    case 'm':
-			    attentionMessage = optargSTR;
-			    break;
+    string optargSTR;
+    unsigned long val;
+    unsigned long sec;
+    unsigned long microSec;
+    while((opt = getopt_long(argc, argv, shortOpts, longOpts, &longIndex)) != -1)
+    {
+        /*
+         * Beware: use the line optargSTR = string(optarg); ONLY for flags WITH arguments !! 
+         * Otherwise, it prevents the code from recognizing -v, -? and -g (because they need 
+         * no argument) and make it throw an exception... To avoid this, a second switch is used.
+         *
+         * (this is noteworthy, as this error is still present in ExploreNET v2.1)
+         */
+        
+        switch(opt)
+        {
+            case 's':
+            case 'r':
+            case 'o':
+            case 'n':
+            case 'b':
+            case 'v':
+            case '?':
+                break;
+            default:
+                optargSTR = string(optarg);
+                
+                /*
+                * For future readers: optarg is of type extern char*, and is defined in getopt.h.
+                * Therefore, you will not find the declaration of this variable in this file.
+                */
+                
+                break;
+        }
+        
+        // Now we can actually treat the options.
+        int gotNb = 0;
+        switch(opt)
+        {
+            case 'e':
+                try
+                {
+                    localIPAddress = InetAddress::getLocalAddressByInterfaceName(optargSTR);
+                }
+                catch (InetAddressException &e)
+                {
+                    cout << "Cannot obtain any IP address assigned to the interface \"" + optargSTR + "\"" << endl;
+                    return 1;
+                }
+                break;
+            case 'm':
+                attentionMessage = optargSTR;
+                break;
             case 'i':
-			    inputFilePath = optargSTR;
-			    break;
-		    case 'f':
-			    std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
-			    if(optargSTR == string("FALSE"))
-				    useFixedFlowID = false;
-			    break;
-		    case 'w':
-			    val = 1000 * StringUtils::string2Ulong(optargSTR);
-			    if(val > 0)
-			    {
-				    sec = val / TimeVal::MICRO_SECONDS_LIMIT;
-				    microSec = val % TimeVal::MICRO_SECONDS_LIMIT;
-				    timeoutPeriod.setTime(sec, microSec);
-			    }
-			    break;
-		    case 'z':
-			    val = 1000 * StringUtils::string2Ulong(optargSTR);
-			    if(val > 0)
-			    {
-				    sec = val / TimeVal::MICRO_SECONDS_LIMIT;
-				    microSec = val % TimeVal::MICRO_SECONDS_LIMIT;
-				    probeRegulatingPeriod.setTime(sec, microSec);
-			    }
-			    break;
-			case 't':
-			    gotNb = std::atoi(optargSTR.c_str());
-			    if (gotNb > 0 && gotNb < 32767)
-			    {
-			        nbThreads = gotNb;
-			    }
-			    break;
-			case 'l':
-			    labelOutputFiles = optargSTR;
-			    break;
-			case 'a':
-			    std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
-			    if(optargSTR == string("FALSE"))
-				    setRefinement = false;
-			    break;
-			case 's':
-			    computeStatistics = true;
-			    break;
-			case 'r':
-			    recomputeRoutes = true;
-			    break;
-			case 'o':
-			    newOutputFile = true;
-			    break;
-			case 'n':
-			    analyzeNeighborhoods = true;
-			    break;
-			case 'b':
-			    generateBipartite = true;
-			    break;
-		    case 'v':
-			    cout << string(argv[0]) << " (TreeNET Reader) v1.0 by J.-F. Grailet ";
-			    cout << "(January - March 2015)" << endl;
-			    return 0;
-		    case '?':
-			    usage(&cout, string(argv[0]));
-			    return 0;
-		    default:
-			    usage(&cout, string(argv[0]));
-			    return 1;
-		}
-	}
+                inputFilePath = optargSTR;
+                break;
+            case 'f':
+                std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
+                if(optargSTR == string("FALSE"))
+                    useFixedFlowID = false;
+                break;
+            case 'w':
+                val = 1000 * StringUtils::string2Ulong(optargSTR);
+                if(val > 0)
+                {
+                    sec = val / TimeVal::MICRO_SECONDS_LIMIT;
+                    microSec = val % TimeVal::MICRO_SECONDS_LIMIT;
+                    timeoutPeriod.setTime(sec, microSec);
+                }
+                break;
+            case 'z':
+                val = 1000 * StringUtils::string2Ulong(optargSTR);
+                if(val > 0)
+                {
+                    sec = val / TimeVal::MICRO_SECONDS_LIMIT;
+                    microSec = val % TimeVal::MICRO_SECONDS_LIMIT;
+                    probeRegulatingPeriod.setTime(sec, microSec);
+                }
+                break;
+            case 't':
+                gotNb = std::atoi(optargSTR.c_str());
+                if (gotNb > 0 && gotNb < 32767)
+                {
+                    nbThreads = gotNb;
+                }
+                break;
+            case 'l':
+                labelOutputFiles = optargSTR;
+                break;
+            case 'a':
+                std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
+                if(optargSTR == string("FALSE"))
+                    setRefinement = false;
+                break;
+            case 's':
+                computeStatistics = true;
+                break;
+            case 'r':
+                recomputeRoutes = true;
+                break;
+            case 'o':
+                newOutputFile = true;
+                break;
+            case 'n':
+                analyzeNeighborhoods = true;
+                break;
+            case 'b':
+                generateBipartite = true;
+                break;
+            case 'v':
+                cout << string(argv[0]) << " (TreeNET Reader) v1.0 by J.-F. Grailet ";
+                cout << "(January - March 2015)" << endl;
+                return 0;
+            case '?':
+                usage(&cout, string(argv[0]));
+                return 0;
+            default:
+                usage(&cout, string(argv[0]));
+                return 1;
+        }
+    }
 
     // Determines local IP
-	if(localIPAddress.isUnset() && recomputeRoutes)
-	{
-		try
-		{
-			localIPAddress = InetAddress::getFirstLocalAddress();
-		}
-		catch(InetAddressException &e)
-		{
-			cout << "Cannot obtain a valid local IP address for probing" << endl;
-			return 1;
-		}
-	}
-	
-	// Set for maintaining subnets
+    if(localIPAddress.isUnset() && recomputeRoutes)
+    {
+        try
+        {
+            localIPAddress = InetAddress::getFirstLocalAddress();
+        }
+        catch(InetAddressException &e)
+        {
+            cout << "Cannot obtain a valid local IP address for probing" << endl;
+            return 1;
+        }
+    }
+    
+    // Set for maintaining subnets
     SubnetSiteSet *set = NULL;
-	try
-	{
-	    // Opens input file (if any) and puts content inside a string
-	    string inputs = "";
-	    string warnings = ""; // To display unrecognized files later (after welcome message)
-	    if(inputFilePath.size() > 0)
-	    {
-	        size_t pos = inputFilePath.find(',');
-	        
-	        // Single input file
-	        if(pos == std::string::npos)
-	        {
-	            ifstream inFile;
-		        inFile.open(inputFilePath.c_str());
-		        if(inFile.is_open())
-		        {
-		            inputs.assign((std::istreambuf_iterator<char>(inFile)),
+    try
+    {
+        // Opens input file (if any) and puts content inside a string
+        string inputs = "";
+        string warnings = ""; // To display unrecognized files later (after welcome message)
+        if(inputFilePath.size() > 0)
+        {
+            size_t pos = inputFilePath.find(',');
+            
+            // Single input file
+            if(pos == std::string::npos)
+            {
+                ifstream inFile;
+                inFile.open(inputFilePath.c_str());
+                if(inFile.is_open())
+                {
+                    inputs.assign((std::istreambuf_iterator<char>(inFile)),
                                             (std::istreambuf_iterator<char>()));
                     
                     inFile.close();
-		        }
-		    }
-		    // Multiple input files
-		    else
-		    {
-	            std::stringstream ss(inputFilePath);
+                }
+            }
+            // Multiple input files
+            else
+            {
+                std::stringstream ss(inputFilePath);
                 std::string inputFileStr;
                 while (std::getline(ss, inputFileStr, ','))
                 {
                     string inputFileContent = "";
                     ifstream inFile;
                     inFile.open(inputFileStr.c_str());
-		            if(inFile.is_open())
-		            {
-		                inputFileContent.assign((std::istreambuf_iterator<char>(inFile)),
+                    if(inFile.is_open())
+                    {
+                        inputFileContent.assign((std::istreambuf_iterator<char>(inFile)),
                                                 (std::istreambuf_iterator<char>()));
                         
                         inputs += inputFileContent;
                         
                         inFile.close();
-		            }
-		            else
-		            {
-		                warnings += "Warning: could not open file " + inputFileStr + "\n";
-		            }
+                    }
+                    else
+                    {
+                        warnings += "Warning: could not open file " + inputFileStr + "\n";
+                    }
                 }
-		    }
-	    }
+            }
+        }
 
         // Input file must contain something
         if(inputs.size() > 0)
@@ -539,8 +539,8 @@ int main(int argc, char *argv[])
                         
                         if((unsigned short) prefixLength > 32)
                         {
-			                cout << "Malformed/Unrecognized subnet \"" + targetStr + "\"" << endl;
-			                ignoreTillBlankLine = true;
+                            cout << "Malformed/Unrecognized subnet \"" + targetStr + "\"" << endl;
+                            ignoreTillBlankLine = true;
                             continue;
                         }
                         
@@ -550,9 +550,9 @@ int main(int argc, char *argv[])
                             subnetPrefix.setInetAddress(prefix);
                         }
                         catch (InetAddressException &e)
-		                {
-			                cout << "Malformed/Unrecognized subnet \"" + targetStr + "\"" << endl;
-			                ignoreTillBlankLine = true;
+                        {
+                            cout << "Malformed/Unrecognized subnet \"" + targetStr + "\"" << endl;
+                            ignoreTillBlankLine = true;
                             continue;
                         }
                         
@@ -573,7 +573,7 @@ int main(int argc, char *argv[])
                         {
                             string subnetStr = temp->getInferredNetworkAddressString();
                             cout << "Unrecognized status \"" + targetStr + "\" for subnet " << subnetStr << endl;
-			                ignoreTillBlankLine = true;
+                            ignoreTillBlankLine = true;
                             continue;
                         }
                         
@@ -596,13 +596,13 @@ int main(int argc, char *argv[])
                                 liveIP.setInetAddress(IPStr);
                             }
                             catch (InetAddressException &e)
-		                    {
-		                        string subnetStr = temp->getInferredNetworkAddressString();
-			                    cout << "Malformed/Unrecognized interface \"" + targetStr;
-			                    cout << "\" in subnet " << subnetStr << "." << endl << "As ";
-			                    cout << "it is the only listed interface, this subnet will ";
-			                    cout << "not be further parsed." << endl;
-			                    ignoreTillBlankLine = true;
+                            {
+                                string subnetStr = temp->getInferredNetworkAddressString();
+                                cout << "Malformed/Unrecognized interface \"" + targetStr;
+                                cout << "\" in subnet " << subnetStr << "." << endl << "As ";
+                                cout << "it is the only listed interface, this subnet will ";
+                                cout << "not be further parsed." << endl;
+                                ignoreTillBlankLine = true;
                                 continue;
                             }
                             
@@ -686,10 +686,10 @@ int main(int argc, char *argv[])
                                 liveIP.setInetAddress(IPStr);
                             }
                             catch (InetAddressException &e)
-		                    {
-		                        string subnetStr = temp->getInferredNetworkAddressString();
-			                    cout << "Malformed/Unrecognized interface \"" + nodeStr;
-			                    cout << "\" in subnet " << subnetStr << endl;
+                            {
+                                string subnetStr = temp->getInferredNetworkAddressString();
+                                cout << "Malformed/Unrecognized interface \"" + nodeStr;
+                                cout << "\" in subnet " << subnetStr << endl;
                                 continue;
                             }
 
@@ -751,9 +751,9 @@ int main(int argc, char *argv[])
                         
                         if(!atLeastOne)
                         {
-		                    cout << "No correct interface was listed. This subnet will not ";
-		                    cout << "be further parsed." << endl;
-		                    ignoreTillBlankLine = true;
+                            cout << "No correct interface was listed. This subnet will not ";
+                            cout << "be further parsed." << endl;
+                            ignoreTillBlankLine = true;
                             continue;
                         }
                     
@@ -808,11 +808,11 @@ int main(int argc, char *argv[])
                                 liveIP.setInetAddress(IPStr);
                             }
                             catch (InetAddressException &e)
-		                    {
-		                        string subnetStr = temp->getInferredNetworkAddressString();
-			                    cout << "Malformed/Unrecognized interface \"" + targetStr;
-			                    cout << "\" in the route of subnet " << subnetStr << ".";
-			                    ignoreTillBlankLine = true;
+                            {
+                                string subnetStr = temp->getInferredNetworkAddressString();
+                                cout << "Malformed/Unrecognized interface \"" + targetStr;
+                                cout << "\" in the route of subnet " << subnetStr << ".";
+                                ignoreTillBlankLine = true;
                                 continue;
                             }
                             
@@ -889,10 +889,10 @@ int main(int argc, char *argv[])
                                 liveIP.setInetAddress(IPStr);
                             }
                             catch (InetAddressException &e)
-		                    {
-		                        string subnetStr = temp->getInferredNetworkAddressString();
-			                    cout << "Malformed/Unrecognized interface \"" + routeStr;
-			                    cout << "\" in route to subnet " << subnetStr << endl;
+                            {
+                                string subnetStr = temp->getInferredNetworkAddressString();
+                                cout << "Malformed/Unrecognized interface \"" + routeStr;
+                                cout << "\" in route to subnet " << subnetStr << endl;
                                 routeOK = false;
                                 break;
                             }
@@ -913,8 +913,8 @@ int main(int argc, char *argv[])
                         
                         if(!routeOK)
                         {
-		                    cout << "Malformed route. This subnet will not be listed." << endl;
-		                    ignoreTillBlankLine = true;
+                            cout << "Malformed route. This subnet will not be listed." << endl;
+                            ignoreTillBlankLine = true;
                             continue;
                         }
                         
@@ -945,13 +945,13 @@ int main(int argc, char *argv[])
             
             cout << "Parsing completed." << endl << endl;
             
-	        /*
-	         * PARIS TRACEROUTE
-	         *
-	         * If explicitely asked, we will re-compute the route to each subnet.
-	         */
-	         
-	        std::list<SubnetSite*> *list = set->getSubnetSiteList();
+            /*
+             * PARIS TRACEROUTE
+             *
+             * If explicitely asked, we will re-compute the route to each subnet.
+             */
+             
+            std::list<SubnetSite*> *list = set->getSubnetSiteList();
             
             if(recomputeRoutes && list->size() > 0)
             {
@@ -965,45 +965,45 @@ int main(int argc, char *argv[])
                 }
                 
                 // Size of the thread array
-			    unsigned short sizeParisArray = 0;
-			    unsigned short maxThreads = nbThreads;
-			    if((unsigned long) toSchedule.size() > (unsigned long) maxThreads)
-			        sizeParisArray = maxThreads;
-			    else
-			        sizeParisArray = (unsigned short) toSchedule.size();
-			    
-			    // Creates thread(s)
-		        Thread **parisTh = new Thread*[sizeParisArray];
-		        for(unsigned short i = 0; i < sizeParisArray; i++)
-		            parisTh[i] = NULL;
-			    
-			    std::list<SubnetSite*> subnetsToDelete;
-			    while(toSchedule.size() > 0)
-			    {
-			        unsigned short range = DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID;
-			        range -= DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID;
-			        range /= sizeParisArray;
-			        
-			        for(unsigned short i = 0; i < sizeParisArray && toSchedule.size() > 0; i++)
-			        {
-			            SubnetSite *curSubnet = toSchedule.front();
-			            toSchedule.pop_front();
-			            
-			            unsigned short lowBound = (i * range);
-			            unsigned short upBound = lowBound + range - 1;
-			            parisTh[i] = new Thread(new ParisTracerouteTask(
-		                             &cout,
-		                             &subnetsToDelete,
-		                             curSubnet,
-		                             localIPAddress,
-		                             attentionMessage,
-		                             timeoutPeriod,
-		                             probeRegulatingPeriod,
-		                             DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + lowBound,
-		                             DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + upBound,
-		                             DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ,
-		                             DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ));
-		            }
+                unsigned short sizeParisArray = 0;
+                unsigned short maxThreads = nbThreads;
+                if((unsigned long) toSchedule.size() > (unsigned long) maxThreads)
+                    sizeParisArray = maxThreads;
+                else
+                    sizeParisArray = (unsigned short) toSchedule.size();
+                
+                // Creates thread(s)
+                Thread **parisTh = new Thread*[sizeParisArray];
+                for(unsigned short i = 0; i < sizeParisArray; i++)
+                    parisTh[i] = NULL;
+                
+                std::list<SubnetSite*> subnetsToDelete;
+                while(toSchedule.size() > 0)
+                {
+                    unsigned short range = DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID;
+                    range -= DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID;
+                    range /= sizeParisArray;
+                    
+                    for(unsigned short i = 0; i < sizeParisArray && toSchedule.size() > 0; i++)
+                    {
+                        SubnetSite *curSubnet = toSchedule.front();
+                        toSchedule.pop_front();
+                        
+                        unsigned short lowBound = (i * range);
+                        unsigned short upBound = lowBound + range - 1;
+                        parisTh[i] = new Thread(new ParisTracerouteTask(
+                                     &cout,
+                                     &subnetsToDelete,
+                                     curSubnet,
+                                     localIPAddress,
+                                     attentionMessage,
+                                     timeoutPeriod,
+                                     probeRegulatingPeriod,
+                                     DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + lowBound,
+                                     DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + upBound,
+                                     DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ,
+                                     DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ));
+                    }
 
                     // Launches thread(s) then waits for completion
                     for(unsigned short i = 0; i < sizeParisArray; i++)
@@ -1056,8 +1056,8 @@ int main(int argc, char *argv[])
             }
             
             cout << "Successfully parsed subnets:" << endl << endl;
-	        
-	        // Prints out headers
+            
+            // Prints out headers
             printHeaderLines(&cout);
             
             // Outputting the parsed subnets (from the set)
@@ -1173,34 +1173,34 @@ int main(int argc, char *argv[])
             NetworkTree *tree = new NetworkTree(treeMaxDepth);
             
             SubnetSite *toInsert = set->getValidSubnet();
-	        while(toInsert != NULL)
-	        {
-	            tree->insert(toInsert);
-	            toInsert = set->getValidSubnet();
-	        }
-	        cout << "Building complete." << endl;
-	        
-	        tree->visit(&cout);
-	        cout << endl;
-	        
-	        if(recomputeRoutes)
+            while(toInsert != NULL)
             {
-	            /*
-	             * ALIAS RESOLUTION
-	             *
-	             * Interfaces bordering a neighborhood are probed once more to attempt to gather 
-	             * interfaces as routers.
-	             */
-	            
-	            cout << "Alias resolution..." << endl << endl;
-	            
-	            std::list<InetAddress*> interfacesToProbe = tree->listInterfaces();
+                tree->insert(toInsert);
+                toInsert = set->getValidSubnet();
+            }
+            cout << "Building complete." << endl;
+            
+            tree->visit(&cout);
+            cout << endl;
+            
+            if(recomputeRoutes)
+            {
+                /*
+                 * ALIAS RESOLUTION
+                 *
+                 * Interfaces bordering a neighborhood are probed once more to attempt to gather 
+                 * interfaces as routers.
+                 */
+                
+                cout << "Alias resolution..." << endl << endl;
+                
+                std::list<InetAddress*> interfacesToProbe = tree->listInterfaces();
 
-	            AliasResolver *ar = NULL;
-	            ar = new AliasResolver(interfacesToProbe,
-		                               localIPAddress, 
+                AliasResolver *ar = NULL;
+                ar = new AliasResolver(interfacesToProbe,
+                                       localIPAddress, 
                                        attentionMessage, 
-	                                   useFixedFlowID, 
+                                       useFixedFlowID, 
                                        timeoutPeriod, 
                                        probeRegulatingPeriod, 
                                        DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID, 
@@ -1228,38 +1228,38 @@ int main(int argc, char *argv[])
             
             // We only infer routers now
             tree->visitAndInferRouters();
-	        
-	        // Statistics regarding the tree itself
-	        if(computeStatistics)
-	        {
-	            unsigned int *stat = tree->getStatistics();
-	            totalNeighborhoods = stat[0];
-	            totalNeighborhoodsLeaves = stat[1];
-	            totalNeighborhoodsComplete = stat[2];
-	            totalNeighborhoodsPartial = stat[3];
-	            totalNeighborhoodsCoveredLabels = stat[4];
-	            
-	            delete[] stat;
-	            
-	            ratioNeighborhoodsLeaves = (double) totalNeighborhoodsLeaves / (double) totalNeighborhoods;
-	            ratioNeighborhoodsComplete = (double) totalNeighborhoodsComplete / (double) totalNeighborhoods;
-	            ratioNeighborhoodsPartial = (double) totalNeighborhoodsPartial / (double) totalNeighborhoods;
-	            ratioNeighborhoodsCoveredLabels = (double) totalNeighborhoodsCoveredLabels / (double) totalNeighborhoods;
-	        }
-	        
-	        if(analyzeNeighborhoods)
-	        {
-	            tree->neighborhoods(&cout);
-	        }
-	        
-	        if(generateBipartite)
-	        {
-	            cout << "Creating bipartite graph..." << endl << endl;
-	            
-	            // Generates bipartite graph
-	            BipartiteGraph *graph = tree->toBipartite();
-	            
-	            // File name
+            
+            // Statistics regarding the tree itself
+            if(computeStatistics)
+            {
+                unsigned int *stat = tree->getStatistics();
+                totalNeighborhoods = stat[0];
+                totalNeighborhoodsLeaves = stat[1];
+                totalNeighborhoodsComplete = stat[2];
+                totalNeighborhoodsPartial = stat[3];
+                totalNeighborhoodsCoveredLabels = stat[4];
+                
+                delete[] stat;
+                
+                ratioNeighborhoodsLeaves = (double) totalNeighborhoodsLeaves / (double) totalNeighborhoods;
+                ratioNeighborhoodsComplete = (double) totalNeighborhoodsComplete / (double) totalNeighborhoods;
+                ratioNeighborhoodsPartial = (double) totalNeighborhoodsPartial / (double) totalNeighborhoods;
+                ratioNeighborhoodsCoveredLabels = (double) totalNeighborhoodsCoveredLabels / (double) totalNeighborhoods;
+            }
+            
+            if(analyzeNeighborhoods)
+            {
+                tree->neighborhoods(&cout);
+            }
+            
+            if(generateBipartite)
+            {
+                cout << "Creating bipartite graph..." << endl << endl;
+                
+                // Generates bipartite graph
+                BipartiteGraph *graph = tree->toBipartite();
+                
+                // File name
                 string filename = "Bipartite ";
                 if(labelOutputFiles.length() > 0)
                     filename += labelOutputFiles;
@@ -1270,23 +1270,23 @@ int main(int argc, char *argv[])
                 ofstream newFile;
                 newFile.open(filename.c_str());
                 newFile << graph->routersToString() << endl;
-	            newFile << graph->subnetsToString() << endl;
-	            newFile << graph->linksSRToString() << endl;
-	            newFile << graph->linksRSToString() << endl;
+                newFile << graph->subnetsToString() << endl;
+                newFile << graph->linksSRToString() << endl;
+                newFile << graph->linksRSToString() << endl;
                 newFile.close();
                 
                 string newFilePath = "./" + filename;
                 chmod(newFilePath.c_str(), 0766);
                 
                 cout << "Bipartite graph outputted as " << filename << endl << endl;
-	            
-	            delete graph;
-	        }
-	        
-	        // Deletes tree
-	        delete tree;
-	        
-	        // Deletes set
+                
+                delete graph;
+            }
+            
+            // Deletes tree
+            delete tree;
+            
+            // Deletes set
             delete set;
             
             // Now, we can display statistics if asked by the user.
@@ -1320,35 +1320,34 @@ int main(int argc, char *argv[])
                 << totalNeighborhoodsCoveredLabels << " ("
                 << (100 * ratioNeighborhoodsCoveredLabels) << "%)" << endl;
             }
-		}
-		// No input
-		else
-		{
-			cout << "Missing/empty input file" << endl;
-			if(inputFilePath.length() > 0)
-			    cout << "Input: " << inputFilePath << endl;
-			cout << warnings << endl;
-			usage(&cout, string(argv[0]));
-			throw InvalidParameterException();
-		}
-	}
-	catch(SocketException &e)
-	{
-	    cout << "Unable to create sockets to recompute routes and alias data. Try running ";
-	    cout << "TreeNET Reader as a privileged user (for example, try with sudo)." << endl;
-	    
-	    if(set != NULL)
-	        delete set;
+        }
+        // No input
+        else
+        {
+            cout << "Missing/empty input file" << endl;
+         if(inputFilePath.length() > 0)
+            cout << "Input: " << inputFilePath << endl;
+            cout << warnings << endl;
+            usage(&cout, string(argv[0]));
+            throw InvalidParameterException();
+        }
+    }
+    catch(SocketException &e)
+    {
+        cout << "Unable to create sockets to recompute routes and alias data. Try running ";
+        cout << "TreeNET Reader as a privileged user (for example, try with sudo)." << endl;
+        
+        if(set != NULL)
+            delete set;
 
-	    return 1;
-	}
-	catch(InvalidParameterException &e)
-	{
-	    cout << "No valid subnet to work with." << endl;
-		cout << "Use \"--help\" or \"-?\" parameter to reach help" << endl;
-		return 1;
-	}
-	
-	return 0;
+        return 1;
+    }
+    catch(InvalidParameterException &e)
+    {
+        cout << "No valid subnet to work with." << endl;
+        cout << "Use \"--help\" or \"-?\" parameter to reach help" << endl;
+        return 1;
+    }
+    
+    return 0;
 }
-

@@ -53,56 +53,56 @@ public:
      * insertion step (re-building the whole map at each insertion is costly).
      */
 
-	NetworkTree(unsigned short maxDepth);
-	~NetworkTree();
-	
-	// Insertion method
-	void insert(SubnetSite *subnet);
-	
-	// Prints the tree (policy: depth-first pre-order)
-	void visit(ostream *out);
-	
-	/*
-	 * Gets statistics over the tree in an array made of the following cells:
-	 * -[0]: amount of neighborhoods
-	 * -[1]: amount of neighborhoods with only subnets as children
-	 * -[2]: amount of neighborhoods with complete linkage
-	 * -[3]: amount of neighborhoods with partial linkage (1 or 2 missing links)
- 	 * -[4]: amount of neighborhoods which all labels appear in measured subnets
-	 */
+    NetworkTree(unsigned short maxDepth);
+    ~NetworkTree();
+    
+    // Insertion method
+    void insert(SubnetSite *subnet);
+    
+    // Prints the tree (policy: depth-first pre-order)
+    void visit(ostream *out);
+    
+    /*
+     * Gets statistics over the tree in an array made of the following cells:
+     * -[0]: amount of neighborhoods
+     * -[1]: amount of neighborhoods with only subnets as children
+     * -[2]: amount of neighborhoods with complete linkage
+     * -[3]: amount of neighborhoods with partial linkage (1 or 2 missing links)
+      * -[4]: amount of neighborhoods which all labels appear in measured subnets
+     */
     
     unsigned int *getStatistics();
-	
-	// Infers and lists the interfaces of all neighborhoods (as pointers)
-	list<InetAddress*> listInterfaces();
-	
-	/*
-	 * Propagates router info (i.e. probe token/IP identifier of each interface) in the routes 
-	 * of the inferred subnets (leaves of the tree).
-	 */
-	
-	void propagateRouterInfo();
-	
-	/*
-	 * Gets a subnet contained in the tree which contains the given input address. For fast 
-	 * look-up, this step is performed with the help of a map which is indexed with the first 
-	 * 20 bits of the needle and contains list of subnets prefixed with these 20 first bits.
-	 */
-	 
-	SubnetSite *getSubnetContaining(InetAddress needle);
+    
+    // Infers and lists the interfaces of all neighborhoods (as pointers)
+    list<InetAddress*> listInterfaces();
+    
+    /*
+     * Propagates router info (i.e. probe token/IP identifier of each interface) in the routes 
+     * of the inferred subnets (leaves of the tree).
+     */
+    
+    void propagateRouterInfo();
+    
+    /*
+     * Gets a subnet contained in the tree which contains the given input address. For fast 
+     * look-up, this step is performed with the help of a map which is indexed with the first 
+     * 20 bits of the needle and contains list of subnets prefixed with these 20 first bits.
+     */
+     
+    SubnetSite *getSubnetContaining(InetAddress needle);
     
     // Visits the tree to infer routers in each neighborhood
     void visitAndInferRouters();
-	
-	// Prints the interesting neighborhoods (i.e. nodes with more than one child)
-	void neighborhoods(ostream *out);
-	
-	// Method to write the leaves in an output file of a given name.
-	void outputAsFile(string filename);
-	
-	// Method to generate a bipartite graph from the tree.
-	BipartiteGraph *toBipartite();
-	
+    
+    // Prints the interesting neighborhoods (i.e. nodes with more than one child)
+    void neighborhoods(ostream *out);
+    
+    // Method to write the leaves in an output file of a given name.
+    void outputAsFile(string filename);
+    
+    // Method to generate a bipartite graph from the tree.
+    BipartiteGraph *toBipartite();
+    
 private:
 
     /*
@@ -194,4 +194,3 @@ private:
 };
 
 #endif /* NETWORKTREE_H_ */
-

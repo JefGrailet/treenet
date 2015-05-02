@@ -15,4 +15,3 @@ destinationIP(dst)
 }
 
 UnresponsiveIPException::~UnresponsiveIPException() throw() {}
-

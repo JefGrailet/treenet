@@ -35,28 +35,28 @@ class BipartiteSubnet
 {
 public:
 
-	// Types of node
-	enum SubnetType
-	{
-	    T_INFERRED,
-	    T_IMAGINARY
-	};
+    // Types of node
+    enum SubnetType
+    {
+        T_INFERRED,
+        T_IMAGINARY
+    };
 
-	BipartiteSubnet(string label); // For imaginary subnet
-	BipartiteSubnet(string label, SubnetSite *subnet); // For inferred subnet
-	~BipartiteSubnet();
+    BipartiteSubnet(string label); // For imaginary subnet
+    BipartiteSubnet(string label, SubnetSite *subnet); // For inferred subnet
+    ~BipartiteSubnet();
 
-	// Accessors
-	inline string getLabel() const { return label; }
-	inline unsigned short getType() const { return type; }
-	inline SubnetSite *getAssociatedSubnet() { return associatedSubnet; }
-	inline list<LinkRouterSubnet*> *getLinks() { return &links; }
-	
-	// Methods to handle the links
-	bool isConnectedTo(string routerLabel);
-	void removeConnectionTo(string routerLabel);
-	inline void addLink(LinkRouterSubnet *link) { links.push_back(link); }
-	
+    // Accessors
+    inline string getLabel() const { return label; }
+    inline unsigned short getType() const { return type; }
+    inline SubnetSite *getAssociatedSubnet() { return associatedSubnet; }
+    inline list<LinkRouterSubnet*> *getLinks() { return &links; }
+    
+    // Methods to handle the links
+    bool isConnectedTo(string routerLabel);
+    void removeConnectionTo(string routerLabel);
+    inline void addLink(LinkRouterSubnet *link) { links.push_back(link); }
+    
 private:
 
     // Label, type, associated subnet (if any)
@@ -70,4 +70,3 @@ private:
 };
 
 #endif /* BIPARTITESUBNET_H_ */
-

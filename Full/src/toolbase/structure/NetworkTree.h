@@ -45,41 +45,41 @@ public:
 
     const static int SIZE_SUBNET_MAP = 1048576;
 
-	/*
+    /*
      * About maxDepth parameter: it is the size of the longest route to a subnet which should be 
      * inserted in the tree. It is used as the size of the depthMap array (i.e. one list of nodes 
      * per depth level), which should be maintained throughout the life of the tree to ease the 
      * insertion step (re-building the whole map at each insertion is costly).
      */
 
-	NetworkTree(unsigned short maxDepth);
-	~NetworkTree();
-	
-	// Insertion method
-	void insert(SubnetSite *subnet);
-	
-	// Prints the tree (policy: depth-first pre-order)
-	void visit(ostream *out);
-	
-	// Infers and lists the interfaces of all neighborhoods (as pointers)
-	list<InetAddress*> listInterfaces();
-	
-	/*
-	 * Propagates router info (i.e. probe token/IP identifier of each interface) in the routes 
-	 * of the inferred subnets (leaves of the tree).
-	 */
-	
-	void propagateRouterInfo();
-	
-	// Gets a subnet contained in the tree which contains the given input address.
-	SubnetSite *getSubnetContaining(InetAddress needle);
-	
-	// Prints the interesting neighborhoods (i.e. nodes with more than one child)
-	void neighborhoods(ostream *out);
-	
-	// Method to write the leaves in an output file of a given name.
-	void outputAsFile(string filename);
-	
+    NetworkTree(unsigned short maxDepth);
+    ~NetworkTree();
+    
+    // Insertion method
+    void insert(SubnetSite *subnet);
+    
+    // Prints the tree (policy: depth-first pre-order)
+    void visit(ostream *out);
+    
+    // Infers and lists the interfaces of all neighborhoods (as pointers)
+    list<InetAddress*> listInterfaces();
+    
+    /*
+     * Propagates router info (i.e. probe token/IP identifier of each interface) in the routes 
+     * of the inferred subnets (leaves of the tree).
+     */
+    
+    void propagateRouterInfo();
+    
+    // Gets a subnet contained in the tree which contains the given input address.
+    SubnetSite *getSubnetContaining(InetAddress needle);
+    
+    // Prints the interesting neighborhoods (i.e. nodes with more than one child)
+    void neighborhoods(ostream *out);
+    
+    // Method to write the leaves in an output file of a given name.
+    void outputAsFile(string filename);
+    
 private:
 
     /*
@@ -123,4 +123,3 @@ private:
 };
 
 #endif /* NETWORKTREE_H_ */
-

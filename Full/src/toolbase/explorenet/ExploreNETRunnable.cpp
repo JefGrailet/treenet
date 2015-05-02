@@ -67,96 +67,96 @@ ExploreNETRunnable::~ExploreNETRunnable() {}
 
 void ExploreNETRunnable::run()
 {
-	TargetAddress t;
-	SubnetSite *site = NULL;
-	unsigned short res;
+    TargetAddress t;
+    SubnetSite *site = NULL;
+    unsigned short res;
 
-	t = this->target;
-	if(t.address.isUnset())
-	{
-		return;
-	}
-	
-	// Checks that target is not already covered in the set
-	sssMutex.lock();
-	if(set->isCovered(t.address))
-	{
-	    outMutex.lock();
-	    cout << t.address << " is already in previously inferred subnets" << endl;
-	    outMutex.unlock();
-	    sssMutex.unlock();
-	    return;
-	}
-	sssMutex.unlock();
-	
-	try
-	{
-	    // Infers local subnet if the target is within the range of the LAN
-		if(lan.subsumes(t.address))
-		{
-		    // Infers local subnet with all IPs or use local information
-			if(exploreLANexplicitly == true)
-			{
-				site = sinf.inferLocalAreaSubnet(t.address, lan);
-				res = ExploreNETRunnable::SUCCESSFULLY_INFERRED_LOCAL_SUBNET_SITE;
-			}
-			else
-			{
-				site = sinf.inferDummyLocalAreaSubnet(t.address, lan);
-				res = ExploreNETRunnable::DUMMY_LOCAL_SUBNET_SITE;
-			}
-		}
-		// Infers remote subnet
-		else
-		{
-			site = sinf.inferRemoteSubnet(t.address, false, t.startTTL, useLowerBorderAsWell);
-			if(site != 0 && site->getInferredSubnetPrefixLength() <= 32)
-			{
-				res = ExploreNETRunnable::SUCCESSFULLY_INFERRED_REMOTE_SUBNET_SITE;
-			}
-			else
-			{
-				res = ExploreNETRunnable::NULL_SUBNET_SITE;
-			}
-		}
-	}
-	catch (UnresponsiveIPException &e)
-	{
-		res = ExploreNETRunnable::UNRESPONSIVE_IP_EXCEPTION;
-	}
-	catch (UndesignatedPivotInterface &e)
-	{
-		res = ExploreNETRunnable::UNDESIGNATED_PIVOT_INTERFACE_EXCEPTION;
-	}
-	catch (ShortTTLException &e)
-	{
-		res = ExploreNETRunnable::SHORT_TTL_EXCEPTION;
-	}
-	
-	string stringResult = ""; // For output purpose
-	
-	// Registering the site in the set
-	if(res == ExploreNETRunnable::SUCCESSFULLY_INFERRED_REMOTE_SUBNET_SITE ||
-	   res == ExploreNETRunnable::SUCCESSFULLY_INFERRED_LOCAL_SUBNET_SITE ||
-	   res == ExploreNETRunnable::DUMMY_LOCAL_SUBNET_SITE)
-	{
-	    sssMutex.lock();
-	    unsigned short insertionResult = set->addSite(site);
-	    string networkAddressStr = site->getInferredNetworkAddressString();
-	    
-	    if(insertionResult == SubnetSiteSet::SMALLER_SUBNET || 
-	       insertionResult == SubnetSiteSet::KNOWN_SUBNET)
-	    {
-	        delete site;
-	        stringResult += "inferred " + networkAddressStr + ", merged with larger/equivalent subnet";
-	    }
-	    else
-	    {
-	        stringResult += "inferred " + networkAddressStr + ", new subnet";
-	    }
-	    
-	    site = 0;
-	    sssMutex.unlock();
+    t = this->target;
+    if(t.address.isUnset())
+    {
+        return;
+    }
+    
+    // Checks that target is not already covered in the set
+    sssMutex.lock();
+    if(set->isCovered(t.address))
+    {
+        outMutex.lock();
+        cout << t.address << " is already in previously inferred subnets" << endl;
+        outMutex.unlock();
+        sssMutex.unlock();
+        return;
+    }
+    sssMutex.unlock();
+    
+    try
+    {
+        // Infers local subnet if the target is within the range of the LAN
+        if(lan.subsumes(t.address))
+        {
+            // Infers local subnet with all IPs or use local information
+            if(exploreLANexplicitly == true)
+            {
+                site = sinf.inferLocalAreaSubnet(t.address, lan);
+                res = ExploreNETRunnable::SUCCESSFULLY_INFERRED_LOCAL_SUBNET_SITE;
+            }
+            else
+            {
+                site = sinf.inferDummyLocalAreaSubnet(t.address, lan);
+                res = ExploreNETRunnable::DUMMY_LOCAL_SUBNET_SITE;
+            }
+        }
+        // Infers remote subnet
+        else
+        {
+            site = sinf.inferRemoteSubnet(t.address, false, t.startTTL, useLowerBorderAsWell);
+            if(site != 0 && site->getInferredSubnetPrefixLength() <= 32)
+            {
+                res = ExploreNETRunnable::SUCCESSFULLY_INFERRED_REMOTE_SUBNET_SITE;
+            }
+            else
+            {
+                res = ExploreNETRunnable::NULL_SUBNET_SITE;
+            }
+        }
+    }
+    catch (UnresponsiveIPException &e)
+    {
+        res = ExploreNETRunnable::UNRESPONSIVE_IP_EXCEPTION;
+    }
+    catch (UndesignatedPivotInterface &e)
+    {
+        res = ExploreNETRunnable::UNDESIGNATED_PIVOT_INTERFACE_EXCEPTION;
+    }
+    catch (ShortTTLException &e)
+    {
+        res = ExploreNETRunnable::SHORT_TTL_EXCEPTION;
+    }
+    
+    string stringResult = ""; // For output purpose
+    
+    // Registering the site in the set
+    if(res == ExploreNETRunnable::SUCCESSFULLY_INFERRED_REMOTE_SUBNET_SITE ||
+       res == ExploreNETRunnable::SUCCESSFULLY_INFERRED_LOCAL_SUBNET_SITE ||
+       res == ExploreNETRunnable::DUMMY_LOCAL_SUBNET_SITE)
+    {
+        sssMutex.lock();
+        unsigned short insertionResult = set->addSite(site);
+        string networkAddressStr = site->getInferredNetworkAddressString();
+        
+        if(insertionResult == SubnetSiteSet::SMALLER_SUBNET || 
+           insertionResult == SubnetSiteSet::KNOWN_SUBNET)
+        {
+            delete site;
+            stringResult += "inferred " + networkAddressStr + ", merged with larger/equivalent subnet";
+        }
+        else
+        {
+            stringResult += "inferred " + networkAddressStr + ", new subnet";
+        }
+        
+        site = 0;
+        sssMutex.unlock();
     }
     // Failure: display cause of the problem in console if showInferenceFailures is true
     else
@@ -174,16 +174,15 @@ void ExploreNETRunnable::run()
     }
 
     // Delete the site object if initialized
-	if(site != 0)
-	{
-	    delete site;
-	    site = 0;
-	}
-	
-	outMutex.lock();
-	cout << "Probed " << t.address << ": " << stringResult << endl;
-	outMutex.unlock();
-	
-	return;
+    if(site != 0)
+    {
+        delete site;
+        site = 0;
+    }
+    
+    outMutex.lock();
+    cout << "Probed " << t.address << ": " << stringResult << endl;
+    outMutex.unlock();
+    
+    return;
 }
-

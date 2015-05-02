@@ -72,4 +72,3 @@ void BipartiteRouter::removeConnectionToSubnet(string labelSubnet)
         }
     }
 }
-

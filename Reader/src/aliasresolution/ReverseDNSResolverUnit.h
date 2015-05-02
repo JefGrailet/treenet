@@ -30,11 +30,11 @@ class ReverseDNSResolverUnit : public Runnable
 public:
 
     // Constructor
-	ReverseDNSResolverUnit(InetAddress *IPToProbe);
-	
-	// Destructor and run method
-	~ReverseDNSResolverUnit();
-	void run();
+    ReverseDNSResolverUnit(InetAddress *IPToProbe);
+    
+    // Destructor and run method
+    ~ReverseDNSResolverUnit();
+    void run();
     
 private:
     
@@ -44,4 +44,3 @@ private:
 };
 
 #endif /* REVERSEDNSRESOLVERUNIT_H_ */
-

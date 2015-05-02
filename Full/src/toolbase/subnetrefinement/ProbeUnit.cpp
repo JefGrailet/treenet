@@ -19,12 +19,12 @@ ProbeUnit::ProbeUnit(ProbesDispatcher *p,
                      InetAddress &lIPa,
                      string &msg,
                      bool uffID,
-			         const TimeVal &tp,
-			         const TimeVal &prpp,
-			         unsigned short lbii,
-			         unsigned short ubii,
-			         unsigned short lbis,
-			         unsigned short ubis) throw(SocketException):
+                     const TimeVal &tp,
+                     const TimeVal &prpp,
+                     unsigned short lbii,
+                     unsigned short ubii,
+                     unsigned short lbis,
+                     unsigned short ubis) throw(SocketException):
 parent(p),
 IPsToProbe(IPs),
 requiredTTL(rTTL),
@@ -50,17 +50,17 @@ ProbeUnit::~ProbeUnit()
 ProbeRecord *ProbeUnit::probe(const InetAddress &dst, unsigned char TTL)
 {
     ProbeRecord *record = NULL;
-	record = prober->singleProbe(this->localIPAddress, dst, TTL, this->useFixedFlowID, false, 0);
+    record = prober->singleProbe(this->localIPAddress, dst, TTL, this->useFixedFlowID, false, 0);
 
-	return record;
+    return record;
 }
 
 ProbeRecord *ProbeUnit::doubleProbe(const InetAddress &dst, unsigned char TTL)
 {
     ProbeRecord *record = NULL;
-	record = prober->doubleProbe(this->localIPAddress, dst, TTL, this->useFixedFlowID, false, 0);
+    record = prober->doubleProbe(this->localIPAddress, dst, TTL, this->useFixedFlowID, false, 0);
 
-	return record;
+    return record;
 }
 
 void ProbeUnit::run()
@@ -83,49 +83,48 @@ void ProbeUnit::run()
         // Performs the next probe
         ProbeRecord *newProbe = doubleProbe(curIP, requiredTTL);
         if(!newProbe->isAnonymousRecord() && newProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY)
-		{
-		    dispatcherMutex.lock();
-	        parent->getResponsiveIPs()->push_back(curIP);
-	        if(!parent->ignoringAlternative())
-	            parent->raiseIgnoreAlternativeFlag();
-	        dispatcherMutex.unlock();
-		}
-		else if(performAlternativeProbe)
-		{
-		    // Reprobes at alternativeTTL and stops if echo reply is received
-		    delete newProbe;
-		    newProbe = doubleProbe(curIP, alternativeTTL);
-		    
-		    if(!newProbe->isAnonymousRecord() && newProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY)
-		    {
-		        delete newProbe;
-		        
-		        // Double checks that this IP is not located at alternativeTTL-1
-		        newProbe = doubleProbe(curIP, alternativeTTL - 1);
-		        
-		        // Found something before alternative TTL: stops probing with alternativeTTL
-		        if(!newProbe->isAnonymousRecord() && newProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY)
-		        {
-		            dispatcherMutex.lock();
-	                if(!parent->ignoringAlternative())
-	                   parent->raiseIgnoreAlternativeFlag();
-	                dispatcherMutex.unlock();
-		        }
-		        // curIP is indeed at alternativeTTL
-		        else
-		        {
-		            dispatcherMutex.lock();
-	                parent->getResponsiveIPs()->push_front(curIP);
-	                if(!parent->hasFoundAlternative())
-	                    parent->raiseFoundAlternativeFlag();
-	                dispatcherMutex.unlock();
-		            
-		            delete newProbe;
-		            return;
-		        }
-		    }
-		}
-		delete newProbe;
+        {
+            dispatcherMutex.lock();
+            parent->getResponsiveIPs()->push_back(curIP);
+            if(!parent->ignoringAlternative())
+                parent->raiseIgnoreAlternativeFlag();
+            dispatcherMutex.unlock();
+        }
+        else if(performAlternativeProbe)
+        {
+            // Reprobes at alternativeTTL and stops if echo reply is received
+            delete newProbe;
+            newProbe = doubleProbe(curIP, alternativeTTL);
+            
+            if(!newProbe->isAnonymousRecord() && newProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY)
+            {
+                delete newProbe;
+                
+                // Double checks that this IP is not located at alternativeTTL-1
+                newProbe = doubleProbe(curIP, alternativeTTL - 1);
+                
+                // Found something before alternative TTL: stops probing with alternativeTTL
+                if(!newProbe->isAnonymousRecord() && newProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY)
+                {
+                    dispatcherMutex.lock();
+                    if(!parent->ignoringAlternative())
+                       parent->raiseIgnoreAlternativeFlag();
+                    dispatcherMutex.unlock();
+                }
+                // curIP is indeed at alternativeTTL
+                else
+                {
+                    dispatcherMutex.lock();
+                    parent->getResponsiveIPs()->push_front(curIP);
+                    if(!parent->hasFoundAlternative())
+                        parent->raiseFoundAlternativeFlag();
+                    dispatcherMutex.unlock();
+                    
+                    delete newProbe;
+                    return;
+                }
+            }
+        }
+        delete newProbe;
     }
 }
-

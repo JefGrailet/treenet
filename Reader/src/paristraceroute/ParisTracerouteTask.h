@@ -44,26 +44,26 @@ public:
     static Mutex ostreamMutex;
     
     // Constructor
-	ParisTracerouteTask(ostream *out,
-	                    list<SubnetSite*> *toDelete,
-	                    SubnetSite *subnet,
-	                    InetAddress &localIPAddress,
+    ParisTracerouteTask(ostream *out,
+                        list<SubnetSite*> *toDelete,
+                        SubnetSite *subnet,
+                        InetAddress &localIPAddress,
                         string &attentionMessage,
-			            const TimeVal &timeoutPeriod = DirectProber::DEFAULT_TIMEOUT_PERIOD,
-			            const TimeVal &probeRegulatorPausePeriod = DirectProber::DEFAULT_PROBE_REGULATOR_PAUSE_PERIOD,
-			            unsigned short lowerBoundICMPid = DirectICMPProber::DEFAULT_LOWER_ICMP_IDENTIFIER,
-			            unsigned short upperBoundICMPid = DirectICMPProber::DEFAULT_UPPER_ICMP_IDENTIFIER,
-			            unsigned short lowerBoundICMPseq = DirectICMPProber::DEFAULT_LOWER_ICMP_SEQUENCE,
-			            unsigned short upperBoundICMPseq = DirectICMPProber::DEFAULT_UPPER_ICMP_SEQUENCE) throw (SocketException);
-	
-	/*
-	 * N.B.: toDelete is a list of subnets for which the route could not be recomputed, therefore 
-	 * which we will not consider for the next steps of the program.
-	 */
-	
-	// Destructor, run method and print out method
-	~ParisTracerouteTask();
-	void run();
+                        const TimeVal &timeoutPeriod = DirectProber::DEFAULT_TIMEOUT_PERIOD,
+                        const TimeVal &probeRegulatorPausePeriod = DirectProber::DEFAULT_PROBE_REGULATOR_PAUSE_PERIOD,
+                        unsigned short lowerBoundICMPid = DirectICMPProber::DEFAULT_LOWER_ICMP_IDENTIFIER,
+                        unsigned short upperBoundICMPid = DirectICMPProber::DEFAULT_UPPER_ICMP_IDENTIFIER,
+                        unsigned short lowerBoundICMPseq = DirectICMPProber::DEFAULT_LOWER_ICMP_SEQUENCE,
+                        unsigned short upperBoundICMPseq = DirectICMPProber::DEFAULT_UPPER_ICMP_SEQUENCE) throw (SocketException);
+    
+    /*
+     * N.B.: toDelete is a list of subnets for which the route could not be recomputed, therefore 
+     * which we will not consider for the next steps of the program.
+     */
+    
+    // Destructor, run method and print out method
+    ~ParisTracerouteTask();
+    void run();
     
 private:
     
@@ -74,8 +74,8 @@ private:
     
     DirectProber *prober;
     InetAddress &localIPAddress;
-	
-	// Probing method
+    
+    // Probing method
     ProbeRecord *probe(const InetAddress &dst, unsigned char TTL);
 
     // "Abort" method (when we cannot recompute the route)
@@ -83,4 +83,3 @@ private:
 };
 
 #endif /* PARISTRACEROUTETASK_H_ */
-

@@ -17,13 +17,13 @@ AliasResolver::AliasResolver(std::list<InetAddress*> IPs,
                              InetAddress &lIPa,
                              string &msg,
                              bool uffID,
-			                 const TimeVal &tp,
-			                 const TimeVal &prpp,
-			                 unsigned short lbii,
-			                 unsigned short ubii,
-			                 unsigned short lbis,
-			                 unsigned short ubis,
-			                 unsigned short mt):
+                             const TimeVal &tp,
+                             const TimeVal &prpp,
+                             unsigned short lbii,
+                             unsigned short ubii,
+                             unsigned short lbis,
+                             unsigned short ubis,
+                             unsigned short mt):
 IPsToProbe(IPs),
 tokenCounter(1),
 localIPAddress(lIPa),
@@ -59,9 +59,9 @@ void AliasResolver::resolve()
         nbThreads = (unsigned short) nbIPs;
     
     // Initializes an array of threads
-	Thread **th = new Thread*[nbThreads];
-	for(unsigned short i = 0; i < nbThreads; i++)
-	    th[i] = NULL;
+    Thread **th = new Thread*[nbThreads];
+    for(unsigned short i = 0; i < nbThreads; i++)
+        th[i] = NULL;
 
     // Does a copy of the IPs list for host name retrieval (after IP ID retrieval)
     list<InetAddress*> backUpIPsToProbe(IPsToProbe);
@@ -154,4 +154,3 @@ unsigned long int AliasResolver::getProbeToken()
     tokenCounter++;
     return token;
 }
-

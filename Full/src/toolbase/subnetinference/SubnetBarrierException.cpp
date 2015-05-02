@@ -15,4 +15,3 @@ barrierPrefix(bp)
 }
 
 SubnetBarrierException::~SubnetBarrierException() throw() {}
-

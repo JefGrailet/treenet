@@ -30,4 +30,3 @@ unsigned short Router::getNbInterfaces()
 {
     return (unsigned short) interfacesList.size();
 }
-

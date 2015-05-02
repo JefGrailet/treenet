@@ -27,24 +27,24 @@ class SubnetSiteSet
 {
 public:
 
-	// Possible results when adding a site
-	enum UpdateResult
-	{
-	    KNOWN_SUBNET, // Site already in the set (in practice, for /32 subnets)
-		SMALLER_SUBNET, // Site already in the set, but with bigger/equivalent prefix
-		BIGGER_SUBNET, // Site already in the set, but with smaller prefix
-		NEW_SUBNET // Site not in the set (therefore inserted)
-	};
+    // Possible results when adding a site
+    enum UpdateResult
+    {
+        KNOWN_SUBNET, // Site already in the set (in practice, for /32 subnets)
+        SMALLER_SUBNET, // Site already in the set, but with bigger/equivalent prefix
+        BIGGER_SUBNET, // Site already in the set, but with smaller prefix
+        NEW_SUBNET // Site not in the set (therefore inserted)
+    };
 
-	SubnetSiteSet();
-	~SubnetSiteSet();
-	
-	// Accessor to the list
-	inline list<SubnetSite*> *getSubnetSiteList() { return &siteList; }
-	
-	// Method to test whether a given IP is already covered in the set or not.
-	bool isCovered(InetAddress ip);
-	
+    SubnetSiteSet();
+    ~SubnetSiteSet();
+    
+    // Accessor to the list
+    inline list<SubnetSite*> *getSubnetSiteList() { return &siteList; }
+    
+    // Method to test whether a given IP is already covered in the set or not.
+    bool isCovered(InetAddress ip);
+    
     /*
      * Method to test if a an hypothetical subnet (represented with its borders and TTL to reach 
      * it) is compatible with this set. A subnet being compatible with the set means that:
@@ -61,35 +61,35 @@ public:
                       InetAddress upperBorder, 
                       unsigned char TTL, 
                       bool beforeAndAfter);
-	
-	// Method to add a new subnet to the set
-	unsigned short addSite(SubnetSite *ss);
-	
-	// Method to get the longest route within the set.
-	unsigned short getLongestRoute();
-	
-	// Method to sort the subnets by increasing route size (when known).
-	void sortByRoute();
-	
-	/**
-	 * Method to obtain a incomplete subnet for refinement purpose. If there is no incomplete
-	 * subnet, it will return NULL.
-	 *
-	 * N.B.: if a subnet is returned, it is also removed from the set (it will be added after
-	 * refining to benefit from the merging mechanics of addSite()).
-	 */
-	
-	SubnetSite *getIncompleteSubnet();
-	
-	// Similar method but returning exclusively SHADOW subnets.
-	SubnetSite *getShadowSubnet();
-	
-	// getValidSubnet() is the dual of getIncompleteSubnet() (returns ACCURATE/ODD/SHADOW subnets)
-	SubnetSite *getValidSubnet();
-	
-	// Method to write the complete set in an output file of a given name.
-	void outputAsFile(string filename);
-	
+    
+    // Method to add a new subnet to the set
+    unsigned short addSite(SubnetSite *ss);
+    
+    // Method to get the longest route within the set.
+    unsigned short getLongestRoute();
+    
+    // Method to sort the subnets by increasing route size (when known).
+    void sortByRoute();
+    
+    /**
+     * Method to obtain a incomplete subnet for refinement purpose. If there is no incomplete
+     * subnet, it will return NULL.
+     *
+     * N.B.: if a subnet is returned, it is also removed from the set (it will be added after
+     * refining to benefit from the merging mechanics of addSite()).
+     */
+    
+    SubnetSite *getIncompleteSubnet();
+    
+    // Similar method but returning exclusively SHADOW subnets.
+    SubnetSite *getShadowSubnet();
+    
+    // getValidSubnet() is the dual of getIncompleteSubnet() (returns ACCURATE/ODD/SHADOW subnets)
+    SubnetSite *getValidSubnet();
+    
+    // Method to write the complete set in an output file of a given name.
+    void outputAsFile(string filename);
+    
 private:
 
     // Sites are stored with a list
@@ -97,4 +97,3 @@ private:
 };
 
 #endif /* SUBNETSITESET_H_ */
-

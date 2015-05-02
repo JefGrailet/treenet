@@ -23,25 +23,24 @@ public:
     // Overriden << operator, only used by debug mode (see also SubnetSite.h)
     friend ostream &operator<<(ostream &out, const SubnetSiteNode &ssn)
     {
-		out << "{"
-		<< *(ssn.ip.getBinaryRepresentation())
-	    << "   "
-	    << *(ssn.ip.getHumanReadableRepresentation())
-	    << " - "
-	    << (int) ssn.TTL
-	    << "}";
-		return out;
-	}
+        out << "{"
+        << *(ssn.ip.getBinaryRepresentation())
+        << "   "
+        << *(ssn.ip.getHumanReadableRepresentation())
+        << " - "
+        << (int) ssn.TTL
+        << "}";
+        return out;
+    }
 
-	// Comparison method for sorting purposes
-	inline static bool smaller(SubnetSiteNode *ssn1, SubnetSiteNode *ssn2) { return ssn1->ip < ssn2->ip; }
+    // Comparison method for sorting purposes
+    inline static bool smaller(SubnetSiteNode *ssn1, SubnetSiteNode *ssn2) { return ssn1->ip < ssn2->ip; }
 
     // Constructor, destructor and private fields
-	SubnetSiteNode(const InetAddress &ip, unsigned char TTL);
-	virtual ~SubnetSiteNode();
-	InetAddress ip;
-	unsigned char TTL;
+    SubnetSiteNode(const InetAddress &ip, unsigned char TTL);
+    virtual ~SubnetSiteNode();
+    InetAddress ip;
+    unsigned char TTL;
 };
 
 #endif /* SUBNETSITENODE_H_ */
-

@@ -19,12 +19,12 @@ ProbesDispatcher::ProbesDispatcher(std::list<InetAddress> IPs,
                                    InetAddress &lIPa,
                                    string &msg,
                                    bool uffID,
-			                       const TimeVal &tp,
-			                       const TimeVal &prpp,
-			                       unsigned short lbii,
-			                       unsigned short ubii,
-			                       unsigned short lbis,
-			                       unsigned short ubis):
+                                   const TimeVal &tp,
+                                   const TimeVal &prpp,
+                                   unsigned short lbii,
+                                   unsigned short ubii,
+                                   unsigned short lbis,
+                                   unsigned short ubis):
 IPsToProbe(IPs),
 requiredTTL(rTTL),
 alternativeTTL(aTTL),
@@ -79,7 +79,7 @@ unsigned short ProbesDispatcher::dispatch()
         lastIPs = nbIPs;
     
     // Creates #nbThreads thread(s) and give #IPsPerThread IPs to each of them
-	Thread **th = new Thread*[nbThreads];
+    Thread **th = new Thread*[nbThreads];
 
     unsigned short range = (DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID - DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID) / nbThreads;
     for(unsigned short i = 0; i < nbThreads; i++)
@@ -141,4 +141,3 @@ unsigned short ProbesDispatcher::dispatch()
 
     return result;
 }
-

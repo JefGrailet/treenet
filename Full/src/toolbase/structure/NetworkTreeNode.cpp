@@ -55,11 +55,11 @@ NetworkTreeNode::~NetworkTreeNode()
     else
     {
         for(list<NetworkTreeNode*>::iterator i = children.begin(); i != children.end(); ++i)
-	    {
-		    delete (*i);
-	    }
-	    children.clear();
-	}
+        {
+            delete (*i);
+        }
+        children.clear();
+    }
 }
 
 bool NetworkTreeNode::isLoadBalancer()
@@ -140,10 +140,10 @@ NetworkTreeNode *NetworkTreeNode::getChild(InetAddress label)
 {
     for(list<NetworkTreeNode*>::iterator i = children.begin(); i != children.end(); ++i)
     {
-	    if((*i)->hasLabel(label))
-	    {
-	        return (*i);
-	    }
+        if((*i)->hasLabel(label))
+        {
+            return (*i);
+        }
     }
     return NULL;
 }
@@ -152,10 +152,10 @@ bool NetworkTreeNode::hasLeavesAsChildren()
 {
     for(list<NetworkTreeNode*>::iterator i = children.begin(); i != children.end(); ++i)
     {
-	    if((*i)->getType() == NetworkTreeNode::T_SUBNET)
-	    {
-	        return true;
-	    }
+        if((*i)->getType() == NetworkTreeNode::T_SUBNET)
+        {
+            return true;
+        }
     }
     return false;
 }
@@ -574,4 +574,3 @@ list<Router> NetworkTreeNode::inferRouters()
     
     return result;
 }
-

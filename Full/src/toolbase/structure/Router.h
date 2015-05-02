@@ -20,18 +20,18 @@ class Router
 {
 public:
 
-	Router();
-	~Router();
-	
-	// Accessor to the list
-	inline list<InetAddress> *getInterfacesList() { return &interfacesList; }
+    Router();
+    ~Router();
+    
+    // Accessor to the list
+    inline list<InetAddress> *getInterfacesList() { return &interfacesList; }
 
-	// Method to add a new interface to this router.
-	void addInterface(InetAddress interface);
-	
-	// Method to get the amount of interfaces of this router.
-	unsigned short getNbInterfaces();
-	
+    // Method to add a new interface to this router.
+    void addInterface(InetAddress interface);
+    
+    // Method to get the amount of interfaces of this router.
+    unsigned short getNbInterfaces();
+    
 private:
 
     // Interfaces are stored with a list
@@ -39,4 +39,3 @@ private:
 };
 
 #endif /* ROUTER_H_ */
-

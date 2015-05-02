@@ -31,20 +31,20 @@ class SubnetSiteSet
 {
 public:
 
-	// Possible results when adding a site
-	enum UpdateResult
-	{
-	    KNOWN_SUBNET, // Site already in the set (in practice, for /32 subnets)
-		SMALLER_SUBNET, // Site already in the set, but with bigger/equivalent prefix
-		BIGGER_SUBNET, // Site already in the set, but with smaller prefix
-		NEW_SUBNET // Site not in the set (therefore inserted)
-	};
+    // Possible results when adding a site
+    enum UpdateResult
+    {
+        KNOWN_SUBNET, // Site already in the set (in practice, for /32 subnets)
+        SMALLER_SUBNET, // Site already in the set, but with bigger/equivalent prefix
+        BIGGER_SUBNET, // Site already in the set, but with smaller prefix
+        NEW_SUBNET // Site not in the set (therefore inserted)
+    };
 
-	SubnetSiteSet();
-	~SubnetSiteSet();
-	
-	// Accessor to the list
-	inline list<SubnetSite*> *getSubnetSiteList() { return &siteList; }
+    SubnetSiteSet();
+    ~SubnetSiteSet();
+    
+    // Accessor to the list
+    inline list<SubnetSite*> *getSubnetSiteList() { return &siteList; }
 
     /*
      * Method to test if a an hypothetical subnet (represented with its borders) is compatible 
@@ -55,28 +55,28 @@ public:
      */
      
     bool isCompatible(InetAddress lowerBorder, InetAddress upperBorder);
-	
-	// Method to add a new subnet to the set (with merging policy and sorting).
-	unsigned short addSite(SubnetSite *ss);
-	
-	// Method to add a new subnet with neither merging, nor sorting.
-	void addSiteNoRefinement(SubnetSite *ss);
-	
-	// Method to sort the set (to use in complement with addSiteNoRefinement, at the end).
-	void sortSet();
-	
-	// Method to get the longest route within the set.
-	unsigned short getLongestRoute();
-	
-	// Method to sort the subnets by increasing route size (when known).
-	void sortByRoute();
-	
-	// getValidSubnet() returns an ACCURATE/ODD/SHADOW subnet while removing it from the set.
-	SubnetSite *getValidSubnet();
-	
-	// Method to write the complete set in an output file of a given name.
-	void outputAsFile(string filename);
-	
+    
+    // Method to add a new subnet to the set (with merging policy and sorting).
+    unsigned short addSite(SubnetSite *ss);
+    
+    // Method to add a new subnet with neither merging, nor sorting.
+    void addSiteNoRefinement(SubnetSite *ss);
+    
+    // Method to sort the set (to use in complement with addSiteNoRefinement, at the end).
+    void sortSet();
+    
+    // Method to get the longest route within the set.
+    unsigned short getLongestRoute();
+    
+    // Method to sort the subnets by increasing route size (when known).
+    void sortByRoute();
+    
+    // getValidSubnet() returns an ACCURATE/ODD/SHADOW subnet while removing it from the set.
+    SubnetSite *getValidSubnet();
+    
+    // Method to write the complete set in an output file of a given name.
+    void outputAsFile(string filename);
+    
 private:
 
     // Sites are stored with a list
@@ -84,4 +84,3 @@ private:
 };
 
 #endif /* SUBNETSITESET_H_ */
-

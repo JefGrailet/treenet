@@ -17,4 +17,3 @@ TTL(T)
 }
 
 SubnetSiteNode::~SubnetSiteNode() {}
-

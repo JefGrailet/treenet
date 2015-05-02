@@ -36,4 +36,3 @@ string LinkRouterSubnet::toString()
     string subnetStr = subnet->getLabel();
     return routerStr + " - " + subnetStr;
 }
-

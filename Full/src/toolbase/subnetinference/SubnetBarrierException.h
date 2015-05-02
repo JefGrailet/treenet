@@ -14,10 +14,9 @@
 class SubnetBarrierException: public NTmapException
 {
 public:
-	SubnetBarrierException(unsigned char barrierPrefix = ToolBase::MIN_CORE_IP_SUBNET_PREFIX);
-	virtual ~SubnetBarrierException() throw();
-	unsigned char barrierPrefix; // This is the last valid prefix that you can grow subnet
+    SubnetBarrierException(unsigned char barrierPrefix = ToolBase::MIN_CORE_IP_SUBNET_PREFIX);
+    virtual ~SubnetBarrierException() throw();
+    unsigned char barrierPrefix; // This is the last valid prefix that you can grow subnet
 };
 
 #endif /* SUBNETBARRIEREXCEPTION_H_ */
-

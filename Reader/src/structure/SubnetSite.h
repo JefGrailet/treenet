@@ -26,57 +26,57 @@ class SubnetSite
 {
 public:
 
-	// Overriden << operator, only used by debug mode (see also SubnetSite.h)
-	friend ostream &operator<<(ostream &out, SubnetSite &ss)
-	{
-		out << "Subnet: " << ss.getInferredNetworkAddressString() << endl;
+    // Overriden << operator, only used by debug mode (see also SubnetSite.h)
+    friend ostream &operator<<(ostream &out, SubnetSite &ss)
+    {
+        out << "Subnet: " << ss.getInferredNetworkAddressString() << endl;
 
-		for(list<SubnetSiteNode *>::const_iterator i = ss.IPlist.begin(); i != ss.IPlist.end(); ++i)
-		{
-			out << "\t" << *(*i) << endl;
-		}
+        for(list<SubnetSiteNode *>::const_iterator i = ss.IPlist.begin(); i != ss.IPlist.end(); ++i)
+        {
+            out << "\t" << *(*i) << endl;
+        }
 
-		return out;
-	}
-	
-	// Possible status for a subnet before/after refinement
-	enum RefinementStatus
-	{
-	    UNDEFINED_SUBNET, // Failed to parse the subnet status
-	    ACCURATE_SUBNET, // Subnet contains its contra-pivot
-	    ODD_SUBNET, // Subnet contains several candidates for contra-pivot, lowest one is taken
-	    SHADOW_SUBNET // Subnet most probably exists, but we cannot find (contra)pivot(s) for sure**
-	};
-	
-	/*
-	 * **expanding this subnet collides it with accurate subnets for which the TTLs do not match.
-	 * For example: we expand a /32 subnet for which the only IP is at 9, but expanding it to /29
-	 * makes it cover another accurate subnet for which the contrapivot is at 7 and pivot(s) at 
-	 * 8. Therefore making this subnet expand further will eventually lead to merging it with 
-	 * accurate subnets, resulting in one big wrong subnet. However, we can still infer that the
-	 * subnet we are expanding exists to some extent. It is then labelled as a "shadow" subnet.
-	 */
+        return out;
+    }
+    
+    // Possible status for a subnet before/after refinement
+    enum RefinementStatus
+    {
+        UNDEFINED_SUBNET, // Failed to parse the subnet status
+        ACCURATE_SUBNET, // Subnet contains its contra-pivot
+        ODD_SUBNET, // Subnet contains several candidates for contra-pivot, lowest one is taken
+        SHADOW_SUBNET // Subnet most probably exists, but we cannot find (contra)pivot(s) for sure**
+    };
+    
+    /*
+     * **expanding this subnet collides it with accurate subnets for which the TTLs do not match.
+     * For example: we expand a /32 subnet for which the only IP is at 9, but expanding it to /29
+     * makes it cover another accurate subnet for which the contrapivot is at 7 and pivot(s) at 
+     * 8. Therefore making this subnet expand further will eventually lead to merging it with 
+     * accurate subnets, resulting in one big wrong subnet. However, we can still infer that the
+     * subnet we are expanding exists to some extent. It is then labelled as a "shadow" subnet.
+     */
 
     // Constructor/destructor
-	SubnetSite();
-	~SubnetSite();
+    SubnetSite();
+    ~SubnetSite();
 
-	list<SubnetSiteNode*> *getSubnetIPList() { return &IPlist; }
-	void clearIPlist();
+    list<SubnetSiteNode*> *getSubnetIPList() { return &IPlist; }
+    void clearIPlist();
 
-	// Basic setters and accessers
-	inline void setInferredSubnetBaseIP(InetAddress sbi) { this->inferredSubnetBaseIP = sbi; }
-	inline void setInferredSubnetPrefixLength(unsigned char spl) { this->inferredSubnetPrefix = spl; }
-	
-	inline InetAddress getInferredSubnetBaseIP() { return this->inferredSubnetBaseIP; }
-	inline unsigned char getInferredSubnetPrefixLength() { return this->inferredSubnetPrefix; }
-	
-	inline int getTotalSize() { return IPlist.size(); }
-	inline NetworkAddress getInferredNetworkAddress() { return NetworkAddress(this->inferredSubnetBaseIP, this->inferredSubnetPrefix); }
-	
-	// Accessers implemented in SubnetSite.cpp (longer implementation)
-	int getInferredSubnetSize();
-	string getInferredNetworkAddressString();
+    // Basic setters and accessers
+    inline void setInferredSubnetBaseIP(InetAddress sbi) { this->inferredSubnetBaseIP = sbi; }
+    inline void setInferredSubnetPrefixLength(unsigned char spl) { this->inferredSubnetPrefix = spl; }
+    
+    inline InetAddress getInferredSubnetBaseIP() { return this->inferredSubnetBaseIP; }
+    inline unsigned char getInferredSubnetPrefixLength() { return this->inferredSubnetPrefix; }
+    
+    inline int getTotalSize() { return IPlist.size(); }
+    inline NetworkAddress getInferredNetworkAddress() { return NetworkAddress(this->inferredSubnetBaseIP, this->inferredSubnetPrefix); }
+    
+    // Accessers implemented in SubnetSite.cpp (longer implementation)
+    int getInferredSubnetSize();
+    string getInferredNetworkAddressString();
 
     // Comparison methods for sorting purposes (one compares lower bounds, the other the routes)
     static bool compare(SubnetSite *ss1, SubnetSite *ss2);
@@ -136,28 +136,27 @@ public:
     
     // Accessor/setter to the bipartite element (+ test method)
     inline bool hasBipEquivalent() { return this->bipSubnet != NULL; }
-	inline void setBipEquivalent(BipartiteSubnet *bipSubnet) { this->bipSubnet = bipSubnet; }
-	inline BipartiteSubnet *getBipEquivalent() { return this->bipSubnet; }
+    inline void setBipEquivalent(BipartiteSubnet *bipSubnet) { this->bipSubnet = bipSubnet; }
+    inline BipartiteSubnet *getBipEquivalent() { return this->bipSubnet; }
     
 private:
-	int getSize(int filterin);
-	
-	// Private fields
-	list<SubnetSiteNode*> IPlist;
-	InetAddress inferredSubnetBaseIP;
-	unsigned char inferredSubnetPrefix;
-	
-	// Fields dedicated to refined data
-	unsigned short status;
-	InetAddress contrapivot;
-	unsigned short TTL1, TTL2; // Shortest and greatest TTL for this subnet
-	unsigned short routeSize;
-	InetAddress *route;
-	
-	// Corresponding bipartite element
+    int getSize(int filterin);
+    
+    // Private fields
+    list<SubnetSiteNode*> IPlist;
+    InetAddress inferredSubnetBaseIP;
+    unsigned char inferredSubnetPrefix;
+    
+    // Fields dedicated to refined data
+    unsigned short status;
+    InetAddress contrapivot;
+    unsigned short TTL1, TTL2; // Shortest and greatest TTL for this subnet
+    unsigned short routeSize;
+    InetAddress *route;
+    
+    // Corresponding bipartite element
     BipartiteSubnet *bipSubnet;
     
 };
 
 #endif /* SUBNETSITE_H_ */
-

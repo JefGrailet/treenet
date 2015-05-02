@@ -40,4 +40,3 @@ void BipartiteSwitch::removeConnectionTo(string labelRouter)
         }
     }
 }
-

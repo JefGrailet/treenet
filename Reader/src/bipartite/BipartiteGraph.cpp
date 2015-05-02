@@ -265,4 +265,3 @@ string BipartiteGraph::linksRSToString()
     
     return linksRSStream.str();
 }
-

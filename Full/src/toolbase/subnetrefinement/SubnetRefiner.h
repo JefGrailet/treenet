@@ -48,27 +48,27 @@ public:
                   SubnetSiteSet *set,
                   InetAddress &localIPAddress,
                   string &attentionMessage,
-			      bool useFixedFlowID = true,
-			      const TimeVal &timeoutPeriod = DirectProber::DEFAULT_TIMEOUT_PERIOD,
-			      const TimeVal &probeRegulatorPausePeriod = DirectProber::DEFAULT_PROBE_REGULATOR_PAUSE_PERIOD,
-			      unsigned short lowerBoundICMPid = DirectICMPProber::DEFAULT_LOWER_ICMP_IDENTIFIER,
-			      unsigned short upperBoundICMPid = DirectICMPProber::DEFAULT_UPPER_ICMP_IDENTIFIER,
-			      unsigned short lowerBoundICMPseq = DirectICMPProber::DEFAULT_LOWER_ICMP_SEQUENCE,
-			      unsigned short upperBoundICMPseq = DirectICMPProber::DEFAULT_UPPER_ICMP_SEQUENCE,
-			      unsigned short maxThreads = 16);
-	~SubnetRefiner();
-	
-	// Refinement methods
-	void expand(SubnetSite *ss);
-	void fill(SubnetSite *ss);
-	
-	/*
-	 * Expansion method to use for shadow subnets at the end of the scanning ONLY; give them 
-	 * the greatest possible size without colliding with other (accurate/odd) subnets.
-	 */
-	
-	void shadowExpand(SubnetSite *ss);
-	
+                  bool useFixedFlowID = true,
+                  const TimeVal &timeoutPeriod = DirectProber::DEFAULT_TIMEOUT_PERIOD,
+                  const TimeVal &probeRegulatorPausePeriod = DirectProber::DEFAULT_PROBE_REGULATOR_PAUSE_PERIOD,
+                  unsigned short lowerBoundICMPid = DirectICMPProber::DEFAULT_LOWER_ICMP_IDENTIFIER,
+                  unsigned short upperBoundICMPid = DirectICMPProber::DEFAULT_UPPER_ICMP_IDENTIFIER,
+                  unsigned short lowerBoundICMPseq = DirectICMPProber::DEFAULT_LOWER_ICMP_SEQUENCE,
+                  unsigned short upperBoundICMPseq = DirectICMPProber::DEFAULT_UPPER_ICMP_SEQUENCE,
+                  unsigned short maxThreads = 16);
+    ~SubnetRefiner();
+    
+    // Refinement methods
+    void expand(SubnetSite *ss);
+    void fill(SubnetSite *ss);
+    
+    /*
+     * Expansion method to use for shadow subnets at the end of the scanning ONLY; give them 
+     * the greatest possible size without colliding with other (accurate/odd) subnets.
+     */
+    
+    void shadowExpand(SubnetSite *ss);
+    
 private:
     
     // Output stream
@@ -80,12 +80,11 @@ private:
     // Private fields to maintain prober parameters
     InetAddress &localIPAddress;
     string &attentionMessage;
-	bool useFixedFlowID;
-	const TimeVal &timeoutPeriod, &probeRegulatorPausePeriod;
+    bool useFixedFlowID;
+    const TimeVal &timeoutPeriod, &probeRegulatorPausePeriod;
     unsigned short lowerBoundICMPid, upperBoundICMPid;
     unsigned short lowerBoundICMPseq, upperBoundICMPseq;
     unsigned short maxThreads;
 }; 
 
 #endif /* SUBNETREFINER_H_ */
-

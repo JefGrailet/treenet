@@ -189,11 +189,11 @@ SubnetSite *NetworkTree::getSubnetContaining(InetAddress needle)
     list<SubnetSite*> subnetList = this->subnetMap[index];
     
     for(list<SubnetSite*>::iterator i = subnetList.begin(); i != subnetList.end(); ++i)
-	{
-	    SubnetSite *ss = (*i);
-	    if(ss->contains(needle))
-	        return ss;
-	}
+    {
+        SubnetSite *ss = (*i);
+        if(ss->contains(needle))
+            return ss;
+    }
     return NULL;
 }
 
@@ -226,15 +226,15 @@ void NetworkTree::outputAsFile(string filename)
     siteList.sort(SubnetSite::compare);
     
     for(list<SubnetSite*>::iterator i = siteList.begin(); i != siteList.end(); ++i)
-	{
-	    SubnetSite *ss = (*i);
-	    string cur = ss->toString();
-	    
-	    if(!cur.empty())
-	        output += cur + "\n";
-	}
-	
-	ofstream newFile;
+    {
+        SubnetSite *ss = (*i);
+        string cur = ss->toString();
+        
+        if(!cur.empty())
+            output += cur + "\n";
+    }
+    
+    ofstream newFile;
     newFile.open(filename.c_str());
     newFile << output;
     newFile.close();
@@ -328,14 +328,14 @@ void NetworkTree::prune(list<NetworkTreeNode*> *map,
         
             // Erases prev from the children list (of this node) and stops
             for(list<NetworkTreeNode*>::iterator i = children->begin(); i != children->end(); ++i)
-	        {
-		        if((*i) == prev)
-		        {
-		            delete (*i);
-		            children->erase(i);
-		            return;
-		        }
-	        }
+            {
+                if((*i) == prev)
+                {
+                    delete (*i);
+                    children->erase(i);
+                    return;
+                }
+            }
         
             delete prev;
         }
@@ -360,14 +360,14 @@ void NetworkTree::prune(list<NetworkTreeNode*> *map,
     
         // Erases prev from the children list (of this node) and stops
         for(list<NetworkTreeNode*>::iterator i = children->begin(); i != children->end(); ++i)
-	    {
-		    if((*i) == prev)
-		    {
-		        delete (*i);
-		        children->erase(i);
-		        return;
-		    }
-	    }
+        {
+            if((*i) == prev)
+            {
+                delete (*i);
+                children->erase(i);
+                return;
+            }
+        }
     }
     // Current node has a single child: prev. Deletes it and moves up in the tree.
     else if(children->size() == 1)
@@ -407,9 +407,9 @@ void NetworkTree::visitRecursive(ostream *out, NetworkTreeNode *cur, unsigned sh
         
         list<NetworkTreeNode*> *children = cur->getChildren();
         for(list<NetworkTreeNode*>::iterator i = children->begin(); i != children->end(); ++i)
-	    {
-		    visitRecursive(out, (*i), depth + 1);
-	    }
+        {
+            visitRecursive(out, (*i), depth + 1);
+        }
     }
     // Displays a leaf (subnet)
     else if(type == NetworkTreeNode::T_SUBNET)
@@ -425,14 +425,14 @@ void NetworkTree::visitRecursive(ostream *out, NetworkTreeNode *cur, unsigned sh
             list<InetAddress> *labels = cur->getLabels();
             bool guardian = false;
             for(list<InetAddress>::iterator i = labels->begin(); i != labels->end(); ++i)
-	        {
-	            if (guardian)
-	                (*out) << ", ";
-	            else
-	                guardian = true;
-	        
-		        (*out) << (*i);
-	        }
+            {
+                if (guardian)
+                    (*out) << ", ";
+                else
+                    guardian = true;
+            
+                (*out) << (*i);
+            }
         }
         else
         {
@@ -446,23 +446,23 @@ void NetworkTree::visitRecursive(ostream *out, NetworkTreeNode *cur, unsigned sh
             (*out) << " (Previous: ";
             bool guardian = false;
             for(list<InetAddress>::iterator i = prevLabels->begin(); i != prevLabels->end(); ++i)
-	        {
-	            if (guardian)
-	                (*out) << ", ";
-	            else
-	                guardian = true;
-	        
-		        (*out) << (*i);
-	        }
-	        (*out) << ")";
-	    }
+            {
+                if (guardian)
+                    (*out) << ", ";
+                else
+                    guardian = true;
+            
+                (*out) << (*i);
+            }
+            (*out) << ")";
+        }
         
         (*out) << endl;
         
         list<NetworkTreeNode*> *children = cur->getChildren();
         for(list<NetworkTreeNode*>::iterator i = children->begin(); i != children->end(); ++i)
         {
-	        visitRecursive(out, (*i), depth + 1);
+            visitRecursive(out, (*i), depth + 1);
         }
     }
 }
@@ -513,8 +513,8 @@ void NetworkTree::statisticsRecursive(unsigned int *stat, NetworkTree *tree, Net
     {
         if((*i)->getType() == NetworkTreeNode::T_NEIGHBORHOOD)
         {
-	        statisticsRecursive(stat, tree, (*i));
-	    }
+            statisticsRecursive(stat, tree, (*i));
+        }
     }
 }
 
@@ -647,15 +647,15 @@ void NetworkTree::neighborhoodsRecursive(ostream *out, NetworkTree *tree, Networ
                 (*out) << "Neighborhood of load balancer {";
                 bool guardian = false;
                 for(list<InetAddress>::iterator i = labels->begin(); i != labels->end(); ++i)
-	            {
-	                if (guardian)
-	                    (*out) << ", ";
-	                else
-	                    guardian = true;
-	            
-		            (*out) << (*i);
-	            }
-	            (*out) << "}:" << endl;
+                {
+                    if (guardian)
+                        (*out) << ", ";
+                    else
+                        guardian = true;
+                
+                    (*out) << (*i);
+                }
+                (*out) << "}:" << endl;
             }
             else
             {
@@ -807,15 +807,15 @@ void NetworkTree::neighborhoodsRecursive(ostream *out, NetworkTree *tree, Networ
                 (*out) << "Neighborhood of load balancer {";
                 bool guardian = false;
                 for(list<InetAddress>::iterator i = labels->begin(); i != labels->end(); ++i)
-	            {
-	                if (guardian)
-	                    (*out) << ", ";
-	                else
-	                    guardian = true;
-	            
-		            (*out) << (*i);
-	            }
-	            (*out) << "}:" << endl;
+                {
+                    if (guardian)
+                        (*out) << ", ";
+                    else
+                        guardian = true;
+                
+                    (*out) << (*i);
+                }
+                (*out) << "}:" << endl;
             }
             else
             {
@@ -1349,4 +1349,3 @@ void NetworkTree::bipConnectWithInternal(BipartiteGraph *bip,
         }
     }
 }
-

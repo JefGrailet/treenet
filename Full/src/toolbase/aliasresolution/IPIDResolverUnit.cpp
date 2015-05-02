@@ -17,12 +17,12 @@ IPIDResolverUnit::IPIDResolverUnit(AliasResolver *p,
                                    InetAddress &lIPa,
                                    string &msg,
                                    bool uffID,
-			                       const TimeVal &tp,
-			                       const TimeVal &prpp,
-			                       unsigned short lbii,
-			                       unsigned short ubii,
-			                       unsigned short lbis,
-			                       unsigned short ubis) throw (SocketException):
+                                   const TimeVal &tp,
+                                   const TimeVal &prpp,
+                                   unsigned short lbii,
+                                   unsigned short ubii,
+                                   unsigned short lbis,
+                                   unsigned short ubis) throw (SocketException):
 parent(p),
 IPToProbe(IP),
 localIPAddress(lIPa),
@@ -46,9 +46,9 @@ IPIDResolverUnit::~IPIDResolverUnit()
 ProbeRecord *IPIDResolverUnit::probe(const InetAddress &dst, unsigned char TTL)
 {
     ProbeRecord *record = NULL;
-	record = prober->singleProbe(this->localIPAddress, dst, TTL, this->useFixedFlowID, false, 0);
+    record = prober->singleProbe(this->localIPAddress, dst, TTL, this->useFixedFlowID, false, 0);
 
-	return record;
+    return record;
 }
 
 void IPIDResolverUnit::run()
@@ -67,18 +67,17 @@ void IPIDResolverUnit::run()
         // Performs the probe
         ProbeRecord *newProbe = probe(IP, PROBE_TTL);
         if(newProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY)
-	    {
-	        IPToProbe->setProbeToken(probeToken);
-	        IPToProbe->setIPIdentifier(newProbe->getRplyIPidentifier());
-	        
-	        // Done: deletes probe record and returns
-	        delete newProbe;
-	        return;   
-	    }
-	    
-	    // Unsuccessfull: deletes current probe record and increments retry counter
-	    delete newProbe;
-	    nbAttempts++;
-	}
+        {
+            IPToProbe->setProbeToken(probeToken);
+            IPToProbe->setIPIdentifier(newProbe->getRplyIPidentifier());
+            
+            // Done: deletes probe record and returns
+            delete newProbe;
+            return;   
+        }
+        
+        // Unsuccessfull: deletes current probe record and increments retry counter
+        delete newProbe;
+        nbAttempts++;
+    }
 }
-

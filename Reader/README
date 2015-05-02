@@ -126,6 +126,9 @@ Other remarks
 
 * Unlike TreeNET, there is no src/toolbase/ directory and the common/ and prober/ folders are in 
   the same directory as other parts of the program.
+
+* Still, src/common/ and src/prober/ were not fully revisited regarding coding style. All the 
+  files from other folders have the same coding style.
   
 * If you want to obtain all the details about parsed subnets, recomputed traceroutes and analysis 
   of the tree, it is recommended to redirect the standard output to a file:

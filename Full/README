@@ -128,6 +128,9 @@ Other remarks
 * Most of the actual code of TreeNET is found in src/toolbase/. src/prober/ and src/common/ 
   provides libraries to handle (ICMP, UDP, TCP) probes, IPv4 addresses, etc.
   
+* Also, while the coding style is homogeneous in src/toolbase/, it was not entirely revisited in 
+  src/prober/ and src/common/ due to time constraints.
+  
 * If you want to obtain all the details about subnet inference/refinement, inferred subnets and 
   analysis of the tree, it is recommended to redirect the standard output to a file:
   

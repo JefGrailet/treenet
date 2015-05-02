@@ -15,4 +15,3 @@ destinationIP(dst)
 }
 
 ShortTTLException::~ShortTTLException() throw() {}
-

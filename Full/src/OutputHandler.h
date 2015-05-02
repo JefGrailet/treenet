@@ -45,4 +45,3 @@ private:
 };
 
 #endif /* OUTPUTHANDLER_H_ */
-

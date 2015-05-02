@@ -20,21 +20,21 @@ class TargetAddress
 {
 public:
 
-	friend ostream & operator<<(ostream &out, const TargetAddress &ta)
-	{
-		out << *(ta.address.getHumanReadableRepresentation()) + string(", ") 
-		+ StringUtils::Uchar2string(ta.startTTL) + string(", ") + 
-		StringUtils::Uchar2string(ta.endTTL);
-		return out;
-	}
-	
-	TargetAddress(InetAddress targetAddress = InetAddress(0), 
-	              unsigned char startTTL = 1, 
-	              unsigned char endTTL = (ToolBase::CONJECTURED_GLOBAL_INTERNET_DIAMETER + 1));
-	virtual ~TargetAddress();
-	InetAddress address;
-	unsigned char startTTL;
-	unsigned char endTTL;
+    friend ostream & operator<<(ostream &out, const TargetAddress &ta)
+    {
+        out << *(ta.address.getHumanReadableRepresentation()) + string(", ") 
+        + StringUtils::Uchar2string(ta.startTTL) + string(", ") + 
+        StringUtils::Uchar2string(ta.endTTL);
+        return out;
+    }
+    
+    TargetAddress(InetAddress targetAddress = InetAddress(0), 
+                  unsigned char startTTL = 1, 
+                  unsigned char endTTL = (ToolBase::CONJECTURED_GLOBAL_INTERNET_DIAMETER + 1));
+    virtual ~TargetAddress();
+    InetAddress address;
+    unsigned char startTTL;
+    unsigned char endTTL;
 };
 
 #endif /* TARGETADDRESS_H_ */

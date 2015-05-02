@@ -32,23 +32,23 @@ public:
     static Mutex dispatcherMutex;
     
     // Constructor
-	ProbeUnit(ProbesDispatcher *parent,
-	          std::list<InetAddress> IPsToProbe,
-	          unsigned char requiredTTL,
-	          unsigned char alternativeTTL,
-	          InetAddress &localIPAddress,
+    ProbeUnit(ProbesDispatcher *parent,
+              std::list<InetAddress> IPsToProbe,
+              unsigned char requiredTTL,
+              unsigned char alternativeTTL,
+              InetAddress &localIPAddress,
               string &attentionMessage,
-			  bool useFixedFlowID = true,
-			  const TimeVal &timeoutPeriod = DirectProber::DEFAULT_TIMEOUT_PERIOD,
-			  const TimeVal &probeRegulatorPausePeriod = DirectProber::DEFAULT_PROBE_REGULATOR_PAUSE_PERIOD,
-			  unsigned short lowerBoundICMPid = DirectICMPProber::DEFAULT_LOWER_ICMP_IDENTIFIER,
-			  unsigned short upperBoundICMPid = DirectICMPProber::DEFAULT_UPPER_ICMP_IDENTIFIER,
-			  unsigned short lowerBoundICMPseq = DirectICMPProber::DEFAULT_LOWER_ICMP_SEQUENCE,
-			  unsigned short upperBoundICMPseq = DirectICMPProber::DEFAULT_UPPER_ICMP_SEQUENCE) throw(SocketException);
-	
-	// Destructor, run method and print out method
-	~ProbeUnit();
-	void run();
+              bool useFixedFlowID = true,
+              const TimeVal &timeoutPeriod = DirectProber::DEFAULT_TIMEOUT_PERIOD,
+              const TimeVal &probeRegulatorPausePeriod = DirectProber::DEFAULT_PROBE_REGULATOR_PAUSE_PERIOD,
+              unsigned short lowerBoundICMPid = DirectICMPProber::DEFAULT_LOWER_ICMP_IDENTIFIER,
+              unsigned short upperBoundICMPid = DirectICMPProber::DEFAULT_UPPER_ICMP_IDENTIFIER,
+              unsigned short lowerBoundICMPseq = DirectICMPProber::DEFAULT_LOWER_ICMP_SEQUENCE,
+              unsigned short upperBoundICMPseq = DirectICMPProber::DEFAULT_UPPER_ICMP_SEQUENCE) throw(SocketException);
+    
+    // Destructor, run method and print out method
+    ~ProbeUnit();
+    void run();
     
 private:
     
@@ -59,13 +59,12 @@ private:
     
     DirectProber *prober;
     InetAddress &localIPAddress;
-	bool useFixedFlowID;
-	
-	// Probing methods
+    bool useFixedFlowID;
+    
+    // Probing methods
     ProbeRecord *probe(const InetAddress &dst, unsigned char TTL);
     ProbeRecord *doubleProbe(const InetAddress &dst, unsigned char TTL);
 
 };
 
 #endif /* PROBEUNIT_H_ */
-

@@ -67,214 +67,214 @@ int main(int argc, char *argv[])
     // Output handler object (with default values)
     OutputHandler *outputHandler = new OutputHandler(&cout, false, false);
 
-	// Default values
-	InetAddress localIPAddress;
-	unsigned char LANsubnetMask = 0;
-	string targetIPstr;
-	int inputStartTTL = 1;
-	string probeAttentionMessage = string("NOT an ATTACK (mail: Jean-Francois.Grailet@student.ulg.ac.be)");
-	bool useLowerBorderAsWell = true;
-	string inputFilePath;
-	ifstream inFile;
-	unsigned short nbThreads = 256; // Default
-	bool exploreLANexplicitly = false;
-	TimeVal timeoutPeriod(2, TimeVal::HALF_A_SECOND);
-	TimeVal probeRegulatingPeriod(0, 50000);
-	TimeVal sampleRegulatingPausePeriod(0, 0);
-	bool doubleProbe = false;
-	bool useFixedFlowID = true;
-	bool dbg = false;
-	string outputFileName = "";
+    // Default values
+    InetAddress localIPAddress;
+    unsigned char LANsubnetMask = 0;
+    string targetIPstr;
+    int inputStartTTL = 1;
+    string probeAttentionMessage = string("NOT an ATTACK (mail: Jean-Francois.Grailet@student.ulg.ac.be)");
+    bool useLowerBorderAsWell = true;
+    string inputFilePath;
+    ifstream inFile;
+    unsigned short nbThreads = 256; // Default
+    bool exploreLANexplicitly = false;
+    TimeVal timeoutPeriod(2, TimeVal::HALF_A_SECOND);
+    TimeVal probeRegulatingPeriod(0, 50000);
+    TimeVal sampleRegulatingPausePeriod(0, 0);
+    bool doubleProbe = false;
+    bool useFixedFlowID = true;
+    bool dbg = false;
+    string outputFileName = "";
 
-	int opt = 0;
-	int longIndex = 0;
+    int opt = 0;
+    int longIndex = 0;
 
-	const char* const shortOpts = "t:e:h:m:n:i:c:r:l:f:a:w:z:b:o:gv?";
-	const struct option longOpts[] = {
-			{"target", required_argument, 0, 't'},
-			{"interface", required_argument, 0, 'e'},
-			{"middle-hop", required_argument, 0, 'h'},
-			{"attention-message", required_argument, 0, 'm'},
-			{"use-network-address", required_argument, 0, 'n'},
-			{"input-file", required_argument, 0, 'i'},
-			{"concurrency-nb-threads", required_argument, 0, 'c'},
-			{"resolve-host-names", required_argument, 0, 'r'},
-			{"explore-lan-explicitly", required_argument, 0, 'l'},
-			{"fix-flow-id", required_argument, 0, 'f'},
-			{"show-alternatives", required_argument, 0, 'a'},
-			{"probe-timeout-period", required_argument, 0, 'w'},
-			{"probe-regulating-period", required_argument, 0, 'z'},
-			{"output-file", required_argument, 0, 'o'},
-			{"debug", no_argument, NULL, 'g'},
-			{"version", no_argument, NULL, 'v'},
-		    {"help", no_argument, NULL, '?'}
-	};
+    const char* const shortOpts = "t:e:h:m:n:i:c:r:l:f:a:w:z:b:o:gv?";
+    const struct option longOpts[] = {
+            {"target", required_argument, 0, 't'},
+            {"interface", required_argument, 0, 'e'},
+            {"middle-hop", required_argument, 0, 'h'},
+            {"attention-message", required_argument, 0, 'm'},
+            {"use-network-address", required_argument, 0, 'n'},
+            {"input-file", required_argument, 0, 'i'},
+            {"concurrency-nb-threads", required_argument, 0, 'c'},
+            {"resolve-host-names", required_argument, 0, 'r'},
+            {"explore-lan-explicitly", required_argument, 0, 'l'},
+            {"fix-flow-id", required_argument, 0, 'f'},
+            {"show-alternatives", required_argument, 0, 'a'},
+            {"probe-timeout-period", required_argument, 0, 'w'},
+            {"probe-regulating-period", required_argument, 0, 'z'},
+            {"output-file", required_argument, 0, 'o'},
+            {"debug", no_argument, NULL, 'g'},
+            {"version", no_argument, NULL, 'v'},
+            {"help", no_argument, NULL, '?'}
+    };
 
     // User arguments
-	string optargSTR;
-	unsigned long val;
-	unsigned long sec;
-	unsigned long microSec;
-	while((opt = getopt_long(argc, argv, shortOpts, longOpts, &longIndex)) != -1)
-	{
-	    /*
-	     * Beware: use the line optargSTR = string(optarg); ONLY for flags WITH arguments !! 
-	     * Otherwise, it prevents the code from recognizing flags like -v, -? or -g (because they 
-	     * require no argument) and make it throw an exception... To avoid this, a second switch 
-	     * is used.
-	     *
-	     * (this is noteworthy, as this error is still present in ExploreNET v2.1)
-	     */
-	    
-	    switch(opt)
-	    {
-	        case 'g':
-	        case 'v':
-	        case '?':
-	            break;
-	        default:
-		        optargSTR = string(optarg);
-		        
-		        /*
-		         * For future readers: optarg is of type extern char*, and is defined in getopt.h.
-		         * Therefore, you will not find the declaration of this variable in this file.
-		         */
-		        
-		        break;
-		}
-		
-		// Now we can actually treat the options.
-		int gotNb = 0;
-		switch(opt)
-		{
-		    case 't':
-			    targetIPstr = optargSTR;
-			    break;
-		    case 'e':
-			    try
-			    {
-				    localIPAddress = InetAddress::getLocalAddressByInterfaceName(optargSTR);
-			    }
-			    catch (InetAddressException &e)
-			    {
-				    cout << "Cannot obtain any IP address assigned to the interface \"" + optargSTR + "\"" << endl;
-				    return 1;
-			    }
-			    break;
-		    case 'h':
-			    inputStartTTL = StringUtils::string2Uchar(optargSTR);
-			    break;
-		    case 'm':
-			    probeAttentionMessage = optargSTR;
-			    break;
-		    case 'n':
-			    std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
-			    if(optargSTR == string("FALSE"))
-				    useLowerBorderAsWell = false;
-			    break;
+    string optargSTR;
+    unsigned long val;
+    unsigned long sec;
+    unsigned long microSec;
+    while((opt = getopt_long(argc, argv, shortOpts, longOpts, &longIndex)) != -1)
+    {
+        /*
+         * Beware: use the line optargSTR = string(optarg); ONLY for flags WITH arguments !! 
+         * Otherwise, it prevents the code from recognizing flags like -v, -? or -g (because they 
+         * require no argument) and make it throw an exception... To avoid this, a second switch 
+         * is used.
+         *
+         * (this is noteworthy, as this error is still present in ExploreNET v2.1)
+         */
+        
+        switch(opt)
+        {
+            case 'g':
+            case 'v':
+            case '?':
+                break;
+            default:
+                optargSTR = string(optarg);
+                
+                /*
+                 * For future readers: optarg is of type extern char*, and is defined in getopt.h.
+                 * Therefore, you will not find the declaration of this variable in this file.
+                 */
+                
+                break;
+        }
+        
+        // Now we can actually treat the options.
+        int gotNb = 0;
+        switch(opt)
+        {
+            case 't':
+                targetIPstr = optargSTR;
+                break;
+            case 'e':
+                try
+                {
+                    localIPAddress = InetAddress::getLocalAddressByInterfaceName(optargSTR);
+                }
+                catch (InetAddressException &e)
+                {
+                    cout << "Cannot obtain any IP address assigned to the interface \"" + optargSTR + "\"" << endl;
+                    return 1;
+                }
+                break;
+            case 'h':
+                inputStartTTL = StringUtils::string2Uchar(optargSTR);
+                break;
+            case 'm':
+                probeAttentionMessage = optargSTR;
+                break;
+            case 'n':
+                std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
+                if(optargSTR == string("FALSE"))
+                    useLowerBorderAsWell = false;
+                break;
             case 'i':
-			    inputFilePath = optargSTR;
-			    break;
-			case 'c':
-			    gotNb = std::atoi(optargSTR.c_str());
-			    if (gotNb > 0 && gotNb < 32767)
-			    {
-			        nbThreads = (unsigned short) gotNb;
-			    }
-			    break;
-		    case 'r':
-			    std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
-			    if(optargSTR == string("TRUE"))
-			    {
-				    outputHandler->paramResolveHostNames(true);
-				}
-			    break;
-		    case 'l':
-			    std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
-			    if(optargSTR == string("TRUE"))
-				    exploreLANexplicitly = true;
-			    break;
-		    case 'f':
-			    std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
-			    if(optargSTR == string("FALSE"))
-				    useFixedFlowID = false;
-			    break;
-		    case 'a':
-			    std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
-			    if(optargSTR == string("TRUE"))
-			    {
-				    outputHandler->paramShowAlternatives(true);
-				}
-			    break;
-		    case 'w':
-			    val = 1000 * StringUtils::string2Ulong(optargSTR);
-			    if(val > 0)
-			    {
-				    sec = val / TimeVal::MICRO_SECONDS_LIMIT;
-				    microSec = val % TimeVal::MICRO_SECONDS_LIMIT;
-				    timeoutPeriod.setTime(sec, microSec);
-			    }
-			    break;
-		    case 'z':
-			    val = 1000 * StringUtils::string2Ulong(optargSTR);
-			    if(val > 0)
-			    {
-				    sec = val / TimeVal::MICRO_SECONDS_LIMIT;
-				    microSec = val % TimeVal::MICRO_SECONDS_LIMIT;
-				    probeRegulatingPeriod.setTime(sec, microSec);
-			    }
-			    break;
-			case 'o':
-			    outputFileName = optargSTR;
-			    break;
-		    case 'g':
-			    dbg = true;
-			    break;
-		    case 'v':
-			    cout << "TreeNET v1.0, written by Jean-Francois Grailet (Academic year 2014-2015)" << endl;
-	            cout << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
-	            delete outputHandler;
-			    return 0;
-		    case '?':
-			    outputHandler->usage(string(argv[0]));
-			    delete outputHandler;
-			    return 0;
-		    default:
-			    outputHandler->usage(string(argv[0]));
-			    delete outputHandler;
-			    return 1;
-		}
-	}
+                inputFilePath = optargSTR;
+                break;
+            case 'c':
+                gotNb = std::atoi(optargSTR.c_str());
+                if (gotNb > 0 && gotNb < 32767)
+                {
+                    nbThreads = (unsigned short) gotNb;
+                }
+                break;
+            case 'r':
+                std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
+                if(optargSTR == string("TRUE"))
+                {
+                    outputHandler->paramResolveHostNames(true);
+                }
+                break;
+            case 'l':
+                std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
+                if(optargSTR == string("TRUE"))
+                    exploreLANexplicitly = true;
+                break;
+            case 'f':
+                std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
+                if(optargSTR == string("FALSE"))
+                    useFixedFlowID = false;
+                break;
+            case 'a':
+                std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
+                if(optargSTR == string("TRUE"))
+                {
+                    outputHandler->paramShowAlternatives(true);
+                }
+                break;
+            case 'w':
+                val = 1000 * StringUtils::string2Ulong(optargSTR);
+                if(val > 0)
+                {
+                    sec = val / TimeVal::MICRO_SECONDS_LIMIT;
+                    microSec = val % TimeVal::MICRO_SECONDS_LIMIT;
+                    timeoutPeriod.setTime(sec, microSec);
+                }
+                break;
+            case 'z':
+                val = 1000 * StringUtils::string2Ulong(optargSTR);
+                if(val > 0)
+                {
+                    sec = val / TimeVal::MICRO_SECONDS_LIMIT;
+                    microSec = val % TimeVal::MICRO_SECONDS_LIMIT;
+                    probeRegulatingPeriod.setTime(sec, microSec);
+                }
+                break;
+            case 'o':
+                outputFileName = optargSTR;
+                break;
+            case 'g':
+                dbg = true;
+                break;
+            case 'v':
+                cout << "TreeNET v1.0, written by Jean-Francois Grailet (Academic year 2014-2015)" << endl;
+                cout << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
+                delete outputHandler;
+                return 0;
+            case '?':
+                outputHandler->usage(string(argv[0]));
+                delete outputHandler;
+                return 0;
+            default:
+                outputHandler->usage(string(argv[0]));
+                delete outputHandler;
+                return 1;
+        }
+    }
 
-	if(localIPAddress.isUnset())
-	{
-		try
-		{
-			localIPAddress = InetAddress::getFirstLocalAddress();
-		}
-		catch(InetAddressException &e)
-		{
-			cout << "Cannot obtain a valid local IP address for probing" << endl;
-			delete outputHandler;
-			return 1;
-		}
-	}
+    if(localIPAddress.isUnset())
+    {
+        try
+        {
+            localIPAddress = InetAddress::getFirstLocalAddress();
+        }
+        catch(InetAddressException &e)
+        {
+            cout << "Cannot obtain a valid local IP address for probing" << endl;
+            delete outputHandler;
+            return 1;
+        }
+    }
 
-	if(LANsubnetMask == 0)
-	{
-		try
-		{
-			LANsubnetMask = NetworkAddress::getLocalSubnetPrefixLengthByLocalAddress(localIPAddress);
-		}
-		catch(InetAddressException &e)
-		{
-			cout << "Cannot obtain subnet mask of the local area network (LAN)" << endl;
-			delete outputHandler;
-			return 1;
-		}
-	}
+    if(LANsubnetMask == 0)
+    {
+        try
+        {
+            LANsubnetMask = NetworkAddress::getLocalSubnetPrefixLengthByLocalAddress(localIPAddress);
+        }
+        catch(InetAddressException &e)
+        {
+            cout << "Cannot obtain subnet mask of the local area network (LAN)" << endl;
+            delete outputHandler;
+            return 1;
+        }
+    }
 
-	NetworkAddress lan(localIPAddress, LANsubnetMask);
+    NetworkAddress lan(localIPAddress, LANsubnetMask);
 
     // Various variables/structures which should be considered when catching some exception
     SubnetSiteSet *set = NULL;
@@ -282,32 +282,32 @@ int main(int argc, char *argv[])
     Thread **th = NULL;
     SubnetRefiner *sr = NULL;
     
-	try
-	{
-	    // Opens input file (if any) and puts content inside a string
-	    string inputFileContent = "";
-	    if(inputFilePath.size() > 0)
-	    {
-		    inFile.open(inputFilePath.c_str());
-		    if(inFile.is_open())
-		    {
-		        inputFileContent.assign((std::istreambuf_iterator<char>(inFile)),
+    try
+    {
+        // Opens input file (if any) and puts content inside a string
+        string inputFileContent = "";
+        if(inputFilePath.size() > 0)
+        {
+            inFile.open(inputFilePath.c_str());
+            if(inFile.is_open())
+            {
+                inputFileContent.assign((std::istreambuf_iterator<char>(inFile)),
                                         (std::istreambuf_iterator<char>()));
                 
                 inFile.close();
-		    }
-	    }
-	
-	    // Destination parameter is set OR input file is provided and readable
-		if(targetIPstr.size() > 0 || inputFileContent.size() > 0)
-		{
-		    // Computes the target address(es)
-		    std::list<TargetAddress> targets;
-		    
-		    // Targets are from a input string (given in console)
-		    if(targetIPstr.size() > 0)
-		    {
-		        std::stringstream ss(targetIPstr);
+            }
+        }
+    
+        // Destination parameter is set OR input file is provided and readable
+        if(targetIPstr.size() > 0 || inputFileContent.size() > 0)
+        {
+            // Computes the target address(es)
+            std::list<TargetAddress> targets;
+            
+            // Targets are from a input string (given in console)
+            if(targetIPstr.size() > 0)
+            {
+                std::stringstream ss(targetIPstr);
                 std::string targetStr;
                 while (std::getline(ss, targetStr, ','))
                 {
@@ -320,42 +320,42 @@ int main(int argc, char *argv[])
                     if(pos == std::string::npos)
                     {
                         TargetAddress target;
-	                    target.startTTL = inputStartTTL;
-	                    try
-	                    {
-	                        target.address.setInetAddress(targetStr);
-	                        targets.push_back(target);
-	                    }
-	                    catch (InetAddressException &e)
-			            {
-				            cout << "Malformed/Unrecognized destination IP address or host name \"" + targetStr + "\"" << endl;
-				            continue;
-	                    }
-	                }
-	                // Target is a whole subnet
-	                else
-	                {
-	                    std::string prefix = targetStr.substr(0, pos);
-	                    unsigned char prefixLength = (unsigned char) std::atoi(targetStr.substr(pos + 1).c_str());
-	                    try
-	                    {
-	                        InetAddress subnetPrefix(prefix);
-	                        NetworkAddress subnet(subnetPrefix, prefixLength);
-	                        
-	                        for(InetAddress cur = subnet.getLowerBorderAddress(); cur <= subnet.getUpperBorderAddress(); cur++)
-	                        {
-	                            TargetAddress target;
-	                            target.startTTL = inputStartTTL;
-	                            target.address = cur;
-	                            targets.push_back(target);
-	                        }
-	                    }
-	                    catch (InetAddressException &e)
-			            {
-				            cout << "Malformed/Unrecognized destination subnet \"" + targetStr + "\"" << endl;
-				            continue;
-	                    }
-	                }
+                        target.startTTL = inputStartTTL;
+                        try
+                        {
+                            target.address.setInetAddress(targetStr);
+                            targets.push_back(target);
+                        }
+                        catch (InetAddressException &e)
+                        {
+                            cout << "Malformed/Unrecognized destination IP address or host name \"" + targetStr + "\"" << endl;
+                            continue;
+                        }
+                    }
+                    // Target is a whole subnet
+                    else
+                    {
+                        std::string prefix = targetStr.substr(0, pos);
+                        unsigned char prefixLength = (unsigned char) std::atoi(targetStr.substr(pos + 1).c_str());
+                        try
+                        {
+                            InetAddress subnetPrefix(prefix);
+                            NetworkAddress subnet(subnetPrefix, prefixLength);
+                            
+                            for(InetAddress cur = subnet.getLowerBorderAddress(); cur <= subnet.getUpperBorderAddress(); cur++)
+                            {
+                                TargetAddress target;
+                                target.startTTL = inputStartTTL;
+                                target.address = cur;
+                                targets.push_back(target);
+                            }
+                        }
+                        catch (InetAddressException &e)
+                        {
+                            cout << "Malformed/Unrecognized destination subnet \"" + targetStr + "\"" << endl;
+                            continue;
+                        }
+                    }
                 }
             }
             
@@ -375,42 +375,42 @@ int main(int argc, char *argv[])
                     if(pos == std::string::npos)
                     {
                         TargetAddress target;
-	                    target.startTTL = inputStartTTL;
-	                    try
-	                    {
-	                        target.address.setInetAddress(targetStr);
-	                        targets.push_back(target);
-	                    }
-	                    catch (InetAddressException &e)
-			            {
-				            cout << "Malformed/Unrecognized destination IP address or host name \"" + targetStr + "\"" << endl;
-				            continue;
-	                    }
-	                }
-	                // Target is a whole subnet
-	                else
-	                {
-	                    std::string prefix = targetStr.substr(0, pos);
-	                    unsigned char prefixLength = (unsigned char) std::atoi(targetStr.substr(pos + 1).c_str());
-	                    try
-	                    {
-	                        InetAddress subnetPrefix(prefix);
-	                        NetworkAddress subnet(subnetPrefix, prefixLength);
-	                        
-	                        for(InetAddress cur = subnet.getLowerBorderAddress(); cur <= subnet.getUpperBorderAddress(); cur++)
-	                        {
-	                            TargetAddress target;
-	                            target.startTTL = inputStartTTL;
-	                            target.address = cur;
-	                            targets.push_back(target);
-	                        }
-	                    }
-	                    catch (InetAddressException &e)
-			            {
-				            cout << "Malformed/Unrecognized destination subnet \"" + targetStr + "\"" << endl;
-				            continue;
-	                    }
-	                }
+                        target.startTTL = inputStartTTL;
+                        try
+                        {
+                            target.address.setInetAddress(targetStr);
+                            targets.push_back(target);
+                        }
+                        catch (InetAddressException &e)
+                        {
+                            cout << "Malformed/Unrecognized destination IP address or host name \"" + targetStr + "\"" << endl;
+                            continue;
+                        }
+                    }
+                    // Target is a whole subnet
+                    else
+                    {
+                        std::string prefix = targetStr.substr(0, pos);
+                        unsigned char prefixLength = (unsigned char) std::atoi(targetStr.substr(pos + 1).c_str());
+                        try
+                        {
+                            InetAddress subnetPrefix(prefix);
+                            NetworkAddress subnet(subnetPrefix, prefixLength);
+                            
+                            for(InetAddress cur = subnet.getLowerBorderAddress(); cur <= subnet.getUpperBorderAddress(); cur++)
+                            {
+                                TargetAddress target;
+                                target.startTTL = inputStartTTL;
+                                target.address = cur;
+                                targets.push_back(target);
+                            }
+                        }
+                        catch (InetAddressException &e)
+                        {
+                            cout << "Malformed/Unrecognized destination subnet \"" + targetStr + "\"" << endl;
+                            continue;
+                        }
+                    }
                 }
             }
             unsigned long nbTargets = (unsigned int) targets.size();
@@ -437,14 +437,14 @@ int main(int argc, char *argv[])
             
             // Set for maintaining subnets
             set = new SubnetSiteSet();
-			
-			// Size of threads vector
-			unsigned short maxThreads = nbThreads;
-			if(nbTargets > (unsigned long) maxThreads)
-			{
-			    sizeArray = maxThreads;
-			    
-			    /*
+            
+            // Size of threads vector
+            unsigned short maxThreads = nbThreads;
+            if(nbTargets > (unsigned long) maxThreads)
+            {
+                sizeArray = maxThreads;
+                
+                /*
                  * TARGET REORDERING
                  *
                  * As targets are usually given in order, probing consecutive targets may be 
@@ -459,57 +459,57 @@ int main(int argc, char *argv[])
                 unsigned short checked[nbTargets];
                 for(unsigned long i = 0; i < nbTargets; i++)
                 {
-	                array[i] = targets.front();
-	                checked[i] = 0;
-	                targets.pop_front();
-	            }
-	            targets.clear();
-	            
-	            // A loop goes through array cells with a step of at least sizeArray
-	            unsigned long curIndex = 0;
-	            for(unsigned long i = 0; i < nbTargets; i++)
-	            {
-	                targets.push_back(array[curIndex]);
-	                checked[curIndex] = 1;
-	                
-	                // Looks for next unused target
+                    array[i] = targets.front();
+                    checked[i] = 0;
+                    targets.pop_front();
+                }
+                targets.clear();
+                
+                // A loop goes through array cells with a step of at least sizeArray
+                unsigned long curIndex = 0;
+                for(unsigned long i = 0; i < nbTargets; i++)
+                {
+                    targets.push_back(array[curIndex]);
+                    checked[curIndex] = 1;
+                    
+                    // Looks for next unused target
                     if(i < nbTargets - 1)
                     {
                         curIndex += (unsigned long) sizeArray;
-	                    if(curIndex >= nbTargets)
+                        if(curIndex >= nbTargets)
                             curIndex -= nbTargets;
-	                    while(checked[curIndex] == 1)
-	                    {
-	                        curIndex++;
-	                        if(curIndex >= nbTargets)
-	                            curIndex -= nbTargets;
-	                    }
-	                }
-	            }
-			}
-			else
-			{
-			    sizeArray = (unsigned short) nbTargets;
-			
-			    // In this case, we will just shuffle the list.
-			    std::vector<TargetAddress> targetsV(targets.size());
+                        while(checked[curIndex] == 1)
+                        {
+                            curIndex++;
+                            if(curIndex >= nbTargets)
+                                curIndex -= nbTargets;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                sizeArray = (unsigned short) nbTargets;
+            
+                // In this case, we will just shuffle the list.
+                std::vector<TargetAddress> targetsV(targets.size());
                 std::copy(targets.begin(), targets.end(), targetsV.begin());
                 std::random_shuffle(targetsV.begin(), targetsV.end());
                 std::list<TargetAddress> shuffledTargets(targetsV.begin(), targetsV.end());
                 targets = shuffledTargets;
-			}
-			
-			// Creates thread(s)
-			th = new Thread*[sizeArray];
-			for(unsigned short i = 0; i < sizeArray; i++)
-			    th[i] = NULL;
-			
-			// Prepares subnet refiner (used during bypass)
-			sr = new SubnetRefiner(&cout, 
-			                       set,
-			                       localIPAddress, 
-	                               probeAttentionMessage, 
-		                           useFixedFlowID, 
+            }
+            
+            // Creates thread(s)
+            th = new Thread*[sizeArray];
+            for(unsigned short i = 0; i < sizeArray; i++)
+                th[i] = NULL;
+            
+            // Prepares subnet refiner (used during bypass)
+            sr = new SubnetRefiner(&cout, 
+                                   set,
+                                   localIPAddress, 
+                                   probeAttentionMessage, 
+                                   useFixedFlowID, 
                                    timeoutPeriod, 
                                    probeRegulatingPeriod, 
                                    DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID, 
@@ -517,38 +517,38 @@ int main(int argc, char *argv[])
                                    DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ,
                                    DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ,
                                    nbThreads);
-			
-			while(nbTargets > 0)
-			{
-			    unsigned short range = DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID;
-			    range -= DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID;
-			    range /= sizeArray;
-			    
-			    for(unsigned short i = 0; i < sizeArray; i++)
-			    {
-			        TargetAddress curTarget = targets.front();
-			        targets.pop_front();
-			        
-			        unsigned short lowerBound = (i * range);
-		            unsigned short upperBound = lowerBound + range - 1;
-			        th[i] = new Thread(new ExploreNETRunnable(
-		                    set,
-		                    curTarget,
-		                    localIPAddress,
-		                    lan,
-		                    exploreLANexplicitly,
-		                    useLowerBorderAsWell,
-		                    probeAttentionMessage,
-		                    timeoutPeriod,
-		                    probeRegulatingPeriod,
-		                    doubleProbe,
-		                    useFixedFlowID,
-		                    DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + lowerBound,
-		                    DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + upperBound,
-		                    DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ,
-		                    DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ,
-		                    dbg));
-		        }
+            
+            while(nbTargets > 0)
+            {
+                unsigned short range = DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID;
+                range -= DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID;
+                range /= sizeArray;
+                
+                for(unsigned short i = 0; i < sizeArray; i++)
+                {
+                    TargetAddress curTarget = targets.front();
+                    targets.pop_front();
+                    
+                    unsigned short lowerBound = (i * range);
+                    unsigned short upperBound = lowerBound + range - 1;
+                    th[i] = new Thread(new ExploreNETRunnable(
+                            set,
+                            curTarget,
+                            localIPAddress,
+                            lan,
+                            exploreLANexplicitly,
+                            useLowerBorderAsWell,
+                            probeAttentionMessage,
+                            timeoutPeriod,
+                            probeRegulatingPeriod,
+                            doubleProbe,
+                            useFixedFlowID,
+                            DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + lowerBound,
+                            DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + upperBound,
+                            DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ,
+                            DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ,
+                            dbg));
+                }
 
                 // Launches thread(s) then waits for completion
                 for(unsigned short i = 0; i < sizeArray; i++)
@@ -588,11 +588,11 @@ int main(int argc, char *argv[])
                  * certain amount of responsive interfaces. Expansion aims at correcting this 
                  * issue by relying on the Contra-Pivot notion (see SubnetRefiner.cpp/.h for more 
                  * details about this).
-	             *
-	             * Because expansion overgrowths subnet, performing this refinement may avoid 
-	             * probing several addresses that are already inside the boundaries of the 
-	             * refined subnets. Therefore, this should speed up the scanning which is the 
-	             * slowest operation of TreeNET.
+                 *
+                 * Because expansion overgrowths subnet, performing this refinement may avoid 
+                 * probing several addresses that are already inside the boundaries of the 
+                 * refined subnets. Therefore, this should speed up the scanning which is the 
+                 * slowest operation of TreeNET.
                  */
                 
                 // We first check which subnet should be refined
@@ -600,10 +600,10 @@ int main(int argc, char *argv[])
                 bool needsRefinement = false;
                 string newSubnets = "";
                 for(std::list<SubnetSite*>::iterator it = list->begin(); it != list->end(); ++it)
-	            {
-	                if((*it)->getRefinementStatus() != SubnetSite::NOT_PREPARED_YET)
-	                    continue;
-	                
+                {
+                    if((*it)->getRefinementStatus() != SubnetSite::NOT_PREPARED_YET)
+                        continue;
+                    
                     (*it)->prepareForRefinement();
                     string networkAddressStr = (*it)->getInferredNetworkAddressString();
                     switch((*it)->getRefinementStatus())
@@ -622,90 +622,90 @@ int main(int argc, char *argv[])
                             newSubnets += networkAddressStr + ": undefined subnet\n";
                             break;
                     }
-	            }
-	            
-	            if(!newSubnets.empty())
-	            {
-	                cout << "New subnets found by the previous " << sizeArray << " threads:" << endl;
-	                cout << newSubnets << endl;
-	            }
-	            else
-	            {
-	                cout << "Previous " << sizeArray << " threads found no new subnet" << endl << endl;
-	            }
+                }
                 
-	            // Performs refinement
-	            if(needsRefinement)
-	            {
-	                cout << "Refining incomplete subnets..." << endl << endl;
-	                
-	                SubnetSite *candidateForRefinement = set->getIncompleteSubnet();
-		            while(candidateForRefinement != NULL)
-		            {
-		                sr->expand(candidateForRefinement);
-		                set->addSite(candidateForRefinement);
-		            
-		                candidateForRefinement = set->getIncompleteSubnet();
-		            }
-		            
-		            cout << "Back to scanning..." << endl << endl;
-		        }
+                if(!newSubnets.empty())
+                {
+                    cout << "New subnets found by the previous " << sizeArray << " threads:" << endl;
+                    cout << newSubnets << endl;
+                }
+                else
+                {
+                    cout << "Previous " << sizeArray << " threads found no new subnet" << endl << endl;
+                }
+                
+                // Performs refinement
+                if(needsRefinement)
+                {
+                    cout << "Refining incomplete subnets..." << endl << endl;
+                    
+                    SubnetSite *candidateForRefinement = set->getIncompleteSubnet();
+                    while(candidateForRefinement != NULL)
+                    {
+                        sr->expand(candidateForRefinement);
+                        set->addSite(candidateForRefinement);
+                    
+                        candidateForRefinement = set->getIncompleteSubnet();
+                    }
+                    
+                    cout << "Back to scanning..." << endl << endl;
+                }
             }
             
             delete[] th;
             
             cout << "Scanning completed." << endl << endl;
-	        
-	        /*
-	         * PART II: SUBNET REFINEMENT (END)
-	         *
-	         * After the scanning (with bypass), subnets may still not contain all live 
-	         * interfaces in their list: a filling method helps to fix this issue by reprobing 
-	         * non-listed interfaces that are within the boundaries of the subnet.
-	         *
-	         * Regarding shadow subnets, if any, we also expand them so that their size 
-	         * (determined by their prefix) is the maximum size for these subnets to not collide 
-	         * with other inferred subnets. In other words, the code computes a lower bound on 
-	         * the prefix length, therefore an upper bound on the size of the subnet. This is the 
-	         * best we can predict for such cases.
-	         *
-	         * The code first lists the subnets to fill and checks if there are shadow subnets.
-	         * Then, the code proceeds to fill the subnets, using SubnetRefiner. There is no 
-	         * parallelization of the filling of several subnets, as there is already 
-	         * parallelization within the filling (with ProbesDispatcher, see subnetrefinement/). 
-	         * The very last step consists in expanding shadow subnets to their upper bound.
-	         */
+            
+            /*
+             * PART II: SUBNET REFINEMENT (END)
+             *
+             * After the scanning (with bypass), subnets may still not contain all live 
+             * interfaces in their list: a filling method helps to fix this issue by reprobing 
+             * non-listed interfaces that are within the boundaries of the subnet.
+             *
+             * Regarding shadow subnets, if any, we also expand them so that their size 
+             * (determined by their prefix) is the maximum size for these subnets to not collide 
+             * with other inferred subnets. In other words, the code computes a lower bound on 
+             * the prefix length, therefore an upper bound on the size of the subnet. This is the 
+             * best we can predict for such cases.
+             *
+             * The code first lists the subnets to fill and checks if there are shadow subnets.
+             * Then, the code proceeds to fill the subnets, using SubnetRefiner. There is no 
+             * parallelization of the filling of several subnets, as there is already 
+             * parallelization within the filling (with ProbesDispatcher, see subnetrefinement/). 
+             * The very last step consists in expanding shadow subnets to their upper bound.
+             */
             
             int nbShadows = 0;
             std::list<SubnetSite*> *list = set->getSubnetSiteList();
             std::list<SubnetSite*> toFill;
             for(std::list<SubnetSite*>::iterator it = list->begin(); it != list->end(); ++it)
-	        {
-	            // Security for PlanetLab version (though this occurs rarely)
-	            if((*it) == NULL)
-	                continue;
-	        
-	            unsigned short status = (*it)->getRefinementStatus();
-	            if(status == SubnetSite::ACCURATE_SUBNET || status == SubnetSite::ODD_SUBNET)
-	                toFill.push_back((*it));
-	            else if((*it)->getRefinementStatus() == SubnetSite::SHADOW_SUBNET)
-	                nbShadows++;
-	        }
-	        
-	        // Filling
-	        if(toFill.size() > 0)
-	        {
-	            cout << "Starting refinement by filling..." << endl << endl;
-	            
-	            for(std::list<SubnetSite*>::iterator it = toFill.begin(); it != toFill.end(); ++it)
-	            {
-	                // Security for PlanetLab version (though this should not occur)
-	                if((*it) == NULL)
-	                    continue;
-	                
-	                unsigned short status = (*it)->getRefinementStatus();
-	                
-	                sr->fill(*it);
+            {
+                // Security for PlanetLab version (though this occurs rarely)
+                if((*it) == NULL)
+                    continue;
+            
+                unsigned short status = (*it)->getRefinementStatus();
+                if(status == SubnetSite::ACCURATE_SUBNET || status == SubnetSite::ODD_SUBNET)
+                    toFill.push_back((*it));
+                else if((*it)->getRefinementStatus() == SubnetSite::SHADOW_SUBNET)
+                    nbShadows++;
+            }
+            
+            // Filling
+            if(toFill.size() > 0)
+            {
+                cout << "Starting refinement by filling..." << endl << endl;
+                
+                for(std::list<SubnetSite*>::iterator it = toFill.begin(); it != toFill.end(); ++it)
+                {
+                    // Security for PlanetLab version (though this should not occur)
+                    if((*it) == NULL)
+                        continue;
+                    
+                    unsigned short status = (*it)->getRefinementStatus();
+                    
+                    sr->fill(*it);
                     // (*it) != NULL: same reason as above (though, once again, unlikely)
                     if((*it) != NULL && status == SubnetSite::ACCURATE_SUBNET)
                         (*it)->recomputeRefinementStatus();
@@ -714,38 +714,38 @@ int main(int argc, char *argv[])
             }
             
             // Shadow expansion (no parallelization here, because this operation is instantaneous)
-	        if(nbShadows > 0)
-	        {
-	            cout << "Expanding shadow subnets to the maximum..." << endl << endl;
-	            for(std::list<SubnetSite*>::iterator it = list->begin(); it != list->end(); ++it)
-	            {
-	                if((*it)->getRefinementStatus() == SubnetSite::SHADOW_SUBNET)
-	                {
-	                    sr->shadowExpand(*it);
-	                }
-	            }
-	            
-	            /*
-	             * Removes all Shadow subnets, then puts them back. The motivation is to merge the 
-	             * subnets that have the same prefix length after shadow expansion, because it is 
-	             * rather frequent that several incomplete subnets lead to the same shadow subnet.
-	             */
-	            
-	            SubnetSite *shadow = set->getShadowSubnet();
-	            std::list<SubnetSite*> listShadows;
-	            while(shadow != NULL)
-	            {
-	                listShadows.push_back(shadow);
-	                shadow = set->getShadowSubnet();
-	            }
-	            
-	            std::list<SubnetSite*>::iterator listBegin = listShadows.begin();
-	            std::list<SubnetSite*>::iterator listEnd = listShadows.end();
-	            for(std::list<SubnetSite*>::iterator it = listBegin; it != listEnd; ++it)
-	            {
-	                set->addSite((*it));
-	            }
-	        }
+            if(nbShadows > 0)
+            {
+                cout << "Expanding shadow subnets to the maximum..." << endl << endl;
+                for(std::list<SubnetSite*>::iterator it = list->begin(); it != list->end(); ++it)
+                {
+                    if((*it)->getRefinementStatus() == SubnetSite::SHADOW_SUBNET)
+                    {
+                        sr->shadowExpand(*it);
+                    }
+                }
+                
+                /*
+                 * Removes all Shadow subnets, then puts them back. The motivation is to merge the 
+                 * subnets that have the same prefix length after shadow expansion, because it is 
+                 * rather frequent that several incomplete subnets lead to the same shadow subnet.
+                 */
+                
+                SubnetSite *shadow = set->getShadowSubnet();
+                std::list<SubnetSite*> listShadows;
+                while(shadow != NULL)
+                {
+                    listShadows.push_back(shadow);
+                    shadow = set->getShadowSubnet();
+                }
+                
+                std::list<SubnetSite*>::iterator listBegin = listShadows.begin();
+                std::list<SubnetSite*>::iterator listEnd = listShadows.end();
+                for(std::list<SubnetSite*>::iterator it = listBegin; it != listEnd; ++it)
+                {
+                    set->addSite((*it));
+                }
+            }
             
             /*
              * PART III: PARIS TRACEROUTE
@@ -775,42 +775,42 @@ int main(int argc, char *argv[])
                 }
                 
                 // Size of the thread array
-			    unsigned short sizeParisArray = 0;
-			    if((unsigned long) toSchedule.size() > (unsigned long) maxThreads)
-			        sizeParisArray = maxThreads;
-			    else
-			        sizeParisArray = (unsigned short) toSchedule.size();
-			    
-			    // Creates thread(s)
-		        Thread **parisTh = new Thread*[sizeParisArray];
-		        for(unsigned short i = 0; i < sizeParisArray; i++)
-		            parisTh[i] = NULL;
-			    
-			    while(toSchedule.size() > 0)
-			    {
-			        unsigned short range = DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID;
-			        range -= DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID;
-			        range /= sizeParisArray;
-			        
-			        for(unsigned short i = 0; i < sizeParisArray && toSchedule.size() > 0; i++)
-			        {
-			            SubnetSite *curSubnet = toSchedule.front();
-			            toSchedule.pop_front();
-			            
-			            unsigned short lowBound = (i * range);
-			            unsigned short upBound = lowBound + range - 1;
-			            parisTh[i] = new Thread(new ParisTracerouteTask(
-		                             &cout,
-		                             curSubnet,
-		                             localIPAddress,
-		                             probeAttentionMessage,
-		                             timeoutPeriod,
-		                             probeRegulatingPeriod,
-		                             DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + lowBound,
-		                             DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + upBound,
-		                             DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ,
-		                             DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ));
-		            }
+                unsigned short sizeParisArray = 0;
+                if((unsigned long) toSchedule.size() > (unsigned long) maxThreads)
+                    sizeParisArray = maxThreads;
+                else
+                    sizeParisArray = (unsigned short) toSchedule.size();
+                
+                // Creates thread(s)
+                Thread **parisTh = new Thread*[sizeParisArray];
+                for(unsigned short i = 0; i < sizeParisArray; i++)
+                    parisTh[i] = NULL;
+                
+                while(toSchedule.size() > 0)
+                {
+                    unsigned short range = DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID;
+                    range -= DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID;
+                    range /= sizeParisArray;
+                    
+                    for(unsigned short i = 0; i < sizeParisArray && toSchedule.size() > 0; i++)
+                    {
+                        SubnetSite *curSubnet = toSchedule.front();
+                        toSchedule.pop_front();
+                        
+                        unsigned short lowBound = (i * range);
+                        unsigned short upBound = lowBound + range - 1;
+                        parisTh[i] = new Thread(new ParisTracerouteTask(
+                                     &cout,
+                                     curSubnet,
+                                     localIPAddress,
+                                     probeAttentionMessage,
+                                     timeoutPeriod,
+                                     probeRegulatingPeriod,
+                                     DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + lowBound,
+                                     DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + upBound,
+                                     DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ,
+                                     DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ));
+                    }
 
                     // Launches thread(s) then waits for completion
                     for(unsigned short i = 0; i < sizeParisArray; i++)
@@ -834,12 +834,12 @@ int main(int argc, char *argv[])
                 
                 delete[] parisTh;
             }
-	        
-	        delete sr;
-	        
-	        cout << "Finished computing routes. Subnets list will follow shortly." << endl << endl;
-	        
-	        // Prints out headers
+            
+            delete sr;
+            
+            cout << "Finished computing routes. Subnets list will follow shortly." << endl << endl;
+            
+            // Prints out headers
             outputHandler->printHeaderLines();
             
             // Outputting results with the set.
@@ -894,31 +894,31 @@ int main(int argc, char *argv[])
             NetworkTree *tree = new NetworkTree(treeMaxDepth);
             
             SubnetSite *toInsert = set->getValidSubnet();
-	        while(toInsert != NULL)
-	        {
-	            tree->insert(toInsert);
-	            toInsert = set->getValidSubnet();
-	        }
-	        cout << "Building complete." << endl;
-	        
-	        tree->visit(&cout);
-	        cout << endl;
-	        
-	        /*
-	         * PART V: ALIAS RESOLUTION
-	         *
-	         * Interfaces bordering a neighborhood are probed once more to attempt to gather 
-	         * interfaces as routers.
-	         */
-	        
-	        cout << "Alias resolution..." << endl << endl;
-	        
-	        std::list<InetAddress*> interfacesToProbe = tree->listInterfaces();
+            while(toInsert != NULL)
+            {
+                tree->insert(toInsert);
+                toInsert = set->getValidSubnet();
+            }
+            cout << "Building complete." << endl;
+            
+            tree->visit(&cout);
+            cout << endl;
+            
+            /*
+             * PART V: ALIAS RESOLUTION
+             *
+             * Interfaces bordering a neighborhood are probed once more to attempt to gather 
+             * interfaces as routers.
+             */
+            
+            cout << "Alias resolution..." << endl << endl;
+            
+            std::list<InetAddress*> interfacesToProbe = tree->listInterfaces();
 
-	        AliasResolver *ar = new AliasResolver(interfacesToProbe,
-		                                          localIPAddress, 
+            AliasResolver *ar = new AliasResolver(interfacesToProbe,
+                                                  localIPAddress, 
                                                   probeAttentionMessage, 
-	                                              useFixedFlowID, 
+                                                  useFixedFlowID, 
                                                   timeoutPeriod, 
                                                   probeRegulatingPeriod, 
                                                   DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID, 
@@ -936,34 +936,34 @@ int main(int argc, char *argv[])
             cout << "Inferred subnets (+ routes and alias resolution hints) have ";
             cout << "been saved in an output file " << newFileName << endl << endl;
 
-	        // Neighborhood exploration is only done now.
-	        tree->neighborhoods(&cout);
-	        
-	        // Deletes tree
-	        delete tree;
+            // Neighborhood exploration is only done now.
+            tree->neighborhoods(&cout);
+            
+            // Deletes tree
+            delete tree;
         
-	        // Deletes set
+            // Deletes set
             delete set;
-		}
-		// No input
-		else
-		{
-			cout << "Missing destination IP address and/or input file argument" << endl;
-			outputHandler->usage(string(argv[0]));
-			throw InvalidParameterException();
-		}
-	}
-	catch(SocketException &e)
-	{
-	    cout << "Unable to create sockets. Try running TreeNET as a privileged user (for ";
-	    cout << "example, try with sudo)." << endl;
-	    
-	    if(set != NULL)
-	        delete set;
-	    
-	    if(th != NULL)
-	    {
-	        for(unsigned int i = 0; i < sizeArray; i++)
+        }
+        // No input
+        else
+        {
+            cout << "Missing destination IP address and/or input file argument" << endl;
+            outputHandler->usage(string(argv[0]));
+            throw InvalidParameterException();
+        }
+    }
+    catch(SocketException &e)
+    {
+        cout << "Unable to create sockets. Try running TreeNET as a privileged user (for ";
+        cout << "example, try with sudo)." << endl;
+        
+        if(set != NULL)
+            delete set;
+        
+        if(th != NULL)
+        {
+            for(unsigned int i = 0; i < sizeArray; i++)
             {
                 if(th[i] != NULL)
                     delete th[i];
@@ -972,19 +972,18 @@ int main(int argc, char *argv[])
         }
         
         if(sr != NULL)
-	        delete sr;
-	    
-	    delete outputHandler;
-	    return 1;
-	}
-	catch(InvalidParameterException &e)
-	{
-		cout << "Use \"--help\" or \"-?\" parameter to reach help" << endl;
-		delete outputHandler;
-		return 1;
-	}
-	
-	delete outputHandler;
-	return 0;
+            delete sr;
+        
+        delete outputHandler;
+        return 1;
+    }
+    catch(InvalidParameterException &e)
+    {
+        cout << "Use \"--help\" or \"-?\" parameter to reach help" << endl;
+        delete outputHandler;
+        return 1;
+    }
+    
+    delete outputHandler;
+    return 0;
 }
-

@@ -37,33 +37,33 @@ class BipartiteRouter
 {
 public:
 
-	// Types of node
-	enum RouterType
-	{
-	    T_INFERRED,
-	    T_IMAGINARY
-	};
+    // Types of node
+    enum RouterType
+    {
+        T_INFERRED,
+        T_IMAGINARY
+    };
 
-	BipartiteRouter(string label); // For imaginary router
-	BipartiteRouter(string label, Router *router); // For inferred router
-	~BipartiteRouter();
+    BipartiteRouter(string label); // For imaginary router
+    BipartiteRouter(string label, Router *router); // For inferred router
+    ~BipartiteRouter();
 
-	// Accessors
-	inline string getLabel() const { return label; }
-	inline unsigned short getType() const { return type; }
-	inline Router *getAssociatedRouter() { return associatedRouter; }
-	inline list<LinkSwitchRouter*> *getLinksSwitches() { return &linksSwitches; }
-	inline list<LinkRouterSubnet*> *getLinksSubnets() { return &linksSubnets; }
-	
-	// Methods to handle the links
-	bool isConnectedToSwitch(string switchLabel);
-	void removeConnectionToSwitch(string switchLabel);
-	inline void addLinkSwitch(LinkSwitchRouter *link) { linksSwitches.push_back(link); }
-	
-	bool isConnectedToSubnet(string subnetLabel);
-	void removeConnectionToSubnet(string subnetLabel);
-	inline void addLinkSubnet(LinkRouterSubnet *link) { linksSubnets.push_back(link); }
-	
+    // Accessors
+    inline string getLabel() const { return label; }
+    inline unsigned short getType() const { return type; }
+    inline Router *getAssociatedRouter() { return associatedRouter; }
+    inline list<LinkSwitchRouter*> *getLinksSwitches() { return &linksSwitches; }
+    inline list<LinkRouterSubnet*> *getLinksSubnets() { return &linksSubnets; }
+    
+    // Methods to handle the links
+    bool isConnectedToSwitch(string switchLabel);
+    void removeConnectionToSwitch(string switchLabel);
+    inline void addLinkSwitch(LinkSwitchRouter *link) { linksSwitches.push_back(link); }
+    
+    bool isConnectedToSubnet(string subnetLabel);
+    void removeConnectionToSubnet(string subnetLabel);
+    inline void addLinkSubnet(LinkRouterSubnet *link) { linksSubnets.push_back(link); }
+    
 private:
 
     // Label, type, associated router (if any)
@@ -78,4 +78,3 @@ private:
 };
 
 #endif /* BIPARTITEROUTER_H_ */
-
