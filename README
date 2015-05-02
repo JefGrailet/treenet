@@ -16,6 +16,8 @@ the traceroutes to each of them. With this network tree, TreeNET is also able
 to perform alias resolution to discover one or several routers. The final, 
 fully annotated tree can be interpreted as a whole topology.
 
+TreeNET is currently only available for Linux.
+
 About TreeNET and TreeNET Reader
 ================================
 
