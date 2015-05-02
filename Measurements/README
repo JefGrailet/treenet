@@ -4,8 +4,9 @@ About Measurements/ folder - By Jean-François Grailet, May 2, 2015
 Overview
 ========
 
-This folder contains measurements which were conducted on PlanetLab testbed with TreeNET and 
-TreeNET Reader (the former for the actual measurements, the latter for merging them).
+This folder contains measurements which were conducted on PlanetLab testbed 
+with TreeNET and TreeNET Reader (the former for the actual measurements, the 
+latter for merging them).
 
 4 ASes are listed:
 -AS224 (stub)
@@ -13,74 +14,86 @@ TreeNET Reader (the former for the actual measurements, the latter for merging t
 -AS3209 (transit)
 -AS7018 (Tier-1)
 
-While the first two could be measured on a daily basis, the two last were measured a single time: 
-AS3209 indeed had a large amount of responsive interfaces, while AS7018 is very large in terms of 
-possible IPs (slightly more than 77 million IPs). Their measurements had to be conducted in 
-several steps, renewed on a daily basis.
+While the first two could be measured on a daily basis, the two last were 
+measured a single time: AS3209 indeed had a large amount of responsive 
+interfaces, while AS7018 is very large in terms of possible IPs (slightly more 
+than 77 million IPs). Their measurements had to be conducted in several steps, 
+renewed on a daily basis.
 
 Content of each folder
 ======================
 
-AS224/ and AS5400/ contains sub-folders each containing a single data set, one per day they were 
-measured (i.e. every day between March 23th and April 24th).
+AS224/ and AS5400/ contains sub-folders each containing a single data set, one 
+per day they were measured (i.e. every day between March 23th and April 24th).
 
-AS3209/ and AS7018/ each contains no sub-folder, as there is only one data set. The measurements 
-for AS3209 were started on April 13th, while those for AS7018 started on March 25th.
+AS3209/ and AS7018/ each contains no sub-folder, as there is only one data 
+set. The measurements for AS3209 were started on April 13th, while those for 
+AS7018 started on March 25th.
 
 Each data set consists of 3 files:
--A measurements files, where subnets are listed with the following syntax:
+-A measurements files (except for AS3209, which set was split in 3), where 
+ subnets are listed with the following syntax:
  
- [CIDR Notation]
- [Classification]
- [Responsive interfaces, as IP - TTL [Alias Resolution Hint] separated with commas]
- [Traceroute, as IP [Alias Resolution Hint] separated with commas]
- [Blank line]
+ [CIDR Notation] 
+ [Classification] 
+ [Responsive interfaces, as IP - TTL [Alias Resolution Hint] separated with ,] 
+ [Traceroute, as IP [Alias Resolution Hint] separated with ,] 
+ [Blank line] 
 
--A small text file giving some statistics about the measures and the tree produced by TreeNET 
- (simply named "Statistics"). Sometimes, this file also signals problems encountered with the 
- measurements (e.g. when a PlanetLab node crashed).
+-A small text file giving some statistics about the measures and the tree 
+ produced by TreeNET (simply named "Statistics"). Sometimes, this file also 
+ signals problems encountered with the measurements (e.g. when a PlanetLab 
+ node crashed).
 
--A larger text file giving a bipartite representation, with first the different routers and 
- subnets involved in the graph, then 2 list of links: one for imaginary switches reconnecting 
- routers together (within a same neighborhood) and one for connections between routers and 
- subnets.
+-A larger text file giving a bipartite representation, with first the 
+ different routers and subnets involved in the graph, then 2 list of links: 
+ one for imaginary switches reconnecting routers together (within a same 
+ neighborhood) and one for connections between routers and subnets.
 
 Terminology
 ===========
 
-To better understand the data sets and their statistics, here are some definitions.
+To better understand the data sets and their statistics, here are some 
+definitions.
 
-* ACCURATE subnet: a subnet which, having N responsive interfaces, features exactly N - 1 
-  interfaces located at the same TTL (Pivot interface) while the last one is located at that same 
-  TTL minus 1 (Contra-Pivot interface). From a topological point of view, the Contra-Pivot 
-  interface is the interface of the last router crossed before reaching the subnet that belongs to 
-  that subnet.
+* ACCURATE subnet: a subnet which, having N responsive interfaces, features 
+  exactly N - 1 interfaces located at the same TTL (Pivot interface) while the 
+  last one is located at that same TTL minus 1 (Contra-Pivot interface). From 
+  a topological point of view, the Contra-Pivot interface is the interface of 
+  the last router crossed before reaching the subnet that belongs to that 
+  subnet.
 
-* ODD subnet: a subnet which features outliers preventing it from being classified as ACCURATE. An 
-  ODD subnet is not necessarily the result of a bad measurement, and can be the result of 
-  particularities in the target network architecture.
+* ODD subnet: a subnet which features outliers preventing it from being 
+  classified as ACCURATE. An ODD subnet is not necessarily the result of a bad 
+  measurement, and can be the result of particularities in the target network 
+  architecture.
 
 * SHADOW subnet: a subnet for which no Contra-Pivot could be found.
 
-* Alias Resolution Hint: a notation consisting of Token|IP Identifier|Reverse DNS, or 
-  Token|IP Identifier or simply Reverse DNS. These "hints" are used to infer routers by gathering 
-  interfaces which share similarities in these hints.
+* Alias Resolution Hint: a notation consisting of Token|IP Identifier|Reverse 
+  DNS, or Token|IP Identifier or simply Reverse DNS. These "hints" are used to 
+  infer routers by gathering interfaces which share similarities in these 
+  hints.
   
-  It should be noted that the token is a number used to chronologically class the IP Identifiers 
-  to evaluate if the corresponding IPs are from a same router (such alias resolution technique was 
-  inspired by Ally/Radar Gun).
+  It should be noted that the token is a number used to chronologically class 
+  the IP Identifiers to evaluate if the corresponding IPs are from a same 
+  router (such alias resolution technique was inspired by Ally/Radar Gun).
 
-* Credible subnet: a subnet which is either ACCURATE, either ODD with more than 70% of its 
-  interfaces being valid Pivot and less than 10% of its interfaces being Contra-Pivot candidate.
+* Credible subnet: a subnet which is either ACCURATE, either ODD with more 
+  than 70% of its interfaces being valid Pivot and less than 10% of its 
+  interfaces being Contra-Pivot candidate.
 
-* Covered IPs: the sum of the total amount of possible IPs of each inferred subnets.
+* Covered IPs: the sum of the total amount of possible IPs of each inferred 
+  subnets.
 
-* Neighborhood: a set of subnets which can reach each other with at most one hop. By extension, it 
-  is an internal node in the network tree produced by TreeNET.
+* Neighborhood: a set of subnets which can reach each other with at most one 
+  hop. By extension, it is an internal node in the network tree produced by 
+  TreeNET.
 
-* Complete linkage: denotes the fact that a neighborhood either has only leaves (i.e. subnets) as 
-  children, either has a subnet for each label of its children internal nodes (i.e. each subnet 
-  contains the label).
+* Complete linkage: denotes the fact that a neighborhood either has only 
+  leaves (i.e. subnets) as children, either has a subnet for each label of its 
+  children internal nodes (i.e. each subnet contains the label).
   
-* Partial linkage: a relaxed definition of "Complete linkage". Either the neighborhood has 
-  complete linkage, either there lacks a single subnet for a single child internal.
+* Partial linkage: a relaxed definition of "Complete linkage". Either the 
+  neighborhood has complete linkage, either there lacks a single subnet for a 
+  single child internal.

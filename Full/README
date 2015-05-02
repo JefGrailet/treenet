@@ -4,12 +4,14 @@ About TreeNET (treenet) - By Jean-François Grailet, April 30, 2015
 Compilation
 ===========
 
-You will need gcc and g++ on your Linux distribution to compile TreeNET (treenet). To compile it, 
-set Release/ as your working directory and execute the command:
+You will need gcc and g++ on your Linux distribution to compile TreeNET 
+(treenet). To compile it, set Release/ as your working directory and execute 
+the command:
 
 make
 
-If you need to recompile TreeNET after some editing, type the following commands:
+If you need to recompile TreeNET after some editing, type the following 
+commands:
 
 make clean
 make
@@ -19,21 +21,22 @@ Deployement on PlanetLab testbed
 
 If you intent to use TreeNET on PlanetLab testbed, here is some advice.
 
-* Do not bother with compiling TreeNET on PlanetLab nodes and rather compile it on your own 
-  computer. Then, you can upload the executable file (found in Release/) on a PlanetLab node and 
-  uses it as soon as you connect to it.
+* Do not bother with compiling TreeNET on PlanetLab nodes and rather compile 
+  it on your own computer. Then, you can upload the executable file (found in 
+  Release/) on a PlanetLab node and uses it as soon as you connect to it.
 
-* Of course, your executable should be compiled with an environement similar to that of the 
-  PlanetLab nodes. The oldest OS you should find on a PlanetLab node is usually Fedora 8 (at the 
-  time this file was written). A safe (but slow) method to compile TreeNET for Fedora 8 is to run 
-  Fedora 8 as a virtual machine, put the sources on it, compile TreeNET and retrieve the 
-  executable file.
+* Of course, your executable should be compiled with an environement similar 
+  to that of the PlanetLab nodes. The oldest OS you should find on a PlanetLab 
+  node is usually Fedora 8 (at the time this file was written). A safe (but 
+  slow) method to compile TreeNET for Fedora 8 is to run Fedora 8 as a virtual 
+  machine, put the sources on it, compile TreeNET and retrieve the executable 
+  file.
 
 Usage
 =====
 
-N.B.: some options are the same as they were in ExploreNET v2.1. Therefore, their description is 
-the same as can be found on the following page:
+N.B.: some options are the same as they were in ExploreNET v2.1. Therefore, 
+their description is the same as can be found on the following page:
 
 Source: http://nsrg.louisiana.edu/project/ntmaps/output/explorenet.html
 
@@ -44,19 +47,22 @@ Whenever an option did not change since ExploreNET, it is signaled.
 The options are:
 
 * -t (verbose: --target)
-  Option to provide a string giving the list of targets. Targets can be a single IP or a prefix 
-  (e.g. w.x.y.z/24) and should be separated with a comma. For example:
+  Option to provide a string giving a list of targets. Targets can be a single 
+  IP or a prefix (e.g. w.x.y.z/24) and should be separated with a comma. For 
+  example:
   
   -t x.y.0.0/18,x.y.64.0/18,x.y.128.0/18,x.y.192.0/18
   
 * -i (verbose: --input-file)
-  Option to provide a string giving one or several paths to input files containing targets. Target 
-  files should only consist in target IP or target prefixes separated with line breaks (\n).
+  Option to provide a string giving one or several paths to input files 
+  containing targets. Target files should only consist in target IP or target 
+  prefixes separated with line breaks (\n).
   
 * -e (verbose: --interface) (from ExploreNET v2.1)
-  Interface name through which probing/response packets exit/enter (default is the first 
-  non-loopback IPv4 interface in the active interface list). Use this option if your machine has 
-  multiple network interface cards and you opt for one interface over the others.
+  Interface name through which probing/response packets exit/enter (default is 
+  the first non-loopback IPv4 interface in the active interface list). Use 
+  this option if your machine has multiple network interface cards and you opt 
+  for one interface over the others.
 
 * -h (verbose: --middle-hop)
   The initial TTL when estimating distances in TTL with remote interfaces.
@@ -65,48 +71,53 @@ The options are:
   Option to edit the message carried by the probes, typically "NOT AN ATTACK".
 
 * -n (verbose: --use-network-address) (from ExploreNET v2.1)
-  Assume network address, i.e., the address ending with all zeros, as an assignable IP address 
-  [true|false] (default is true). Although for prefix lengths less than 31, network address, i.e., 
-  the address ending with all zeros, and broadcast address, i.e., the address ending with all 
-  ones, are suggested not to be assigned to interfaces, some administrators tend to utilize 
-  network addresses.
+  Assume network address, i.e., the address ending with all zeros, as an 
+  assignable IP address [true|false] (default is true). Although for prefix 
+  lengths less than 31, network address, i.e., the address ending with all 
+  zeros, and broadcast address, i.e., the address ending with all ones, are 
+  suggested not to be assigned to interfaces, some administrators tend to 
+  utilize network addresses.
   
 * -c (verbose: --concurrency-nb-threads)
-  Option to edit the amount of threads used while probing (during inference as well as during 
-  refinement) or computing traceroutes/alias resolution hints. Default is 256.
+  Option to edit the amount of threads used while probing (during inference as 
+  well as during refinement) or computing traceroutes/alias resolution hints. 
+  Default is 256.
 
 * -r (verbose: --resolve-host-names) (from ExploreNET v2.1)
-  Use reverse DNS to resolve host names and show them along with subnet IP addresses [true|false] 
-  (default is false). If an IP address has an associated name it is shown in parentheses next to 
-  the IP address, otherwise an empty parentheses is shown.
+  Use reverse DNS to resolve host names and show them along with subnet IP 
+  addresses [true|false] (default is false). If an IP address has an 
+  associated name it is shown in parentheses next to the IP address, otherwise 
+  an empty parentheses is shown.
 
 * -l (verbose: --explore-lan-explicitely) (from ExploreNET v2.1)
-  Discover the IP addresses in the Local Area Network (LAN) [true|false] (default is false). If 
-  not true, the program gets the local area network information directly from the system rather 
-  than through inference.
+  Discover the IP addresses in the Local Area Network (LAN) [true|false] 
+  (default is false). If not true, the program gets the local area network 
+  information directly from the system rather than through inference.
 
 * -f (verbose: --fix-flow-id) (from ExploreNET v2.1)
-  Use stable flow ID whenever possible [true|false] (default is true). Takes advantage of fixed 
-  flow ID against load balancers as in paris-traceroute whenever the destination address does not 
-  change.
+  Use stable flow ID whenever possible [true|false] (default is true). Takes 
+  advantage of fixed flow ID against load balancers as in paris-traceroute 
+  whenever the destination address does not change.
 
 * -a (verbose: --show-alternatives) (from ExploreNET v2.1)
   Show alternative subnets if they exist [true|false] (default is true).
 
 * -w (verbose: --probe-timeout-period) (from ExploreNET v2.1)
-  Maximum milliseconds amount to wait for a probe reply (default is 2500). If you think that the 
-  RTT to the destination is more than the default value then increase it.
+  Maximum milliseconds amount to wait for a probe reply (default is 2500). If 
+  you think that the RTT to the destination is more than the default value 
+  then increase it.
 
 * -z (verbose: --probe-regulating-period) (from ExploreNET v2.1)
-  Minimum milliseconds amount to wait between two immediately consecutive probes (default is 50). 
-  Useful when routers apply rate limiting.
+  Minimum milliseconds amount to wait between two immediately consecutive 
+  probes (default is 50). Useful when routers apply rate limiting.
 
 * -o (verbose: --output-file)
-  Option to choose the name of the output file. By default, the name of the output file (always 
-  generated) is dd-mm-yyyy hh:mm:ss.
+  Option to choose the name of the output file. By default, the name of the 
+  output file (always generated) is dd-mm-yyyy hh:mm:ss.
 
 * -g (verbose: --debug) (from ExploreNET v2.1)
-  Shows debug information during the subnet inference (with the mechanisms from ExploreNET).
+  Shows debug information during the subnet inference (with the mechanisms 
+  from ExploreNET).
 
 * -v (verbose: --version)
   Shows program version.
@@ -117,35 +128,41 @@ The options are:
 Other remarks
 =============
 
-* Most machines do not allow user to open sockets to send probes, which prevent TreeNET from 
-  doing anything. To overcome this, run TreeNET as a super user (for example, with sudo).
+* Most machines do not allow user to open sockets to send probes, which 
+  prevents TreeNET from doing anything. To overcome this, run TreeNET as a 
+  super user (for example, with sudo).
 
-* The subnet inference step can take quite a long time. A good compromise to ensure a reasonable 
-  execution time is to give no more than 2^16 target IPs (given as one or several prefixes, of 
-  course) at a time. Depending on how the target network is responsive, with 256 threads, TreeNET 
-  can complete in a few hours to one or two days, allowing to renew measures on a daily basis.
+* The subnet inference step can take quite a long time. A good compromise to 
+  ensure a reasonable execution time is to give no more than 2^16 target IPs 
+  (given as one or several prefixes, of course) at a time. Depending on how 
+  the target network is responsive, with 256 threads, TreeNET can complete in 
+  a few hours to one or two days, allowing to renew measures on a daily basis.
 
-* Most of the actual code of TreeNET is found in src/toolbase/. src/prober/ and src/common/ 
-  provides libraries to handle (ICMP, UDP, TCP) probes, IPv4 addresses, etc.
+* Most of the actual code of TreeNET is found in src/toolbase/. src/prober/ 
+  and src/common/ provides libraries to handle (ICMP, UDP, TCP) probes, IPv4 
+  addresses, etc.
   
-* Also, while the coding style is homogeneous in src/toolbase/, it was not entirely revisited in 
-  src/prober/ and src/common/ due to time constraints.
+* Also, while the coding style is homogeneous in src/toolbase/, it was not 
+  entirely revisited in src/prober/ and src/common/ due to time constraints.
   
-* If you want to obtain all the details about subnet inference/refinement, inferred subnets and 
-  analysis of the tree, it is recommended to redirect the standard output to a file:
+* If you want to obtain all the details about subnet inference/refinement, 
+  inferred subnets and analysis of the tree, it is recommended to redirect the 
+  standard output to a file:
   
   ... > Output_file
   
-  Note that the file might get quite big for a large amount of targets (several Megaoctets).
+  Note that the file might get quite big for a large amount of targets 
+  (several Megaoctets).
 
 Contact
 =======
 
-TreeNET was written by Jean-François Grailet during the academic year 2014-2015 in the context of 
-a master thesis at the University of Liège (Belgium).
+TreeNET was written by Jean-François Grailet during the academic year 
+2014-2015 in the context of a master thesis at the University of Liège 
+(Belgium).
 
 Permanent contact: jefgrailet@hotmail.com
 
-TreeNET uses parts of ExploreNET, a subnet inference tool conceived and implemented by Mehmet 
-Engin Tozal, currently assistant teacher at the University of Louisiana at Lafayette (USA).
-
+TreeNET uses parts of ExploreNET, a subnet inference tool conceived and 
+implemented by Mehmet Engin Tozal, currently assistant teacher at the 
+University of Louisiana at Lafayette (USA).
