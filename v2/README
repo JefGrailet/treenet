@@ -1,0 +1,131 @@
+About TreeNET v2.0 - By Jean-François Grailet, December 2, 2015
+===============================================================
+
+Overview of the improvements
+============================
+
+* Network pre-scanning: a new algorithmic step, the network pre-scanning phase 
+  was designed solely for improving overall performance. The idea is to probe 
+  a few times every target IP to ensure their responsivity, such that only 
+  responsive IPs are considered in subsequent steps. Indeed, the subnet 
+  inference and refinement steps can be costly in terms of probes, and can 
+  potentially probe several times unreponsive IPs. To avoid this, TreeNET now 
+  builds an "IP dictionnary" containing only responsive IPs from the 
+  pre-scanning phase. Only IPs belonging to the IP dictionnary are probed 
+  again, therefore reducing the probing cost. It is worth noting that the 
+  pre-scanning is actually done two times, the second opinion scan using a 
+  bigger timeout value to maximize the amount of responsive interfaces. A 
+  third but optional scan can also be used.
+
+* Better structure: the introduction of the IP dictionnary also improves the 
+  overall structure of both the code and the output. In particular, the alias 
+  resolution hints are now stored in the IP dictionnary, which is outputted 
+  as a separate file in addition to the subnet dump. This avoids repeating 
+  several times the same hints in the subnet dump for IPs which appear 
+  multiple times in the file, which was an issue of TreeNET v1.0.
+
+* Improved traceroute phase: to mitigate as much as possible the occurrences 
+  of 0.0.0.0 in the routes (which can be due to delays), the Paris traceroute 
+  phase now handles the timeout value to reprobe intermediate routers which 
+  are unresponsive at first.
+
+* Route repairment phase: the insertion in the network tree now starts with 
+  the subnets which the route is complete (i.e., no occurrence of 0.0.0.0). 
+  Then, the incomplete routes of the remaining subnets are compared to what 
+  is already stored in the tree to find the most similar route and replace 
+  the occurrences of 0.0.0.0 with corresponding segments from the complete 
+  route. This step prevents routes from having holes which correspond to 
+  usually responsive routers which are affected by delays or which decided to 
+  not respond to probes any longer. This is especially useful for the less 
+  deep parts of the network tree, where routers are probed for nearly each 
+  traceroute.
+  
+* Refactored alias resolution: previously preferring reverse DNS over a 
+  simplistic IP-ID-based method in its v1.0, TreeNET now uses reverse DNS only 
+  as a last resort technique (when IP-IDs cannot be obtained). In its v2.0, 
+  TreeNET collects multiple IP-IDs for each IP and computes a delay between 
+  each consecutive IP-ID (for a same IP) in microseconds. These values can 
+  then be used to apply the method Ally (i.e., having x from IP_1, y from IP_2 
+  and z from IP_1, obtained sequentially, IP_1 and IP_2 are associated if 
+  x < y < z with z - x being small enough) or to apply a new method based on 
+  the velocity of IP-ID counters (which is similar to the method used by 
+  RadarGun, an alias resolution tool).
+
+* More options: TreeNET v2.0 also offers more option than its previous 
+  iteration, such as delay value between two consecutive threads to create a 
+  small delay between probes to mitigate potential congestion when targetting 
+  IPs which are close to each other, or several parameters to calibrate the 
+  IP-ID-based alias resolution methods.
+
+* Faster and more accurate: the combination of the network pre-scanning phase 
+  and all improvements mentioned above makes TreeNET v2.0 not only more 
+  accurate, but also much faster than v1.0. It is now able to entirely 
+  analyze ASes potentially having one or several millions of IPs on its own in 
+  a few hours to a few days (if there are not too many responsive IPs), while 
+  the previous version required to be deployed on several machines and a 
+  merging phase with TreeNET Reader to obtain the same delays.
+
+About ARTest
+============
+
+ARTest stands for "Alias Resolution Test". Just as its name suggests, this 
+derived version of TreeNET exclusively implements the alias resolution part. 
+It also features a completely different input/output: instead of IP prefixes 
+or single IPs separated with \n, each line of the input should consist of a 
+list of IPs (separated with a blank space) which are considered to belong to 
+a router. In other words, the input file is more or less a ground truth ARTest 
+is going to analyze.
+
+Then, ARTest proceeds by analyzing each separate list to see if it can infer 
+the same router with the alias resolution techniques of TreeNET based on 
+IP-IDs. If some IP proves to be unresponsive at the time of probing, it is 
+not considered during the evaluation.
+
+At the end, ARTest outputs the same lists of IPs, but commented, to highlight 
+where TreeNET would be successful and were it would not. It also outputs the 
+obtained IP dictionnary and a text file listing success rates of each list 
+(already sorted in ascending order), separated with \n, for plotting purposes.
+
+About ExploreNET++
+==================
+
+Despite its name, ExploreNET++ is not actually an improvement of ExploreNET 
+but rather a rehash providing an improved input/output scheme and fixing some 
+minor issues (e.g. regarding memory usage). Among others, the subnets inferred 
+by ExploreNET++ are outputted in the same fashion as TreeNET (minus the Paris 
+Traceroute part) to ease comparison. The targets are also checked with 
+multiple concurrent threads to speed up the overall execution.
+
+However, in order to stay faithful to ExploreNET v2.1 for the core parts, 
+ExploreNET++ does not include features of TreeNET such as network pre-scanning 
+or subnet merging.
+
+Content of this folder
+======================
+
+As the names suggest, Full/ contains all sources for the complete version of 
+TreeNET v2.0, while ARTest/ contains the sources of the alias resolution 
+assessment version and ExploreNET++ contains the rehashed ExploreNET v2.1 for 
+the sake of comparison with TreeNET.
+
+The last sub-folder, Measurements/, contains various data sets corresponding 
+to measurements made on ASes of varying sizes and roles. Measurements/ 
+contains a sub-folder per AS, which each AS sub-folder containing sub-folders 
+for each data set, each of these folders being named after the date of the 
+measurements.
+
+Contact
+=======
+
+TreeNET v2.0 and all related programs (ARTest, ExploreNET++) were written by 
+Jean-François Grailet, currently Ph. D. student at the University of Liège 
+(Belgium) in the Research Unit in Networking (RUN), using the sources of 
+ExploreNET v2.1 as a basis.
+
+E-mail address: Jean-Francois.Grailet@ulg.ac.be
+
+ExploreNET v2.1 has been elaborated and written by Dr. Mehmet Engin Tozal, 
+currently assistant teacher at the University of Louisiana at Lafayette (USA).
+The sources of this program can be downloaded at the following address:
+
+http://nsrg.louisiana.edu/project/ntmaps/output/explorenet.html

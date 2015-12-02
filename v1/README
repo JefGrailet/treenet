@@ -1,0 +1,58 @@
+About TreeNET v1.0 - By Jean-François Grailet, April 30, 2015
+=============================================================
+
+N.B. (December 1st, 2015): TreeNET v1.0 is now deprecated. For a more recent 
+release, you might want to look at the root of this repository. However, more 
+recent releases might not come with data sets for the same ASes as those who 
+were probed with TreeNET v1.0.
+
+About TreeNET and TreeNET Reader
+================================
+
+TreeNET v1.0 actually comes in two pieces of software: TreeNET "Full", which 
+provides TreeNET as a measurement/topology discovery tool, and TreeNET 
+"Reader" which is meant to parse files outputted by TreeNET "Full" to analyze 
+them and merge them.
+
+In particular, TreeNET Reader comes with the traceroute/alias resolution tools 
+present in TreeNET "Full" such that it can re-compute the routes and alias 
+resolution hints for the subnets it parsed (usually from several files).
+
+Indeed, a network tree is relevant only if it uses traceroutes computed from a 
+same vantage point. As TreeNET needs to be deployed on several machines to 
+infer subnets within a large network, TreeNET Reader allows one to re-compute 
+all traceroutes and alias resolution hints from the same vantage point for all 
+measurements (when provided together).
+
+TreeNET Reader is also able to convert a fully built/annotated network tree 
+into a bipartite graph for further analysis (with other softwares).
+
+Content of this folder
+======================
+
+As the names suggest, Full/ contains all sources for TreeNET as a measurement 
+tool (simply named "TreeNET") while /Reader provides all the sources of 
+TreeNET Reader. Both folders come with their own README files, detailing 
+compilation and usage.
+
+The third and last sub-folder, Measurements/, contains measurements of four 
+autonomous systems (or ASes) which were computed between March 23th and April 
+24th 2015. You can learn more about them by reading the README file at the 
+root of this folder.
+
+Contact
+=======
+
+TreeNET and TreeNET Reader (v1.0) were both written by Jean-François Grailet 
+during the academic year 2014-2015 in the context of a master thesis at the 
+University of Liège (Belgium), using the sources of ExploreNET v2.1 as a basis.
+Jean-François is currently a Ph. D. student at the same university, in the 
+Research Unit in Networking (RUN).
+
+E-mail address: Jean-Francois.Grailet@ulg.ac.be
+
+ExploreNET v2.1 has been elaborated and written by Dr. Mehmet Engin Tozal, 
+currently assistant teacher at the University of Louisiana at Lafayette (USA).
+The sources of this program can be downloaded at the following address:
+
+http://nsrg.louisiana.edu/project/ntmaps/output/explorenet.html
