@@ -1,67 +1,84 @@
-About TreeNET - By Jean-François Grailet, April 30, 2015
-========================================================
+About TreeNET - By Jean-François Grailet (last update: December 2nd, 2015)
+==========================================================================
 
-Overview of the program
-=======================
+Overview
+========
 
 TreeNET is a subnet-based topology discovery software which is built upon the 
-subnet inference software ExploreNET. Not only TreeNET provides refinement 
-techniques for subnets inferred by ExploreNET, but it also builds a structure 
-(which we will refer to as "network tree") which is used to locate subnets 
-with respect to each other. The intuition is that close subnets (e.g. which 
-can reach each other with a TTL of at most 1) forms a neighborhood, inside 
-which lies a mesh of routers (and Ethernet switches). The network tree aims 
-at hightlighting these neighborhoods, on the basis of the inferred subnets and 
-the traceroutes to each of them. With this network tree, TreeNET is also able 
-to perform alias resolution to discover one or several routers. The final, 
-fully annotated tree can be interpreted as a whole topology.
+subnet inference software ExploreNET. Using the inference mechanics provided 
+by ExploreNET and providing some refinement over the measured subnets, TreeNET 
+tries to infer a whole router - subnet topology by building a tree-like 
+structure which relies on the measured subnets and on traceroute to them 
+(using Paris traceroute).
 
-TreeNET is currently only available for Linux.
+The tree-like structure (called "network tree") aims at highlighting 
+"Neighborhoods", i.e. network locations bordered by subnets which can reach 
+each other with a TTL of at most 1. These locations typically consist of a 
+single router or a mesh of several routers, possibly implemented with Layer-2 
+equipment. The knowledge of the subnets surrounding Neighborhoods can be used 
+to perform alias resolution and discover one or several routers to replace the 
+Neighborhoods and obtain a (near-)complete topology. Indeed, each subnet, if 
+sound, should contain an interface with a particular minimum TTL value which 
+necessarily belongs to the router giving access to that subnet. Listing such 
+interfaces from all subnets bordering a same Neighborhood is actually the 
+first step of alias resolution in TreeNET.
 
-About TreeNET and TreeNET Reader
-================================
+A long-term goal of TreeNET is to be able to infer not only routers (Layer-3 
+equipment), but also Layer-2 devices, using its knowledge of routers and 
+subnets bordering a location where Layer-2 devices might exist.
 
-TreeNET actually comes in two pieces of software: TreeNET "Full", which 
-provides TreeNET as a measurement/topology discovery tool, and TreeNET 
-"Reader" which is meant to parse files outputted by TreeNET "Full" to analyze 
-them and merge them.
+Current versions
+================
 
-In particular, TreeNET Reader comes with the traceroute/alias resolution tools 
-present in TreeNET "Full" such that it can re-compute the routes and alias 
-resolution hints for the subnets it parsed (usually from several files).
+All current versions are exclusively available for Linux.
 
-Indeed, a network tree is relevant only if it uses traceroutes computed from a 
-same vantage point. As TreeNET needs to be deployed on several machines to 
-infer subnets within a large network, TreeNET Reader allows one to re-compute 
-all traceroutes and alias resolution hints from the same vantage point for all 
-measurements (when provided together).
+* TreeNET v1.0: developped during academic year 2014-2015 for a master thesis, 
+  this version implements all major algorithmic steps described in the 
+  overview. This version also comes with measurements which were conducted 
+  with it on PlanetLab and a companion piece of software (TreeNET Reader) 
+  which provides tools for analysis/merging of the collected data sets.
 
-TreeNET Reader is also able to convert a fully built/annotated network tree 
-into a bipartite graph for further analysis (with other softwares).
+* TreeNET v2.0: elaborated in September 2015 and fully implemented as soon as 
+  November 2015, this second version adds a new algorithmic step called 
+  "network pre-scanning" which aims at speeding up the overall execution. The 
+  alias resolution part has also been thoroughly improved, while other steps 
+  have been revisited for various but less consequent improvements.
+  
+  TreeNET v2.0 is accompanied by two additional pieces of software, ARTest and 
+  ExploreNET++. Both of them were implemented to assess precise steps of 
+  TreeNET: ARTest was made to assess the alias resolution step, while 
+  ExploreNET++ was made to provide an input/output scheme for ExploreNET close 
+  to that of TreeNET in order to assess the refinement techniques introduced 
+  in TreeNET.
+  
+  There is currently no available v2.0 for TreeNET Reader. Some measurements 
+  conducted with TreeNET v2.0 on PlanetLab are however available.
 
 Content of this folder
 ======================
 
-As the names suggest, Full/ contains all sources for TreeNET as a measurement 
-tool (simply named "TreeNET") while /Reader provides all the sources of 
-TreeNET Reader. Both folders come with their own README files, detailing 
-compilation and usage.
+As the names suggest, v1/ contains all files related to TreeNET v1.0, while 
+v2/ provides all sources for TreeNET v2.0 along data sets which were collected 
+with it.
 
-The third and last sub-folder, Measurements/, contains measurements of four 
-autonomous systems (or ASes) which were computed between March 23th and April 
-24th. You can learn more about them by reading the README file at the root of 
-this folder.
+Work in progress
+================
+
+TreeNET Reader v2.0 is in the works. Measurements obtained via TreeNET v2.0 
+will also be made available as they come.
 
 Contact
 =======
 
-TreeNET and TreeNET Reader were both written by Jean-François Grailet during 
-the academic year 2014-2015 in the context of a master thesis at the 
-University of Liège (Belgium).
+TreeNET and all related programs (TreeNET Reader, ARTest, ExploreNET++) were 
+written by Jean-François Grailet, currently Ph. D. student at the University 
+of Liège (Belgium) in the Research Unit in Networking (RUN), using the sources 
+of ExploreNET v2.1 as a basis.
 
-Permanent contact: jefgrailet@hotmail.com
+E-mail address: Jean-Francois.Grailet@ulg.ac.be
 
-TreeNET and TreeNET Reader use parts of ExploreNET (basic components for both 
-and subnet inference tools for the former), a subnet inference tool conceived 
-and implemented by Mehmet Engin Tozal, currently assistant teacher at the 
-University of Louisiana at Lafayette (USA).
+ExploreNET v2.1 has been elaborated and written by Dr. Mehmet Engin Tozal, 
+currently assistant teacher at the University of Louisiana at Lafayette (USA).
+The sources of this program can be downloaded at the following address:
+
+http://nsrg.louisiana.edu/project/ntmaps/output/explorenet.html
