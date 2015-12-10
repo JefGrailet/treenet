@@ -1,0 +1,60 @@
+About Alias resolution/ folder - By Jean-François Grailet, December 10, 2015
+============================================================================
+
+Overview
+========
+
+This folder contains output files from ARTest, the alias resolution assessment 
+version of TreeNET, along the input which was used to produce them. These 
+files were used to evaluate the accuracy of the alias resolution techniques 
+implemented in TreeNET v2.0 in November 2015 (precisely, the 19th of the same 
+month).
+
+Content
+=======
+
+* alias_lists.txt: the data set which was used as input. It was made available 
+  by iPlane, and consists in a list of aliases, with an alias per line, which 
+  could be inferred through IP-ID based techniques. It should be noted that 
+  such a data set is refreshed once in a while, and therefore it was necessary 
+  to provide the data set we used in case the data set currently available at 
+  
+  http://iplane.cs.washington.edu/data/alias_lists.txt
+  
+  was different from what we used.
+
+* Assessment: the actual assessment output file. Each line is made of the 
+  following components:
+  
+  (1) [IMPOSSIBLE|FAIL|SUCCESS AT X%]: overall result for this alias; 
+      IMPOSSIBLE means no IP from this alias was responsive at the time of 
+      measurement, FAIL means there were responsive IPs but TreeNET was unable 
+      to associate any of them, and finally, SUCCESS AT X% means that IPs 
+      could be associated. The percentage is the ratio between the amount of 
+      interfaces of the largest inferred router and the amount of responsive 
+      IPs for this alias.
+  (2) List of IPs: the alias as it was provided in alias_lists.txt, except 
+      that any unresponsive IP is followed by the mention "[X]".
+  (3) List of inferred routers: in case the line starts with SUCCESS AT X% 
+      with a X smaller than 100, this part lists the inferred routers as:
+   
+      [IP_1 (method), IP_2 (method), ...]
+   
+      The two methods are "Speed" (for velocity range overlap method) and 
+      "Ally" (the name of the method). Two consecutive routers are separated 
+      with a comma.
+  
+  The formatting is the following:
+  
+  (1) - (2)[: (3)] ([] = optional)
+
+* Assessment.ip: the IP dictionnary as obtained by ARTest at the end of the 
+  execution. Its main interests is for future parsing to re-run alias 
+  resolution without any probing but with different parameters (e.g. the 
+  maximum rounding error while computing a velocity).
+
+* Assessment.plot: a file listing the success ratios for each alias, sorted 
+  in ascending order. Aliases labelled with IMPOSSIBLE are represented by the 
+  value -1, every other value being comprised in [0,1]. As the name of the 
+  file suggests, it is used for plotting graphs without having to parse the 
+  file "Assessment".

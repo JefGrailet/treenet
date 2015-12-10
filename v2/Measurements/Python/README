@@ -1,0 +1,38 @@
+About Python/ folder - By Jean-François Grailet, December 10, 2015
+==================================================================
+
+Overview
+========
+
+This folder contains a bunch of Python scripts which can be used to parse and 
+analyze data sets produced by TreeNET v2.0 and its derivatives along some 
+input files.
+
+Content
+=======
+
+* Comparison.py: a script for comparing subnet dumps obtained by TreeNET v2.0 
+  and ExploreNET++, respectively. It outputs in console the proportion of each 
+  class of subnet along the covered IPs and the proportion of subnets which 
+  are redundant in the subnet dump from ExploreNET++ and the proportion of 
+  subnets from the same dump which are strictly smaller than overlapping 
+  subnet found in the subnet dump of TreeNET.
+
+* EvaluateCapacity.py: a script to evaluate the amount of IPs of a target 
+  network, represented as a text file with IPv4 ranges or single IPs separated 
+  by line breaks (see, for example, Measurements/AS224/AS224.txt).
+
+* PlotResults.py: receives a .plot file (see Measurements/Alias resolution/) 
+  to produce a Cumulative Distribution Function (CDF) and a Probablity Density 
+  Function (PDF) graphs in the PDF format to visualize the results of an 
+  alias resolution assessment conducted with TreeNET "ARTest".
+
+* QuickAnalysis.py: receives a subnet dump from TreeNET and outputs in console 
+  the amount of covered IPs along the proportion of ACCURATE, ODD and SHADOW 
+  subnets.
+
+* Simplify.py: receives a subnet dump (from TreeNET as well as ExploreNET++) 
+  as input to produce a simplified version of it, where only the subnet CIDR 
+  notation and the classification are kept and written on the same line rather 
+  than separate lines. Not only this produces a smaller file, but it is also 
+  meant to ease checking by network administrators.
