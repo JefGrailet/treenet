@@ -54,6 +54,8 @@ void OutputHandler::usage(string programName)
     
     (*out) << "\t-u" << "\t" << "--probing-protocol" << "\t\t" << "probing protocol (ICMP, UDP or TCP; ICMP by default)" << endl;
     
+    (*out) << "\t-k" << "\t" << "--double-probe" << "\t\t\t" << "using two consecutive probes for each probe (default is false)" << endl;
+    
     (*out) << "\t-m" << "\t" << "--attention-message" << "\t\t" << "probe attention message (default is \"NOT an ATTACK\")" << endl;
     
     (*out) << "\t-n" << "\t" << "--use-network-address" << "\t\t" 

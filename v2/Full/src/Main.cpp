@@ -96,12 +96,13 @@ int main(int argc, char *argv[])
     int opt = 0;
     int longIndex = 0;
 
-    const char* const shortOpts = "t:e:h:u:m:n:i:c:r:l:f:p:s:a:w:z:d:j:x:b:y:o:gv?";
+    const char* const shortOpts = "t:e:h:u:k:m:n:i:c:r:l:f:p:s:a:w:z:d:j:x:b:y:o:gv?";
     const struct option longOpts[] = {
             {"target", required_argument, 0, 't'}, 
             {"interface", required_argument, 0, 'e'}, 
             {"middle-hop", required_argument, 0, 'h'}, 
             {"probing-protocol", required_argument, 0, 'u'}, 
+            {"double-probe", required_argument, 0, 'k'}, 
             {"attention-message", required_argument, 0, 'm'}, 
             {"use-network-address", required_argument, 0, 'n'}, 
             {"input-file", required_argument, 0, 'i'}, 
@@ -185,6 +186,11 @@ int main(int argc, char *argv[])
                     probingProtocol = TreeNETEnvironment::PROBING_PROTOCOL_UDP;
                 else if(optargSTR == string("TCP"))
                     probingProtocol = TreeNETEnvironment::PROBING_PROTOCOL_TCP;
+                break;
+            case 'k':
+                std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
+                if(optargSTR == string("TRUE"))
+                    doubleProbe = true;
                 break;
             case 'm':
                 probeAttentionMessage = optargSTR;
@@ -406,14 +412,14 @@ int main(int argc, char *argv[])
         parser->parseInputFile(inputFileContent);
         
         // Some welcome message
-        cout << "Welcome to TreeNET" << endl << endl;
+        cout << "Welcome to TreeNET v2.0.\n" << endl;
         
         // Announces that it will ignore LAN.
         if(parser->targetsEncompassLAN())
         {
             cout << "Target IPs encompass the LAN of the vantage point ("
                  << LAN.getSubnetPrefix() << "/" << (unsigned short) LAN.getPrefixLength() 
-                 << "). IPs belonging to the LAN will be ignored." << endl << endl;
+                 << "). IPs belonging to the LAN will be ignored.\n" << endl;
         }
         
         std::list<InetAddress> targetsPrescanning = parser->getTargetsPrescanning();
@@ -463,10 +469,10 @@ int main(int argc, char *argv[])
         }
         else
         {
-            cout << "All probed IPs were responsive." << endl << endl;
+            cout << "All probed IPs were responsive.\n" << endl;
         }
         
-        cout << "Prescanning ended." << endl << endl;
+        cout << "Prescanning ended.\n" << endl;
         
         delete prescanner;
         
@@ -520,7 +526,7 @@ int main(int argc, char *argv[])
             env->setTimeoutPeriod(timeoutPeriod * 2);
             editedTimeout = true;
             cout << "Timeout adapted for network scanning: " << env->getTimeoutPeriod();
-            cout << endl << endl;
+            cout << "\n" << endl;
         }
         
         // Size of threads vector
@@ -538,7 +544,7 @@ int main(int argc, char *argv[])
         // Prepares subnet refiner (used during bypass)
         sr = new SubnetRefiner(env);
         
-        cout << "Starting network scanning..." << endl << endl;
+        cout << "Starting network scanning...\n" << endl;
         
         while(nbTargets > 0)
         {
@@ -641,29 +647,35 @@ int main(int argc, char *argv[])
             
             if(!newSubnets.empty())
             {
-                cout << "New subnets found by the previous " << sizeArray << " threads:" << endl;
+                cout << "New subnets found by the previous " << sizeArray << " threads:\n";
                 cout << newSubnets << endl;
             }
             else
             {
-                cout << "Previous " << sizeArray << " threads found no new subnet" << endl << endl;
+                cout << "Previous " << sizeArray << " threads found no new subnet\n" << endl;
             }
             
             // Performs refinement
             if(needsRefinement)
             {
-                cout << "Refining incomplete subnets..." << endl << endl;
+                cout << "Refining incomplete subnets...\n" << endl;
                 
                 SubnetSite *candidateForRefinement = subnetSet->getIncompleteSubnet();
                 while(candidateForRefinement != NULL)
                 {
                     sr->expand(candidateForRefinement);
-                    subnetSet->addSite(candidateForRefinement);
+                    unsigned short res = subnetSet->addSite(candidateForRefinement);
+                    
+                    if(res == SubnetSiteSet::SMALLER_SUBNET || res == SubnetSiteSet::KNOWN_SUBNET)
+                    {
+                        delete candidateForRefinement;
+                        candidateForRefinement = NULL;
+                    }
                 
                     candidateForRefinement = subnetSet->getIncompleteSubnet();
                 }
                 
-                cout << "Back to scanning..." << endl << endl;
+                cout << "Back to scanning...\n" << endl;
             }
         }
         
@@ -675,7 +687,7 @@ int main(int argc, char *argv[])
             env->setTimeoutPeriod(timeoutPeriod);
         }
         
-        cout << "Scanning completed." << endl << endl;
+        cout << "Scanning completed.\n" << endl;
         
         /*
          * STEP III: SUBNET REFINEMENT (END)
@@ -716,7 +728,7 @@ int main(int argc, char *argv[])
         // Filling
         if(toFill.size() > 0)
         {
-            cout << "Starting refinement by filling..." << endl << endl;
+            cout << "Starting refinement by filling...\n" << endl;
             
             for(std::list<SubnetSite*>::iterator it = toFill.begin(); it != toFill.end(); ++it)
             {
@@ -737,7 +749,7 @@ int main(int argc, char *argv[])
         // Shadow expansion (no parallelization here, because this operation is instantaneous)
         if(nbShadows > 0)
         {
-            cout << "Expanding shadow subnets to the maximum..." << endl << endl;
+            cout << "Expanding shadow subnets to the maximum...\n" << endl;
             for(std::list<SubnetSite*>::iterator it = list->begin(); it != list->end(); ++it)
             {
                 if((*it)->getRefinementStatus() == SubnetSite::SHADOW_SUBNET)
@@ -767,7 +779,11 @@ int main(int argc, char *argv[])
             std::list<SubnetSite*>::iterator listEnd = listShadows.end();
             for(std::list<SubnetSite*>::iterator it = listBegin; it != listEnd; ++it)
             {
-                subnetSet->addSite((*it));
+                unsigned short res = subnetSet->addSite((*it));
+                if(res == SubnetSiteSet::SMALLER_SUBNET || res == SubnetSiteSet::KNOWN_SUBNET)
+                {
+                    delete (*it);
+                }
             }
         }
         
@@ -783,7 +799,7 @@ int main(int argc, char *argv[])
     
         if(list->size() > 0)
         {
-            cout << "Computing route to each accurate/odd/shadow subnet..." << endl << endl;
+            cout << "Computing route to each accurate/odd/shadow subnet...\n" << endl;
             
             // Lists subnets for which we would like a route
             std::list<SubnetSite*> toSchedule;
@@ -858,7 +874,7 @@ int main(int argc, char *argv[])
         
         delete sr;
         
-        cout << "Finished computing routes. Subnets list will follow shortly." << endl << endl;
+        cout << "Finished computing routes. Subnets list will follow shortly.\n" << endl;
         
         // Prints out headers
         outputHandler->printHeaderLines();
@@ -900,7 +916,7 @@ int main(int argc, char *argv[])
         }
         
         subnetSet->outputAsFile(newFileNameSubnet);
-        cout << endl << "Inferred subnets (+ routes) have been saved in an output file ";
+        cout << "\nInferred subnets (+ routes) have been saved in an output file ";
         cout << newFileNameSubnet << endl;
         
         /*
@@ -917,7 +933,7 @@ int main(int argc, char *argv[])
          * is to avoid occurrences of 0.0.0.0 as much as possible (as they are not interpretable).
          */
         
-        cout << endl << "Building network tree..." << endl;
+        cout << "\nBuilding network tree..." << endl;
          
         unsigned short treeMaxDepth = subnetSet->getLongestRoute();
         subnetSet->sortByRoute();
@@ -932,7 +948,7 @@ int main(int argc, char *argv[])
             toInsert = subnetSet->getValidSubnet();
         }
         
-        cout << "Subnets with complete route inserted." << endl;
+        cout << "Subnets with complete route inserted.\n";
         cout << "Now repairing incomplete routes to insert remaining subnets..." << endl;
         
         // Then, subnets with an incomplete route after a repairment
@@ -944,12 +960,12 @@ int main(int argc, char *argv[])
             toInsert = subnetSet->getValidSubnet(false);
         }
         
-        cout << "Building complete." << endl << endl;
+        cout << "Building complete.\n" << endl;
         
         // Final save of the results.
         tree->outputSubnets(newFileNameSubnet);
         cout << "Inferred subnets (+ routes) have been saved in an output file ";
-        cout << newFileNameSubnet << endl << endl;
+        cout << newFileNameSubnet << ".\n" << endl;
         
         tree->visit(&cout);
         cout << endl;
@@ -961,7 +977,7 @@ int main(int argc, char *argv[])
          * interfaces as routers.
          */
         
-        cout << "Alias resolution..." << endl << endl;
+        cout << "Alias resolution...\n" << endl;
         
         // std::list<InetAddress*> interfacesToProbe = tree->listInterfaces();
         AliasHintCollector *ahc = new AliasHintCollector(env);
@@ -971,7 +987,7 @@ int main(int argc, char *argv[])
         
         env->getIPTable()->outputDictionnary(newFileNameIP);
         cout << "IP dictionnary with alias resolution hints has been saved in an output file ";
-        cout << newFileNameIP << endl << endl;
+        cout << newFileNameIP << ".\n" << endl;
 
         // Internal node exploration is only done now.
         AliasResolver *ar = new AliasResolver(env);
