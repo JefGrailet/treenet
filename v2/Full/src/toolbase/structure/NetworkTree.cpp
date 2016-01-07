@@ -154,6 +154,9 @@ void NetworkTree::insert(SubnetSite *subnet)
                 }
                 
                 prune(this->depthMap, toMerge, NULL, d - 2);
+                
+                // Sorts parent's children to keep the good order (it can change after merging)
+                cur->getParent()->sortChildren();
             }
         }
     

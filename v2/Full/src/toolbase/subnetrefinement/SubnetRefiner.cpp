@@ -249,9 +249,8 @@ void SubnetRefiner::expand(SubnetSite *ss)
                     
                     /*
                      * IPs besides the first candidate are inserted as well with right TTL, 
-                     * otherwise it will lead to errors during the filling step (previous 
-                     * candidates for contra-pivot would be listed as pivots because they will 
-                     * reply to reqTTL anyway since they are at reqTTL - 1).
+                     * because it is possible the subnet actually features back-up interface(s) 
+                     * which are still relevant in subsequent steps (like alias resolution).
                      */
                     
                     if(guardian)
@@ -280,9 +279,10 @@ void SubnetRefiner::expand(SubnetSite *ss)
         previousUpperBorder = upperBorder;
     }
     
-    (*out) << "Subnet is undefined" << endl << endl;
+    (*out) << "Subnet is undefined: TreeNET cannot find a valid contra-pivot even if a /20 is";
+    (*out) << "considered.\nSubnet marked as shadow subnet.\n" << endl;
     
-    ss->setRefinementStatus(SubnetSite::UNDEFINED_SUBNET);
+    ss->setRefinementStatus(SubnetSite::SHADOW_SUBNET);
 }
 
 void SubnetRefiner::fill(SubnetSite *ss)

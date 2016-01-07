@@ -109,6 +109,9 @@ public:
     // Static comparison method for sorting purposes
     static bool compare(NetworkTreeNode *n1, NetworkTreeNode *n2);
     
+    // Inline method to (re-)sort the children
+    inline void sortChildren() { children.sort(NetworkTreeNode::compare); }
+    
     // Method to add a child to this node
     void addChild(NetworkTreeNode *child);
     

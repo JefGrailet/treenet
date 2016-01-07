@@ -112,10 +112,23 @@ bool NetworkTreeNode::hasPreviousLabel(InetAddress label)
 
 void NetworkTreeNode::addLabel(InetAddress label)
 {
+    InetAddress previousHead = labels.front();
+
     labels.push_back(label);
     if(labels.size() > 1 && this->type == NetworkTreeNode::T_NEIGHBORHOOD)
         this->type = NetworkTreeNode::T_HEDERA;
     labels.sort(InetAddress::smaller);
+    
+    /*
+     * If the head of the list changed, one must re-sort the list of children of the parent node 
+     * (if any) to keep a coherent order.
+     */
+    
+    if(previousHead != labels.front())
+    {
+        if(this->parent != NULL)
+            this->parent->sortChildren();
+    }
 }
 
 void NetworkTreeNode::addPreviousLabel(InetAddress label)
