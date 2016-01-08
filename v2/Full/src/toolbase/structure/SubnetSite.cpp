@@ -857,10 +857,10 @@ bool SubnetSite::isCredible()
         
         if((*i) != NULL && (*i)->prefix >= this->inferredSubnetPrefix)
         {
-            unsigned short index = (unsigned short) (*i)->TTL - baseTTL;
-            if(index <= diffTTL)
+            unsigned short offset = (unsigned short) (*i)->TTL - baseTTL;
+            if(offset <= diffTTL)
             {
-                interfacesByTTL[((unsigned short) (*i)->TTL - baseTTL)]++;
+                interfacesByTTL[offset]++;
                 totalInterfaces++;
             }
         }

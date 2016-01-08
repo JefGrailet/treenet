@@ -584,7 +584,7 @@ void NetworkTree::internalsRecursive(ostream *out,
     {
         ingressInterfaces = parent->getLabels()->size();
     }
-    unsigned int egressInterfaces = (unsigned int) nbChildren;
+    unsigned int egressInterfaces = 0;
     
     // Puts direct neighbor subnets in a list and puts the internal nodes in another one
     list<NetworkTreeNode*> childrenL;
@@ -598,15 +598,17 @@ void NetworkTree::internalsRecursive(ostream *out,
         if((*i)->isLeaf())
         {
             childrenL.push_back((*i));
+            egressInterfaces++;
         }
         else if((*i)->isInternal())
         {
             childrenI.push_back((*i));
+            egressInterfaces += (*i)->getLabels()->size();
         }
     }
     
     size_t nbNeighborSubnets = childrenL.size();
-    unsigned short countchildrenI = (unsigned short) childrenI.size();
+    unsigned short countChildrenI = (unsigned short) childrenI.size();
 
     if(nbNeighborSubnets > 0)
     {
@@ -690,7 +692,11 @@ void NetworkTree::internalsRecursive(ostream *out,
                         if(ss->containsAddress((*k)))
                         {
                             onTheWay.push_back((*k));
-                            countchildrenI--;
+                            
+                            // Due to Hedera's, countChildrenI can eventually rollover
+                            if(countChildrenI > 0)
+                                countChildrenI--;
+                            
                             egressInterfaces--; // Decremented for each "on the way" child internal
                         }
                     }
@@ -717,11 +723,11 @@ void NetworkTree::internalsRecursive(ostream *out,
         
         (*out) << "Inferred a total " << egressInterfaces + ingressInterfaces << " interfaces." 
         << endl;
-        if(countchildrenI == 0)
+        if(countChildrenI == 0)
         {
             (*out) << "This internal node has complete linkage with its children." << endl;
         }
-        else if(countchildrenI == 1)
+        else if(countChildrenI == 1)
         {
             (*out) << "This internal node has partial linkage with its children." << endl;
         }

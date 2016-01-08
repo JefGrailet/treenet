@@ -184,21 +184,21 @@ NetworkTreeNode *NetworkTreeNode::getChild(InetAddress label)
     return NULL;
 }
 
-bool NetworkTreeNode::hasLeavesAsChildren()
+bool NetworkTreeNode::hasOnlyLeavesAsChildren()
 {
     for(list<NetworkTreeNode*>::iterator i = children.begin(); i != children.end(); ++i)
     {
-        if((*i)->isLeaf())
+        if(!(*i)->isLeaf())
         {
-            return true;
+            return false;
         }
     }
-    return false;
+    return true;
 }
 
 unsigned short NetworkTreeNode::getLinkage()
 {
-    if(this->isLeaf() || this->hasLeavesAsChildren())
+    if(this->isLeaf() || this->hasOnlyLeavesAsChildren())
         return 0;
     
     unsigned short missingLinks = 0;

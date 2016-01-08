@@ -121,8 +121,8 @@ public:
     // Method to get a child of this node, given a label (returns NULL if no such child)
     NetworkTreeNode *getChild(InetAddress label);
     
-    // Boolean method to know if the current node has subnets (leaves) as children
-    bool hasLeavesAsChildren();
+    // Boolean method to know if the current node has only subnets (leaves) as children
+    bool hasOnlyLeavesAsChildren();
     
     /*
      * Method to check if all non-subnet children have their label belonging to a brother 
