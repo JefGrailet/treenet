@@ -1,5 +1,5 @@
-About TreeNET - By Jean-François Grailet (last update: December 2nd, 2015)
-==========================================================================
+About TreeNET - By Jean-François Grailet (last update: January 18, 2016)
+========================================================================
 
 Overview
 ========
@@ -38,34 +38,40 @@ All current versions are exclusively available for Linux.
   with it on PlanetLab and a companion piece of software (TreeNET Reader) 
   which provides tools for analysis/merging of the collected data sets.
 
-* TreeNET v2.0: elaborated in September 2015 and fully implemented as soon as 
-  November 2015, this second version adds a new algorithmic step called 
-  "network pre-scanning" which aims at speeding up the overall execution. The 
-  alias resolution part has also been thoroughly improved, while other steps 
-  have been revisited for various but less consequent improvements.
+* TreeNET v2.1: elaborated in September 2015 and fully implemented as soon as 
+  November 2015 (as v2.0), this second version adds a new algorithmic step 
+  called "network pre-scanning" which aims at speeding up the overall 
+  execution. The alias resolution part has also been thoroughly improved, 
+  while other steps have been revisited for various but less consequent 
+  improvements. 
   
-  TreeNET v2.0 is accompanied by two additional pieces of software, ARTest and 
+  In January 2016, TreeNET v2.0 was upgraded to v2.1 with the introduction of 
+  new refinement mechanics which aims at speeding up the execution time and 
+  reducing the probing cost.
+  
+  TreeNET v2.1 is accompanied by two additional pieces of software, ARTest and 
   ExploreNET++. Both of them were implemented to assess precise steps of 
   TreeNET: ARTest was made to assess the alias resolution step, while 
   ExploreNET++ was made to provide an input/output scheme for ExploreNET close 
   to that of TreeNET in order to assess the refinement techniques introduced 
-  in TreeNET.
-  
+  in TreeNET. Both of these variations were released at the same time as the 
+  initial v2.0.
+
   There is currently no available v2.0 for TreeNET Reader. Some measurements 
-  conducted with TreeNET v2.0 on PlanetLab are however available.
+  conducted with TreeNET v2.0 and onwards on PlanetLab are however available.
 
 Content of this folder
 ======================
 
 As the names suggest, v1/ contains all files related to TreeNET v1.0, while 
-v2/ provides all sources for TreeNET v2.0 along data sets which were collected 
+v2/ provides all sources for TreeNET v2.1 along data sets which were collected 
 with it.
 
 Work in progress
 ================
 
 TreeNET Reader v2.0 is in the works. Measurements obtained via TreeNET v2.0 
-will also be made available as they come.
+and onwards will also be made available as they come.
 
 Contact
 =======

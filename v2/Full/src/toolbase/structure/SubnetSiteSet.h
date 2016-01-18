@@ -46,6 +46,17 @@ public:
     SubnetSite *getSubnetContaining(InetAddress ip);
     
     /*
+     * Methods to test whether a subnet or IP is encompassed by a subnet already in the set with 
+     * the same Pivot TTL. The goal of this method is to test if a subnet to refine (with 
+     * expansion) is encompassed by some UNDEFINED subnet (listed in "IPBlocksToAvoid" field in 
+     * TreeNETEnvironment) which the pivot TTL is the same. The method returns NULL if ss is not 
+     * encompassed, otherwise the encompassing subnet is returned.
+     */
+    
+    SubnetSite *getSubnetContainingWithTTL(InetAddress ip, unsigned char TTL);
+    SubnetSite *isSubnetEncompassed(SubnetSite *ss);
+    
+    /*
      * Method to test if a an hypothetical subnet (represented with its borders and TTL to reach 
      * it) is compatible with this set. A subnet being compatible with the set means that:
      * -either it does not overlap any subnet within the set,

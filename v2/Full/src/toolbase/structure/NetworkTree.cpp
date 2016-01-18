@@ -541,7 +541,7 @@ void NetworkTree::collectHintsRecursive(ostream *out,
             
                 (*out) << (*i);
             }
-            cout << "}";
+            (*out) << "}";
         }
         else
         {

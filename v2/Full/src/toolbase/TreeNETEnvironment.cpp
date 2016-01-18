@@ -53,10 +53,12 @@ maxThreads(mT)
 {
     this->IPTable = new IPLookUpTable(nIDs);
     this->subnetSet = new SubnetSiteSet();
+    this->IPBlocksToAvoid = new SubnetSiteSet();
 }
 
 TreeNETEnvironment::~TreeNETEnvironment()
 {
     delete IPTable;
     delete subnetSet;
+    delete IPBlocksToAvoid;
 }

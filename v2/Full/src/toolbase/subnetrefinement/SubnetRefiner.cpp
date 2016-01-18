@@ -26,6 +26,10 @@ SubnetRefiner::~SubnetRefiner()
 
 void SubnetRefiner::expand(SubnetSite *ss)
 {
+    // For security
+    if(ss == NULL)
+        return;
+
     // Relevant stuff from env
     ostream *out = env->getOutputStream();
     SubnetSiteSet *subnetSet = env->getSubnetSet();
@@ -279,14 +283,38 @@ void SubnetRefiner::expand(SubnetSite *ss)
         previousUpperBorder = upperBorder;
     }
     
-    (*out) << "Subnet is undefined: TreeNET cannot find a valid contra-pivot even if a /20 is";
+    (*out) << "TreeNET cannot find a valid contra-pivot interface even if a /20 is ";
     (*out) << "considered.\nSubnet marked as shadow subnet.\n" << endl;
     
     ss->setRefinementStatus(SubnetSite::SHADOW_SUBNET);
+    
+    // Creates equivalent /20 subnet in "toAvoid" set
+    if(ss->getPivotAddress() != InetAddress(0))
+    {
+        InetAddress pivotIP(ss->getPivotAddress());
+    
+        SubnetSiteSet *zonesToAvoid = env->getIPBlocksToAvoid();
+        SubnetSite *zoneToAvoid = new SubnetSite();
+        zoneToAvoid->setPivotAddress(pivotIP);
+        zoneToAvoid->setInferredSubnetPrefixLength((unsigned char) 20);
+        zoneToAvoid->setRefinementStatus(SubnetSite::UNDEFINED_SUBNET);
+        zoneToAvoid->setRefinementShortestTTL(reqTTL);
+        zoneToAvoid->setRefinementGreatestTTL(reqTTL);
+        zoneToAvoid->insert(new SubnetSiteNode(pivotIP, 
+                                               (unsigned char) 20, 
+                                               reqTTL, 
+                                               SubnetSiteNode::UNKNOWN_ALIAS_SX));
+        
+        zonesToAvoid->getSubnetSiteList()->push_back(zoneToAvoid);
+    }
 }
 
 void SubnetRefiner::fill(SubnetSite *ss)
 {
+    // Security (PlanetLab...)
+    if(ss == NULL)
+       return;
+
     // Relevant pointers from env
     ostream *out = env->getOutputStream();
     IPLookUpTable *table = env->getIPTable();

@@ -41,6 +41,7 @@ public:
     {
         SUCCESSFULLY_INFERRED_REMOTE_SUBNET_SITE,
         SUCCESSFULLY_INFERRED_LOCAL_SUBNET_SITE, // Contains alive IP addresses of LAN and its subnet mask
+        UNNECESSARY_PROBING, // For an optimization from TreeNET v2.1
         DUMMY_LOCAL_SUBNET_SITE, // Contains only LAN subnet mask
         NULL_SUBNET_SITE,
         UNRESPONSIVE_IP_EXCEPTION,

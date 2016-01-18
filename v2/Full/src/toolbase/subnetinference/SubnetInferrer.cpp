@@ -113,6 +113,33 @@ SubnetSite *SubnetInferrer::inferRemoteSubnet(const InetAddress &destinationAddr
                                                 middleTTL, 
                                                 useLowerBorderAsWell);
         
+        /*
+         * TreeNET v2.1 (01/2016): avoids inferring if IP is in a /20 range from "IPBlocksToAvoid" 
+         * set found in TreeNETEnvironment class. However, the TTL must be the same as the Pivot 
+         * TTL for this range to exclude the destination IP for sure, hence the need to go through 
+         * populateRecords(). To signal this to the calling environment, this method returns the 
+         * subnet from IPBlocksToAvoid which contains the destination IP. There is no ambiguity 
+         * since it has a refinement status other than NOT_PREPARED_YET.
+         */
+        
+        if(siteRecord != NULL)
+        {
+            SubnetSiteSet *toAvoid = env->getIPBlocksToAvoid();
+            SubnetSite *ss = toAvoid->getSubnetContainingWithTTL(destinationAddress, 
+                                                                 siteRecord->getReqTTL());
+            if(ss != NULL)
+            {
+                delete siteRecord;
+                if(sitePrevRecord != NULL)
+                    delete sitePrevRecord;
+                if(sitePrevPrevRecord != NULL)
+                    delete sitePrevPrevRecord;
+                cache.clear();
+                
+                return ss;
+            }
+        }
+        
         int subnetPositioningProbingCost = temporaryProbingCost;
         temporaryProbingCost = 0;
         if(recordPopulation)

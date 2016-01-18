@@ -1,8 +1,11 @@
-About TreeNET v2.0 - By Jean-François Grailet, December 2, 2015
+About TreeNET v2.1 - By Jean-François Grailet, January 18, 2016
 ===============================================================
 
 Overview of the improvements
 ============================
+
+Starting from TreeNET v2.0 and onwards
+--------------------------------------
 
 * Network pre-scanning: a new algorithmic step, the network pre-scanning phase 
   was designed solely for improving overall performance. The idea is to probe 
@@ -65,6 +68,23 @@ Overview of the improvements
   the previous version required to be deployed on several machines and a 
   merging phase with TreeNET Reader to obtain the same delays.
 
+Starting from TreeNET v2.1 and onwards
+--------------------------------------
+
+* Improved refinement phase: when TreeNET is unable to find a Contra-Pivot for 
+  an incomplete subnet which has been expanded to the maximum (i.e., /20), it 
+  now keeps the fully expanded subnet in a new subnet set to avoid unnecessary 
+  probing tasks, which are, in this case:
+  -expanding another incomplete subnet if the Pivot TTL in it is the same as 
+   in the fully expanded (undefined) subnet and if the former is encompassed 
+   in the latter.
+  -inferring a subnet from a pivot IP if the TTL to reach it is the same as in 
+   the fully expanded (undefined) subnet and if this subnet contains that IP.
+  Avoiding both tasks allows TreeNET v2.1 to run faster when probing an AS 
+  where a large amount of responsive IPs ultimately lead to SHADOW subnets 
+  (i.e., without any Contra-Pivot interface), as it skips these time-consuming 
+  cases once it observed one of them (for a given /20 IPv4 address block).
+
 About ARTest
 ============
 
@@ -104,7 +124,7 @@ Content of this folder
 ======================
 
 As the names suggest, Full/ contains all sources for the complete version of 
-TreeNET v2.0, while ARTest/ contains the sources of the alias resolution 
+TreeNET v2.1, while ARTest/ contains the sources of the alias resolution 
 assessment version and ExploreNET++ contains the rehashed ExploreNET v2.1 for 
 the sake of comparison with TreeNET.
 
@@ -117,7 +137,7 @@ measurements.
 Contact
 =======
 
-TreeNET v2.0 and all related programs (ARTest, ExploreNET++) were written by 
+TreeNET v2.1 and all related programs (ARTest, ExploreNET++) were written by 
 Jean-François Grailet, currently Ph. D. student at the University of Liège 
 (Belgium) in the Research Unit in Networking (RUN), using the sources of 
 ExploreNET v2.1 as a basis.

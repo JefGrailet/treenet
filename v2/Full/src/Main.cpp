@@ -306,7 +306,7 @@ int main(int argc, char *argv[])
                 debugMode = true;
                 break;
             case 'v':
-                cout << "TreeNET v2.0, written by Jean-Francois Grailet (v1.0: 2014-2015, v2.0: September - November 2015)" << endl;
+                cout << "TreeNET v2.1, written by Jean-Francois Grailet (v1.0: 04/2015, v2.0: 11/2015, v2.1: 01/2016)" << endl;
                 cout << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
                 delete outputHandler;
                 return 0;
@@ -375,6 +375,7 @@ int main(int argc, char *argv[])
     
     // Gets direct access to the subnet set
     SubnetSiteSet *subnetSet = env->getSubnetSet();
+    SubnetSiteSet *zonesToAvoid = env->getIPBlocksToAvoid();
 
     // Various variables/structures which should be considered when catching some exception
     unsigned short sizeArray = 0;
@@ -412,7 +413,7 @@ int main(int argc, char *argv[])
         parser->parseInputFile(inputFileContent);
         
         // Some welcome message
-        cout << "Welcome to TreeNET v2.0.\n" << endl;
+        cout << "Welcome to TreeNET v2.1.\n" << endl;
         
         // Announces that it will ignore LAN.
         if(parser->targetsEncompassLAN())
@@ -663,6 +664,38 @@ int main(int argc, char *argv[])
                 SubnetSite *candidateForRefinement = subnetSet->getIncompleteSubnet();
                 while(candidateForRefinement != NULL)
                 {
+                    /*
+                     * Checks if expansion should be conducted, i.e. the subnet should not be 
+                     * encompassed by an UNDEFINED subnet found in the "IPBlocksToAvoid" set from 
+                     * TreeNETEnvironment. Otherwise, expansion is a waste of time: the presence 
+                     * of an UNDEFINED subnet means we already looked for Contra-Pivot interfaces 
+                     * in this zone without success. There should not be any issue regarding TTL 
+                     * values, because expansion should have stopped before reaching the UNDEFINED 
+                     * state in this case. When refinement by expansion is not done, the subnet is 
+                     * directly labelled as SHADOW and reinserted in subnetSet.
+                     */
+                    
+                    SubnetSite *ss2 = zonesToAvoid->isSubnetEncompassed(candidateForRefinement);
+                    if(ss2 != NULL)
+                    {
+                        string ssStr = candidateForRefinement->getInferredNetworkAddressString();
+                        string ss2Str = ss2->getInferredNetworkAddressString();
+                        cout << "No refinement for " << ssStr << ": it is encompassed in the ";
+                        cout << ss2Str << " IPv4 address block.\nThis block features Pivot ";
+                        cout << "interfaces with the same TTL as expected for " << ssStr << ".\n";
+                        cout << "It has already been checked to find Contra-Pivot interfaces, ";
+                        cout << "without success.\n";
+                        cout << ssStr << " marked as SHADOW subnet.\n" << endl;
+                    
+                        candidateForRefinement->setRefinementStatus(SubnetSite::SHADOW_SUBNET);
+                        
+                        // No check of return value because subnet did not change
+                        subnetSet->addSite(candidateForRefinement); 
+                        
+                        candidateForRefinement = subnetSet->getIncompleteSubnet();
+                        continue;
+                    }
+                
                     sr->expand(candidateForRefinement);
                     unsigned short res = subnetSet->addSite(candidateForRefinement);
                     

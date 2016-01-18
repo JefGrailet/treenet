@@ -129,7 +129,14 @@ void ExploreNETRunnable::run()
             site = sinf.inferRemoteSubnet(t, false, startTTL, useLowerBorderAsWell);
             if(site != 0 && site->getInferredSubnetPrefixLength() <= 32)
             {
-                res = ExploreNETRunnable::SUCCESSFULLY_INFERRED_REMOTE_SUBNET_SITE;
+                if(site->getRefinementStatus() == SubnetSite::NOT_PREPARED_YET)
+                {
+                    res = ExploreNETRunnable::SUCCESSFULLY_INFERRED_REMOTE_SUBNET_SITE;
+                }
+                else
+                {
+                    res = ExploreNETRunnable::UNNECESSARY_PROBING;
+                }
             }
             else
             {
@@ -178,7 +185,23 @@ void ExploreNETRunnable::run()
     // Failure: display cause of the problem in console if showInferenceFailures is true
     else
     {
-        if(res == ExploreNETRunnable::NULL_SUBNET_SITE)
+        /*
+         * TreeNET v2.1: no inference for IP encompassed by a /20 block with the same TTL for 
+         * Pivot IPs, because previous inference/expansion led to subnet(s) with no Contra-Pivot 
+         * to ensure their soundness.
+         */
+        
+        if(res == ExploreNETRunnable::UNNECESSARY_PROBING)
+        {
+            stringResult += "no inference, as pivot TTL is the same as for IPs in ";
+            stringResult += site->getInferredNetworkAddressString();
+            stringResult += " (IP range to avoid)";
+            
+            // Avoids deleting the /20 block afterwards
+            site = 0;
+        }
+        // Other errors already present in TreeNET v2.0
+        else if(res == ExploreNETRunnable::NULL_SUBNET_SITE)
             stringResult += "subnet seems to not exist";
         else if(res == ExploreNETRunnable::SHORT_TTL_EXCEPTION)
             stringResult += "subnet TTL (pivot TTL) must be at least two";

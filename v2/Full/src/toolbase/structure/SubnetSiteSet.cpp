@@ -49,9 +49,73 @@ SubnetSite *SubnetSiteSet::getSubnetContaining(InetAddress ip)
             upperBorder = ss->getPivotAddress();
         }
     
-        if (ip >= lowerBorder && ip <= upperBorder)
+        if(ip >= lowerBorder && ip <= upperBorder)
         {
             return ss;
+        }
+    }
+    
+    return NULL;
+}
+
+SubnetSite *SubnetSiteSet::getSubnetContainingWithTTL(InetAddress ip, unsigned char TTL)
+{
+    for(list<SubnetSite*>::iterator i = siteList.begin(); i != siteList.end(); ++i)
+    {
+        SubnetSite *ss = (*i);
+        
+        NetworkAddress na = ss->getInferredNetworkAddress();
+        InetAddress lowerBorder = na.getLowerBorderAddress();
+        InetAddress upperBorder = na.getUpperBorderAddress();
+        unsigned char ssTTL = ss->getRefinementShortestTTL();
+    
+        if(ssTTL == TTL)
+        {
+            if(ip >= lowerBorder && ip <= upperBorder)
+            {
+                return ss;
+            }
+        }
+    }
+    
+    return NULL;
+}
+
+SubnetSite *SubnetSiteSet::isSubnetEncompassed(SubnetSite *ss)
+{
+    // Just in case
+    if(ss == NULL)
+        return NULL;
+    
+    InetAddress ssLowerBorder, ssUpperBorder;
+    unsigned char ssPrefixLength = ss->getInferredSubnetPrefixLength();
+    unsigned char ssTTL = ss->getRefinementShortestTTL();
+    if(ssPrefixLength <= 31)
+    {
+        NetworkAddress na = ss->getInferredNetworkAddress();
+        ssLowerBorder = na.getLowerBorderAddress();
+        ssUpperBorder = na.getUpperBorderAddress();
+    }
+    else
+    {
+        ssLowerBorder = ss->getPivotAddress();
+        ssUpperBorder = ss->getPivotAddress();
+    }
+    
+    for(list<SubnetSite*>::iterator i = siteList.begin(); i != siteList.end(); ++i)
+    {
+        SubnetSite *ss2 = (*i);
+        NetworkAddress na = ss2->getInferredNetworkAddress();
+        InetAddress ss2LowerBorder = na.getLowerBorderAddress();
+        InetAddress ss2UpperBorder = na.getUpperBorderAddress();
+       
+        unsigned char ss2TTL = ss2->getRefinementShortestTTL();
+        if(ss2TTL == ssTTL)
+        {
+            if(ssLowerBorder >= ss2LowerBorder && ssLowerBorder <= ss2UpperBorder)
+            {
+                return ss2;
+            }
         }
     }
     

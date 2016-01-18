@@ -59,6 +59,7 @@ public:
     // Accessers
     inline IPLookUpTable *getIPTable() { return this->IPTable; }
     inline SubnetSiteSet *getSubnetSet() { return this->subnetSet; }
+    inline SubnetSiteSet *getIPBlocksToAvoid() { return this->IPBlocksToAvoid; }
     inline ostream *getOutputStream() { return this->out; }
     
     inline unsigned char getStartTTL() { return this->startTTL; }
@@ -92,6 +93,7 @@ private:
     // Structures
     IPLookUpTable *IPTable;
     SubnetSiteSet *subnetSet;
+    SubnetSiteSet *IPBlocksToAvoid; // Lists UNDEFINED /20 subnets where expansion should not be done
     
     // Output stream
     ostream *out;
