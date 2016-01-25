@@ -43,6 +43,13 @@ public:
     IPTableEntry *create(InetAddress needle); // NULL if already existed
     IPTableEntry *lookUp(InetAddress needle); // NULL if not found
     
+    /* 
+     * Creation method without check for collision nor sorting, because if we have set(s) with IPs 
+     * already in order that does not overlap between each other, there is no need for it.
+     */
+    
+    IPTableEntry *createAnyway(InetAddress needle);
+    
     // Output method
     void outputDictionnary(string filename);
 

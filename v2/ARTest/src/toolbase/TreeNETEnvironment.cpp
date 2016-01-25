@@ -64,6 +64,22 @@ TreeNETEnvironment::~TreeNETEnvironment()
     routerList.clear();
 }
 
+void TreeNETEnvironment::listUnresponsiveInterfaces()
+{
+    for(list<Router*>::iterator i = routerList.begin(); i != routerList.end(); ++i)
+    {
+        Router *r = (*i);
+        list<InetAddress> *expected = r->getExpectedIPs();
+
+        for(list<InetAddress>::iterator j = expected->begin(); j != expected->end(); ++j)
+        {
+            IPTableEntry *entry = IPTable->lookUp((*j));
+            if(entry == NULL)
+                r->addUnresponsiveIP((*j));
+        }
+    }
+}
+
 void TreeNETEnvironment::outputRouterList(string fileName)
 {
     string output = "";

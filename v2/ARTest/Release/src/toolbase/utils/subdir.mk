@@ -4,13 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/toolbase/utils/TargetParser.cpp
+../src/toolbase/utils/TargetParser.cpp \
+../src/toolbase/utils/IPDictionnaryParser.cpp
 
 OBJS += \
-./src/toolbase/utils/TargetParser.o
+./src/toolbase/utils/TargetParser.o \
+./src/toolbase/utils/IPDictionnaryParser.o
 
 CPP_DEPS += \
-./src/toolbase/utils/TargetParser.d
+./src/toolbase/utils/TargetParser.d \
+./src/toolbase/utils/IPDictionnaryParser.d
 
 
 # Each subdirectory must supply rules for building sources it contributes

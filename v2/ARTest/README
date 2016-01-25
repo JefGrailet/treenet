@@ -1,5 +1,5 @@
-About ARTest (treenet_artest) - By Jean-François Grailet, December 2, 2015
-==========================================================================
+About ARTest v1.1 (treenet_artest) - By Jean-François Grailet, January 25, 2016
+===============================================================================
 
 Compilation
 ===========
@@ -52,6 +52,12 @@ The options are:
   containing alias lists. Input files should only consist list of IPs 
   separated with blanks (= router supposed to be true) which are themselves 
   separated with line breaks (\n).
+
+* -n (verbose: --offline-mode) (ARTest v1.1)
+  Option to provide an additional input file corresponding to an IP 
+  dictionnary dump previously collected with ARTest. This allows ARTest to do 
+  only the alias resolution step and avoid any probing work by using data that 
+  is already available, in order to ease parameters tuning.
   
 * -e (verbose: --interface) (from ExploreNET v2.1)
   Interface name through which probing/response packets exit/enter (default is 
@@ -173,11 +179,14 @@ Other remarks
 Contact
 =======
 
-TreeNET "ARTest" is a derivated version of TreeNET v2.0 solely built to assess 
-the efficiency of its IP-ID-based alias resolution techniques. It was written 
-by Jean-François Grailet, currently Ph. D. student at the University of Liège 
-(Belgium) in the Research Unit in Networking (RUN), using the sources of 
-ExploreNET v2.1 as a basis.
+TreeNET "ARTest" (v1.0+) is a derivated version of TreeNET v2.0 solely built 
+to assess the efficiency of its IP-ID-based alias resolution techniques. 
+Starting from its own v1.1, ARTest is also suited for offline work in order to 
+tune alias resolution parameters.
+
+TreeNET v2.1 and its derivatives were written by Jean-François Grailet, 
+currently Ph. D. student at the University of Liège (Belgium) in the Research 
+Unit in Networking (RUN), using the sources of ExploreNET v2.1 as a basis.
 
 E-mail address: Jean-Francois.Grailet@ulg.ac.be
 

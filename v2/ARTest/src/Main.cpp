@@ -47,6 +47,7 @@ using std::list;
 
 #include "toolbase/TreeNETEnvironment.h"
 #include "toolbase/utils/TargetParser.h"
+#include "toolbase/utils/IPDictionnaryParser.h"
 #include "toolbase/prescanning/NetworkPrescanner.h"
 #include "toolbase/aliasresolution/AliasHintCollector.h"
 #include "toolbase/aliasresolution/AliasResolver.h"
@@ -68,6 +69,9 @@ void usage(ostream *out, string programName)
 
     (*out) << "\t-i" << "\t" << "--input-file" << "\t\t\t" 
     << "input file (list of alias lists) path (separate IPs with blanks, lists with \\n)" << endl;
+    
+    (*out) << "\t-n" << "\t" << "--offline-mode" << "\t\t\t"
+    << "use an existing IP dictionnary instead of computing a new one (dump with extension .ip)" << endl;
     
     (*out) << "\t-e" << "\t" << "--interface" << "\t\t\t" 
     << "interface name through which probing/response packets exit/enter (default is the first non-loopback IPv4 interface)" << endl;
@@ -103,7 +107,7 @@ void usage(ostream *out, string programName)
     (*out) << "\t-g" << "\t" << "--debug" << "\t\t\t\t" << "enter debug mode" << endl;
     (*out) << "\t-v" << "\t" << "--version" << "\t\t\t" << "program version" << endl;
     (*out) << "\t-?" << "\t" << "--help" << "\t\t\t\t" << "help" << endl;
-    (*out) << "TreeNET v2.0, Alias Resolution assessment version, written by Jean-Francois Grailet (5 November 2015)" << endl;
+    (*out) << "TreeNET \"ARTest\" (Alias Resolution test) version 1.1 (Nov 2015 - Jan 2016), written by J.-F. Grailet\n";
     (*out) << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
 
     out->flush();
@@ -125,6 +129,7 @@ int main(int argc, char *argv[])
     unsigned short maxRollovers = 50; // Idem
     double baseTolerance = 0.3; // Idem
     double maxError = 0.35; // Idem
+    bool offlineMode = false;
     bool doubleProbe = false;
     bool useFixedFlowID = true;
     bool thirdOpinionPrescan = false;
@@ -134,6 +139,7 @@ int main(int argc, char *argv[])
     // Values related to input/output (files)
     string targetsStr;
     string inputFilePath;
+    string inputIPDictionnaryPath;
     ifstream inFile;
     string outputFileName = "";
 
@@ -141,12 +147,13 @@ int main(int argc, char *argv[])
     int opt = 0;
     int longIndex = 0;
 
-    const char* const shortOpts = "e:u:m:i:c:f:s:w:z:d:a:r:t:x:o:gv?";
+    const char* const shortOpts = "e:u:m:i:n:c:f:s:w:z:d:a:r:t:x:o:gv?";
     const struct option longOpts[] = {
             {"interface", required_argument, 0, 'e'}, 
             {"probing-protocol", required_argument, 0, 'u'}, 
             {"attention-message", required_argument, 0, 'm'}, 
             {"input-file", required_argument, 0, 'i'}, 
+            {"offline-mode", required_argument, 0, 'n'}, 
             {"concurrency-nb-threads", required_argument, 0, 'c'}, 
             {"fix-flow-id", required_argument, 0, 'f'}, 
             {"third-opinion-prescan", required_argument, 0, 's'}, 
@@ -223,6 +230,10 @@ int main(int argc, char *argv[])
                 break;
             case 'i':
                 inputFilePath = optargSTR;
+                break;
+            case 'n':
+                offlineMode = true;
+                inputIPDictionnaryPath = optargSTR;
                 break;
             case 'c':
                 gotNb = std::atoi(optargSTR.c_str());
@@ -303,7 +314,7 @@ int main(int argc, char *argv[])
                 debugMode = true;
                 break;
             case 'v':
-                cout << "TreeNET v2.0, Alias Resolution assessment version, written by Jean-Francois Grailet (5 November 2015)" << endl;
+                cout << "TreeNET \"ARTest\" (Alias Resolution test) version 1.1 (Nov 2015 - Jan 2016), written by J.-F. Grailet\n";
                 cout << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
                 return 0;
             case '?':
@@ -390,154 +401,258 @@ int main(int argc, char *argv[])
         parser->parseInputFile(inputFileContent);
         
         // Some welcome message
-        cout << "Welcome to TreeNET (Alias Resolution assessment version)" << endl << endl;
+        cout << "Welcome to TreeNET (Alias Resolution assessment version)\n" << endl;
         
-        // Announces that it will ignore LAN.
-        if(parser->targetsInLAN())
+        // Online mode
+        if(!offlineMode)
         {
-            cout << "Some target IPs are located in the LAN of the vantage point ("
-                 << LAN.getSubnetPrefix() << "/" << (unsigned short) LAN.getPrefixLength() 
-                 << "). IPs belonging to the LAN will be ignored." << endl << endl;
-        }
-        
-        list<InetAddress> targetsPrescanning = parser->getTargets();
-        
-        delete parser;
-        
-        // Stops if no target at all
-        if(targetsPrescanning.size() == 0)
-        {
-            cout << "No target to probe." << endl;
-            throw InvalidParameterException();
-        }
-        
-        /*
-         * NETWORK PRE-SCANNING
-         *
-         * Each interface from the suggested routers are probed to check that they are live IPs.
-         * Like in TreeNET, there is by default a second opinion scan, and if explicitely asked, 
-         * a third one. At each scan, the timeout delay is increased.
-         *
-         * It is worth noting that the unresponsive IPs will be updated in each router object 
-         * only at the next step, juste before the live IPs are probed again during the alias 
-         * resolution.
-         */
-        
-        NetworkPrescanner *prescanner = new NetworkPrescanner(env);
-        prescanner->setTimeoutPeriod(env->getTimeoutPeriod());
-        
-        cout << "Prescanning with initial timeout..." << endl;
-        prescanner->setTargets(targetsPrescanning);
-        prescanner->probe();
-        cout << endl;
-        
-        if(prescanner->hasUnresponsiveTargets())
-        {
-            TimeVal timeout2 = env->getTimeoutPeriod() * 2;
-            cout << "Second opinion with twice the timeout (" << timeout2 << ")..." << endl;
-            prescanner->setTimeoutPeriod(timeout2);
-            prescanner->reloadUnresponsiveTargets();
+            // Announces that it will ignore LAN.
+            if(parser->targetsInLAN())
+            {
+                cout << "Some target IPs are located in the LAN of the vantage point ("
+                     << LAN.getSubnetPrefix() << "/" << (unsigned short) LAN.getPrefixLength() 
+                     << "). IPs belonging to the LAN will be ignored.\n" << endl;
+            }
+            
+            list<InetAddress> targetsPrescanning = parser->getTargets();
+            
+            delete parser;
+            
+            // Stops if no target at all
+            if(targetsPrescanning.size() == 0)
+            {
+                cout << "No target to probe." << endl;
+                throw InvalidParameterException();
+            }
+            
+            /*
+             * NETWORK PRE-SCANNING
+             *
+             * Each interface from the suggested routers are probed to check that they are live IPs.
+             * Like in TreeNET, there is by default a second opinion scan, and if explicitely asked, 
+             * a third one. At each scan, the timeout delay is increased.
+             *
+             * It is worth noting that the unresponsive IPs will be updated in each router object 
+             * only at the next step, juste before the live IPs are probed again during the alias 
+             * resolution.
+             */
+            
+            NetworkPrescanner *prescanner = new NetworkPrescanner(env);
+            prescanner->setTimeoutPeriod(env->getTimeoutPeriod());
+            
+            cout << "Prescanning with initial timeout..." << endl;
+            prescanner->setTargets(targetsPrescanning);
             prescanner->probe();
             cout << endl;
             
-            // Optional 3rd opinion prescan
-            if(prescanner->hasUnresponsiveTargets() && thirdOpinionPrescan)
+            if(prescanner->hasUnresponsiveTargets())
             {
-                TimeVal timeout3 = env->getTimeoutPeriod() * 4;
-                cout << "Third opinion with 4 times the timeout (" << timeout3 << ")..." << endl;
-                prescanner->setTimeoutPeriod(timeout3);
+                TimeVal timeout2 = env->getTimeoutPeriod() * 2;
+                cout << "Second opinion with twice the timeout (" << timeout2 << ")..." << endl;
+                prescanner->setTimeoutPeriod(timeout2);
                 prescanner->reloadUnresponsiveTargets();
                 prescanner->probe();
                 cout << endl;
+                
+                // Optional 3rd opinion prescan
+                if(prescanner->hasUnresponsiveTargets() && thirdOpinionPrescan)
+                {
+                    TimeVal timeout3 = env->getTimeoutPeriod() * 4;
+                    cout << "Third opinion with 4 times the timeout (" << timeout3 << ")..." << endl;
+                    prescanner->setTimeoutPeriod(timeout3);
+                    prescanner->reloadUnresponsiveTargets();
+                    prescanner->probe();
+                    cout << endl;
+                }
+                else
+                {
+                    cout << "All probed IPs were responsive.\n" << endl;
+                }
             }
             else
             {
-                cout << "All probed IPs were responsive." << endl << endl;
+                cout << "All probed IPs were responsive.\n" << endl;
             }
-        }
-        else
-        {
-            cout << "All probed IPs were responsive." << endl << endl;
-        }
-        
-        cout << "Prescanning ended." << endl << endl;
-        
-        delete prescanner;
+            
+            cout << "Prescanning ended.\n" << endl;
+            
+            delete prescanner;
 
-        /*
-         * ALIAS RESOLUTION
-         *
-         * Interfaces of a suggested router are probed once more to check if the A.R. part of 
-         * TreeNET is able to infer the same result or finds something else.
-         */ 
-        
-        cout << "Alias resolution..." << endl << endl;
-        
-        AliasHintCollector *ahc = new AliasHintCollector(env);
-        AliasResolver *ar = new AliasResolver(env);
-        
-        list<Router*> *routers = env->getRouterList();
-        for(list<Router*>::iterator i = routers->begin(); i != routers->end(); ++i)
-        {
-            list<InetAddress> *exp = (*i)->getExpectedIPs();
-            cout << "Checking [";
-            bool first = true;
-            for(list<InetAddress>::iterator j = exp->begin(); j != exp->end(); ++j)
+            /*
+             * ALIAS RESOLUTION
+             *
+             * Interfaces of a suggested router are probed once more to check if the A.R. part of 
+             * TreeNET is able to infer the same result or finds something else.
+             */ 
+            
+            cout << "Alias resolution...\n" << endl;
+            
+            AliasHintCollector *ahc = new AliasHintCollector(env);
+            AliasResolver *ar = new AliasResolver(env);
+            
+            list<Router*> *routers = env->getRouterList();
+            for(list<Router*>::iterator i = routers->begin(); i != routers->end(); ++i)
             {
-                if(first)
-                    first = false;
-                else
-                    cout << ", ";
+                list<InetAddress> *exp = (*i)->getExpectedIPs();
+                cout << "Checking [";
+                bool first = true;
+                for(list<InetAddress>::iterator j = exp->begin(); j != exp->end(); ++j)
+                {
+                    if(first)
+                        first = false;
+                    else
+                        cout << ", ";
+                
+                    cout << (*j);
+                }
+                cout << "]" << endl;
             
-                cout << (*j);
+                // Alias resolution hints collection
+                ahc->setIPsToProbe((*i));
+                ahc->collect();
+                
+                // Proper alias resolution
+                ar->resolve((*i));
             }
-            cout << "]" << endl;
-        
-            // Alias resolution hints collection
-            ahc->setIPsToProbe((*i));
-            ahc->collect();
+            delete ahc;
+            delete ar;
             
-            // Proper alias resolution
-            ar->resolve((*i));
+            cout << endl;
+            
+            // Saves results
+            string newFileName = "";
+            if(outputFileName.length() > 0)
+            {
+                newFileName = outputFileName;
+            }
+            else
+            {
+                // Get the current time for the name of output file
+                time_t rawTime;
+                struct tm *timeInfo;
+                char buffer[80];
+
+                time(&rawTime);
+                timeInfo = localtime(&rawTime);
+
+                strftime(buffer, 80, "%d-%m-%Y %T", timeInfo);
+                string timeStr(buffer);
+                
+                newFileName = "Aliases " + timeStr;
+            }
+            
+            env->outputRouterList(newFileName);
+            cout << "Revisited routers have been saved in an output file ";
+            cout << newFileName << endl;
+            
+            env->getIPTable()->outputDictionnary(newFileName + ".ip");
+            cout << "IP dictionnary with alias resolution hints has been saved in an output file ";
+            cout << newFileName + ".ip" << endl;
+            
+            env->outputPlotData(newFileName + ".plot");
+            cout << "PDF/CDF Plot data has been saved in an output file ";
+            cout << newFileName + ".plot" << endl;
         }
-        delete ahc;
-        delete ar;
-        
-        cout << endl;
-        
-        // Saves results
-        string newFileName = "";
-        if(outputFileName.length() > 0)
-        {
-            newFileName = outputFileName;
-        }
+        // Offline mode
         else
         {
-            // Get the current time for the name of output file
-            time_t rawTime;
-            struct tm *timeInfo;
-            char buffer[80];
-
-            time(&rawTime);
-            timeInfo = localtime(&rawTime);
-
-            strftime(buffer, 80, "%d-%m-%Y %T", timeInfo);
-            string timeStr(buffer);
+            delete parser;
+        
+            // Opens input file (if any) and puts content inside a string
+            string IPDictionnaryContent = "";
+            if(inputIPDictionnaryPath.size() > 0)
+            {
+                inFile.open(inputIPDictionnaryPath.c_str());
+                if(inFile.is_open())
+                {
+                    IPDictionnaryContent.assign((std::istreambuf_iterator<char>(inFile)),
+                                                (std::istreambuf_iterator<char>()));
+                    
+                    inFile.close();
+                }
+            }
             
-            newFileName = "Aliases " + timeStr;
+            // There is no input file
+            if(IPDictionnaryContent.size() == 0)
+            {
+                cout << "Could not read and parse IP Dictionnary dump" << endl;
+                usage(&cout, string(argv[0]));
+                throw InvalidParameterException();
+            }
+            
+            // Parses inputs and gets target lists
+            IPDictionnaryParser *dictParser = new IPDictionnaryParser(env);
+            dictParser->parseInputFile(IPDictionnaryContent);
+            delete dictParser;
+            
+            env->listUnresponsiveInterfaces();
+            
+            /*
+             * ALIAS RESOLUTION
+             *
+             * The provided IP Dictionnary is used to perform alias resolution, but using the 
+             * current parameters. In other words, results can be tuned thanks to the parameters 
+             * of TreeNET ARTest, while the data remains the same.
+             */ 
+            
+            cout << "Alias resolution with the provided IP dictionnary...\n" << endl;
+            
+            AliasResolver *ar = new AliasResolver(env);
+            
+            list<Router*> *routers = env->getRouterList();
+            for(list<Router*>::iterator i = routers->begin(); i != routers->end(); ++i)
+            {
+                list<InetAddress> *exp = (*i)->getExpectedIPs();
+                cout << "Checking [";
+                bool first = true;
+                for(list<InetAddress>::iterator j = exp->begin(); j != exp->end(); ++j)
+                {
+                    if(first)
+                        first = false;
+                    else
+                        cout << ", ";
+                
+                    cout << (*j);
+                }
+                cout << "]" << endl;
+                
+                // Proper alias resolution
+                ar->resolve((*i));
+            }
+            delete ar;
+            
+            cout << endl;
+            
+            // Saves results
+            string newFileName = "";
+            if(outputFileName.length() > 0)
+            {
+                newFileName = outputFileName;
+            }
+            else
+            {
+                // Get the current time for the name of output file
+                time_t rawTime;
+                struct tm *timeInfo;
+                char buffer[80];
+
+                time(&rawTime);
+                timeInfo = localtime(&rawTime);
+
+                strftime(buffer, 80, "%d-%m-%Y %T", timeInfo);
+                string timeStr(buffer);
+                
+                newFileName = "Aliases " + timeStr;
+            }
+            
+            env->outputRouterList(newFileName);
+            cout << "Revisited routers have been saved in an output file ";
+            cout << newFileName << endl;
+            
+            env->outputPlotData(newFileName + ".plot");
+            cout << "PDF/CDF Plot data has been saved in an output file ";
+            cout << newFileName + ".plot" << endl;
         }
-        
-        env->outputRouterList(newFileName);
-        cout << "Revisited routers have been saved in an output file ";
-        cout << newFileName << endl;
-        
-        env->getIPTable()->outputDictionnary(newFileName + ".ip");
-        cout << "IP dictionnary with alias resolution hints has been saved in an output file ";
-        cout << newFileName + ".ip" << endl;
-        
-        env->outputPlotData(newFileName + ".plot");
-        cout << "PDF/CDF Plot data has been saved in an output file ";
-        cout << newFileName + ".plot" << endl;
     }
     catch(SocketException &e)
     {

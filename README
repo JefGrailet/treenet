@@ -1,4 +1,4 @@
-About TreeNET - By Jean-François Grailet (last update: January 18, 2016)
+About TreeNET - By Jean-François Grailet (last update: January 25, 2016)
 ========================================================================
 
 Overview
@@ -57,8 +57,9 @@ All current versions are exclusively available for Linux.
   in TreeNET. Both of these variations were released at the same time as the 
   initial v2.0.
 
-  There is currently no available v2.0 for TreeNET Reader. Some measurements 
-  conducted with TreeNET v2.0 and onwards on PlanetLab are however available.
+  TreeNET Reader v2.0 has been released in late January 2016, taking account 
+  of all improvements brought to TreeNET v2.0+ and providing a few additionnal 
+  options and an improved bipartite conversion.
 
 Content of this folder
 ======================
@@ -70,8 +71,8 @@ with it.
 Work in progress
 ================
 
-TreeNET Reader v2.0 is in the works. Measurements obtained via TreeNET v2.0 
-and onwards will also be made available as they come.
+Measurement campaigns are currently being planned. Alias resolution will also 
+be evaluated in depth during next months.
 
 Contact
 =======

@@ -311,7 +311,6 @@ void SubnetRefiner::expand(SubnetSite *ss)
 
 void SubnetRefiner::fill(SubnetSite *ss)
 {
-    // Security (PlanetLab...)
     if(ss == NULL)
        return;
 
@@ -367,14 +366,20 @@ void SubnetRefiner::fill(SubnetSite *ss)
         if(cur == NULL) // By security
             continue;
         
-        knownIPs[cur->ip.getULongAddress() - lowerBorder.getULongAddress()] = 1;
+        unsigned long offset = cur->ip.getULongAddress() - lowerBorder.getULongAddress();
+        if(offset >= 0 && offset < maxSize) // Security
+            knownIPs[offset] = 1;
     }
     
     // Inserts in the subnet IPs found in the IP look-up table but absent from the list
     unsigned short newIPs = 0;
     for(InetAddress i = lowerBorder; i <= upperBorder; i++)
     {
-        if(knownIPs[i.getULongAddress() - lowerBorder.getULongAddress()] == 0)
+        unsigned long offset = i.getULongAddress() - lowerBorder.getULongAddress();
+        if(offset < 0 || offset >= maxSize) // Security
+            continue;
+        
+        if(knownIPs[offset] == 0)
         {
             IPTableEntry *iEntry = table->lookUp(i);
             

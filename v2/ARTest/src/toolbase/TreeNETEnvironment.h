@@ -83,6 +83,9 @@ public:
     // Setters (very few of them)
     inline void setTimeoutPeriod(TimeVal timeout) { this->timeoutPeriod = timeout; }
     
+    // (offline mode) List unresponsive interfaces among routers (after IP dictionnary parsing)
+    void listUnresponsiveInterfaces();
+    
     // Method to output the router list (specific to ARTest)
     void outputRouterList(string fileName);
     
