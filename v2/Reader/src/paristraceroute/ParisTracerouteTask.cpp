@@ -120,7 +120,6 @@ void ParisTracerouteTask::run()
     list<InetAddress> candidatesDst = subnet->getPivotAddresses(ParisTracerouteTask::MAX_PIVOT_CANDIDATES);
     if(candidatesDst.size() == 0)
     {
-        cout << "Case 0" << endl;
         this->abort();
         return;
     }
@@ -230,6 +229,37 @@ void ParisTracerouteTask::run()
         return;
     }
     
+    /*
+     * Just to be sure, some backward probing is performed in case the TTL estimation was too 
+     * pessimistic (i.e. too high) due to networking issues.
+     */
+    
+    while(probeTTL > 1)
+    {
+        ProbeRecord *newProbe = this->probe(probeDst, probeTTL - 1);
+    
+        // Decreases TTL and pops out last interface if an ECHO reply is obtained
+        bool decreased = false;
+        if(newProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY) 
+        {
+            probeTTL--;
+            interfaces.pop_back();
+            decreased = true;
+        }
+        
+        delete newProbe;
+        
+        if(!decreased)
+            break;
+    }
+    
+    // Something that should not happen still happened; we stop here
+    if(probeTTL < 1)
+    {
+        this->abort();
+        return;
+    }
+    
     // New route replaces the old one
     unsigned short sizeRoute = (unsigned short) interfaces.size();
     InetAddress *route = new InetAddress[sizeRoute];
@@ -249,101 +279,222 @@ void ParisTracerouteTask::run()
     subnet->setRouteSize(sizeRoute);
     subnet->setRoute(route);
     
-    // Pivot/Contrapivot validation: checks the contrapivot is still at probeTTL - 1
-    InetAddress contrapivotIP = subnet->getContrapivot(); // Only uses the first one
-    ProbeRecord *minusOne = NULL;
-    if((unsigned short) probeTTL > 1)
-        minusOne = this->probe(contrapivotIP, probeTTL - 1);
+    unsigned short status = subnet->getStatus();
     
-    bool repositioned = false;
-    // At least minusOne must be non null (otherwise, probed Pivot can only be a Contra-Pivot)
-    if(subnet->getStatus() == SubnetSite::SHADOW_SUBNET ||
-       (minusOne != NULL && minusOne->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY))
+    // Stops here if subnet was considered to be a SHADOW one
+    if(status == SubnetSite::SHADOW_SUBNET)
     {
         subnet->adaptTTLs(probeTTL);
-        if(minusOne != NULL)
-            delete minusOne;
-            
         subnet->completeRefinedData(); // To update shortest/greatest TTL
+        
+        ostream *out = env->getOutputStream();
+        ostreamMutex.lock();
+        
+        std::string subnetStr = subnet->getInferredNetworkAddressString();
+        (*out) << "Route to " << subnetStr << ":\n";
+        for(unsigned short i = 0; i < sizeRoute; i++)
+            (*out) << route[i] << "\n";
+        (*out) << endl;
+        
+        ostreamMutex.unlock();
     }
-    // Otherwise, one must double check the TTL of each IP and re-positions the subnet
-    else
+
+    /*
+     * Exceptional case where probeTTL equals 1 (probes with probeTTL-1 are irrelevant), 
+     * which is necessarily a Contra-Pivot (TTL = 0 means we are on the subnet, which is not the 
+     * intended use of TreeNET). Some repositioning is needed.
+     */
+    
+    if(probeTTL == 1)
     {
-        delete minusOne;
-        
-        /*
-         * Additionnal values for when the IP with which TTL was evaluated is a Contra-Pivot 
-         * from the new perspective (new vantage point).
-         */
-        
-        bool wasContrapivot = false;
         InetAddress newPivot(0);
-        
+
         list<SubnetSiteNode*> *nodes = subnet->getSubnetIPList();
         for(list<SubnetSiteNode*>::iterator i = nodes->begin(); i != nodes->end(); ++i)
         {
-            if((*i)->ip == probeDst)
+            SubnetSiteNode *cur = (*i);
+            if(cur->ip == probeDst)
             {
-                (*i)->TTL = probeTTL;
+                cur->TTL = probeTTL;
                 continue;
             }
         
             // First probe at probeTTL
-            ProbeRecord *validationProbe = this->probe((*i)->ip, probeTTL);
-            bool success = false;
-            
-            // We get an echo reply at probeTTL, so we should also check probeTTL-1 to be sure
+            ProbeRecord *validationProbe = this->probe(cur->ip, probeTTL);
+
+            // We get an echo reply at probeTTL, so it must be another Contra-Pivot
             if(validationProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY)
             {
-                success = true; // Success whatever happens afterwards
-                
-                delete validationProbe;
-                validationProbe = this->probe((*i)->ip, probeTTL - 1);
-                
-                if(validationProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY)
-                    (*i)->TTL = probeTTL - 1;
-                else
-                    (*i)->TTL = probeTTL;
-                
-                delete validationProbe;
+                cur->TTL = probeTTL;
             }
-            // Reciprocally, we check at probeTTL+1 if there is no echo reply
+            // Otherwise it should be a Pivot
             else
             {
-                delete validationProbe;
-                validationProbe = this->probe((*i)->ip, probeTTL + 1);
-                
-                // Initial target was a contra-pivot
-                wasContrapivot = true;
-                newPivot = (*i)->ip;
-                
-                if(validationProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY)
-                {
-                    (*i)->TTL = probeTTL + 1;
-                    success = true;
-                }
-                
-                delete validationProbe;
+                cur->TTL = probeTTL + 1;
+                newPivot = cur->ip;
             }
             
-            // If we get nothing in the end, we delete this node
-            if(!success)
-            {
-                delete (*i);
-                nodes->erase(i--);
-            }
+            delete validationProbe;
         }
         
-        // Fixing last step of the route if the initial probed IP was a Contra-Pivot
-        if(wasContrapivot)
+        // Fixing last step of the route
+        ProbeRecord *lastProbe = this->probe(newPivot, probeTTL);
+        route[sizeRoute - 1] = lastProbe->getRplyAddress();
+        delete lastProbe;
+        
+        subnet->completeRefinedData();
+        
+        // Prints out results
+        ostream *out = env->getOutputStream();
+        ostreamMutex.lock();
+        
+        std::string subnetStr = subnet->getInferredNetworkAddressString();
+        (*out) << "Route to " << subnetStr << ":\n";
+        for(unsigned short i = 0; i < sizeRoute; i++)
+            (*out) << route[i] << "\n";
+        (*out) << "\nSubnet also repositioned due to different Pivot/Contra-Pivot nodes.\n";
+        (*out) << endl;
+        
+        ostreamMutex.unlock();
+        return;
+    }
+
+    /*
+     * SUBNET REPOSITIONING
+     *
+     * Depending on the vantage point, the Pivot/Contra-Pivot interfaces of a subnet can change. 
+     * Therefore, it is necessary to perform additional probes to ensure the soundness of the 
+     * subnet by updating the TTL of its listed interfaces. The method consists in first verifying 
+     * that a Contra-Pivot from former measurements is still a Contra-Pivot, and if it is not, 
+     * additionnal probes to find the new Contra-Pivot interfaces (which are necessarily among the 
+     * listed responsive interfaces) are used.
+     */
+    
+    unsigned short nbCp = subnet->countContrapivotAddresses();
+    bool needsRepositioning = false;
+    
+    // Single contra-pivot to check
+    if(nbCp == 1)
+    {
+        InetAddress contrapivotIP = subnet->getContrapivot();
+        for(unsigned short attempts = 0; attempts < 3; attempts++)
         {
-            ProbeRecord *lastProbe = this->probe(newPivot, probeTTL);
+            ProbeRecord *cpCheck = this->probe(contrapivotIP, probeTTL - 1);
+            unsigned char probeResult = cpCheck->getRplyICMPtype();
+            delete cpCheck;
+        
+            if(probeResult == DirectProber::ICMP_TYPE_TIME_EXCEEDED)
+            {
+                needsRepositioning = true;
+                break;
+            }
+            else if(probeResult == DirectProber::ICMP_TYPE_ECHO_REPLY)
+            {
+                break;
+            }
+        }
+    }
+    else
+    {
+        list<InetAddress> candiCp = subnet->getContrapivotAddresses();
+        for(list<InetAddress>::iterator it = candiCp.begin(); it != candiCp.end(); ++it)
+        {
+            InetAddress contrapivotIP = (*it);
+            
+            ProbeRecord *cpCheck = this->probe(contrapivotIP, probeTTL - 1);
+            unsigned char probeResult = cpCheck->getRplyICMPtype();
+            delete cpCheck;
+        
+            if(probeResult == DirectProber::ICMP_TYPE_TIME_EXCEEDED)
+            {
+                needsRepositioning = true;
+                break;
+            }
+            else if(probeResult == DirectProber::ICMP_TYPE_ECHO_REPLY)
+            {
+                break;
+            }
+        } 
+    }
+    
+    if(needsRepositioning)
+    {
+        // Looking for new Contra-Pivot candidates
+        list<SubnetSiteNode*> *nodes = subnet->getSubnetIPList();
+        unsigned short initialSTTL = subnet->getShortestTTL();
+        unsigned short cpCount = 0;
+        for(list<SubnetSiteNode*>::iterator i = nodes->begin(); i != nodes->end(); ++i)
+        {
+            SubnetSiteNode* cur = (*i);
+            
+            ProbeRecord *testProbe = this->probe(cur->ip, probeTTL - 1);
+            if(testProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY)
+            {
+                cur->TTL--; // adaptTTLs() will finish the work
+                cpCount++;
+            }
+            else if(testProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_TIME_EXCEEDED)
+            {
+                // A Contra-Pivot from previous measurements is now a Pivot; TTL is incremented
+                if(cur->TTL == initialSTTL)
+                {
+                    cur->TTL++; // adaptTTLs() will finish the work
+                }
+            }
+            delete testProbe;
+        }
+        
+        // Found some Contra-Pivot: OK, adapt TTLs and finish updating subnet
+        if(cpCount > 0)
+        {
+            subnet->adaptTTLs(probeTTL);
+            subnet->completeRefinedData();   
+        }
+        // Otherwise, initial dest should be the Contra-Pivot
+        else
+        {
+            for(list<SubnetSiteNode*>::iterator i = nodes->begin(); i != nodes->end(); ++i)
+            {
+                SubnetSiteNode* cur = (*i);
+                
+                if(cur->ip == probeDst)
+                {
+                    cur->TTL = probeTTL;
+                    continue;
+                }
+            
+                ProbeRecord *testProbe = this->probe(cur->ip, probeTTL);
+                // Another contra-Pivot
+                if(testProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY)
+                {
+                    cur->TTL = probeTTL;
+                }
+                // Necessarily a Pivot
+                else
+                {
+                    cur->TTL = probeTTL + 1;
+                }
+                delete testProbe;
+            }
+            
+            // Fixing last step of the route
+            ProbeRecord *lastProbe = this->probe(probeDst, probeTTL);
             route[sizeRoute - 1] = lastProbe->getRplyAddress();
             delete lastProbe;
         }
         
+        /*
+         * N.B.: last case might not give the exact TTLs for potential TTLs, which will cause a 
+         * small bias. However, this would require more probing work, and this case is not 
+         * supposed to occur on a regular basis.
+         */
+        
         subnet->completeRefinedData();
-        repositioned = true;
+    }
+    else
+    {
+        subnet->adaptTTLs(probeTTL);
+        subnet->completeRefinedData(); // To update shortest/greatest TTL
     }
     
     // Prints out the obtained route (+ additionnal message if subnet was repositioned)
@@ -354,7 +505,7 @@ void ParisTracerouteTask::run()
     (*out) << "Route to " << subnetStr << ":\n";
     for(unsigned short i = 0; i < sizeRoute; i++)
         (*out) << route[i] << "\n";
-    if(repositioned)
+    if(needsRepositioning)
         (*out) << "\nSubnet also repositioned due to different Pivot/Contra-Pivot nodes.\n";
     (*out) << endl;
     

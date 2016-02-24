@@ -432,3 +432,23 @@ void SubnetSiteSet::outputAsFile(string filename)
     string path = "./" + filename;
     chmod(path.c_str(), 0766);
 }
+
+unsigned short SubnetSiteSet::transplantRoutes(unsigned short sPrefix, 
+                                               InetAddress *prefix, 
+                                               unsigned short sNew, 
+                                               InetAddress *newPrefix)
+{
+    unsigned short nbTransplantations = 0;
+    
+    for(list<SubnetSite*>::iterator i = siteList.begin(); i != siteList.end(); ++i)
+    {
+        SubnetSite *ss = (*i);
+        if(ss->matchRoutePrefix(sPrefix, prefix))
+        {
+            ss->transplantRoute(sPrefix, sNew, newPrefix);
+            nbTransplantations++;
+        }
+    }
+    
+    return nbTransplantations;
+}

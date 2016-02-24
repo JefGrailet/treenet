@@ -37,7 +37,7 @@ list<string> IPDictionnaryParser::explode(string input, char delimiter)
     return result;
 }
 
-void IPDictionnaryParser::parseInputFile(string inputFileContent)
+void IPDictionnaryParser::parse(string inputFileContent)
 {
     ostream *out = env->getOutputStream();
     IPLookUpTable *dictionnary = env->getIPTable();

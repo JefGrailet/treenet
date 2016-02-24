@@ -24,10 +24,9 @@ SubnetParser::~SubnetParser()
 {
 }
 
-void SubnetParser::parseInputFile(string inputFileContent, bool storeInIPDict)
+void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool storeInIPDict)
 {
     ostream *out = env->getOutputStream();
-    SubnetSiteSet *set = env->getSubnetSet();
     bool setRefinement = env->getSetRefinement();
     
     std::stringstream ss(inputFileContent);
@@ -49,7 +48,7 @@ void SubnetParser::parseInputFile(string inputFileContent, bool storeInIPDict)
                 {
                     string subnetStr = temp->getInferredNetworkAddressString();
                     
-                    set->addSiteNoRefinement(temp);
+                    dest->addSiteNoRefinement(temp);
                     (*out) << "New subnet: " << subnetStr;
                     if (temp->isCredible())
                         (*out) << " (credible) ";
@@ -57,7 +56,7 @@ void SubnetParser::parseInputFile(string inputFileContent, bool storeInIPDict)
                 }
                 else
                 {
-                    unsigned short result = set->addSite(temp);
+                    unsigned short result = dest->addSite(temp);
                     string subnetStr = temp->getInferredNetworkAddressString();
                     
                     if(result == SubnetSiteSet::NEW_SUBNET)
@@ -287,11 +286,17 @@ void SubnetParser::parseInputFile(string inputFileContent, bool storeInIPDict)
                     temp->setRouteSize(1);
                     temp->setRoute(route);
                     
-                    if(infoStr.compare("Repaired") == 0)
+                    if(infoStr.compare("Repaired") == 0 || infoStr.compare("R") == 0)
                     {
-                        bool *repairMask = new bool[1];
-                        repairMask[0] = true;
-                        temp->setRouteRepairMask(repairMask);
+                        unsigned short *editMask = new unsigned short[1];
+                        editMask[0] = SubnetSite::REPAIRED_INTERFACE;
+                        temp->setRouteEditMask(editMask);
+                    }
+                    else if(infoStr.compare("P") == 0)
+                    {
+                        unsigned short *editMask = new unsigned short[1];
+                        editMask[0] = SubnetSite::PREDICTED_INTERFACE;
+                        temp->setRouteEditMask(editMask);
                     }
                     
                     continue;
@@ -299,8 +304,8 @@ void SubnetParser::parseInputFile(string inputFileContent, bool storeInIPDict)
                 
                 // Case of multiple interfaces being listed (separated by ", ")
                 list<InetAddress> routeLs;
-                list<bool> repairMaskLs;
-                bool hasRepairedRoute = false;
+                list<unsigned short> editMaskLs;
+                bool hasEditedRoute = false;
                 
                 std::stringstream routeStream(targetStr);
                 string routeStr;
@@ -342,13 +347,20 @@ void SubnetParser::parseInputFile(string inputFileContent, bool storeInIPDict)
                     
                     routeLs.push_back(liveIP);
                     
-                    if(infoStr.compare("Repaired") == 0)
+                    if(infoStr.compare("Repaired") == 0 || infoStr.compare("R") == 0)
                     {
-                        repairMaskLs.push_back(true);
-                        hasRepairedRoute = true;
+                        editMaskLs.push_back(SubnetSite::REPAIRED_INTERFACE);
+                        hasEditedRoute = true;
+                    }
+                    else if(infoStr.compare("P") == 0)
+                    {
+                        editMaskLs.push_back(SubnetSite::PREDICTED_INTERFACE);
+                        hasEditedRoute = true;
                     }
                     else
-                        repairMaskLs.push_back(false);
+                    {
+                        editMaskLs.push_back(SubnetSite::OBSERVED_INTERFACE);
+                    }
                 }
                 
                 if(!routeOK)
@@ -370,16 +382,16 @@ void SubnetParser::parseInputFile(string inputFileContent, bool storeInIPDict)
                 temp->setRouteSize(routeSize);
                 temp->setRoute(route);
                 
-                // Saving repair mask, if any
-                if(hasRepairedRoute)
+                // Saving edition mask, if any
+                if(hasEditedRoute)
                 {
-                    bool *repairMask = new bool[routeSize];
+                    unsigned short *editMask = new unsigned short[routeSize];
                     for(unsigned short i = 0; i < routeSize; i++)
                     {
-                        repairMask[i] = repairMaskLs.front();
-                        repairMaskLs.pop_front();
+                        editMask[i] = editMaskLs.front();
+                        editMaskLs.pop_front();
                     }
-                    temp->setRouteRepairMask(repairMask);
+                    temp->setRouteEditMask(editMask);
                 }
             }
         }

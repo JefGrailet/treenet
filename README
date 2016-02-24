@@ -1,5 +1,5 @@
-About TreeNET - By Jean-François Grailet (last update: January 25, 2016)
-========================================================================
+About TreeNET - By Jean-François Grailet (last update: February 24, 2016)
+=========================================================================
 
 Overview
 ========
@@ -59,20 +59,36 @@ All current versions are exclusively available for Linux.
 
   TreeNET Reader v2.0 has been released in late January 2016, taking account 
   of all improvements brought to TreeNET v2.0+ and providing a few additionnal 
-  options and an improved bipartite conversion.
+  options and an improved bipartite conversion. It was upgraded to v2.1 in 
+  February 2016 to add a "merging mode" which merges datasets collected from 
+  different vantage points (or VPs) into a single dataset where routes to the 
+  different subnets are adapted to be able to build a single, coherent network 
+  tree, using new algorithms which require no additional probing.
 
 Content of this folder
 ======================
 
 As the names suggest, v1/ contains all files related to TreeNET v1.0, while 
-v2/ provides all sources for TreeNET v2.1 along data sets which were collected 
+v2/ provides all sources for TreeNET v2.1 along datasets which were collected 
 with it.
 
 Work in progress
 ================
 
-Measurement campaigns are currently being planned. Alias resolution will also 
-be evaluated in depth during next months.
+Current and future work includes:
+
+* Measurements planning and development and assessment of techniques which 
+  improve overall performance and/or allow measurements of large-scale ASes.
+
+* Refined alias resolution, with an improved probe scheduling and new 
+  techniques and heuristics to improve overall accuracy.
+
+* Post-processing of the network tree and/or heuristics to mitigate the 
+  loss of accuracy brought by traditionnal networking issues which damage 
+  traceroute measurements, such as route stretching, cycles and loops.
+
+It is also worth noting that the way measurements are provided might change 
+in the future.
 
 Contact
 =======

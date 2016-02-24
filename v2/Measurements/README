@@ -1,4 +1,4 @@
-About Measurements/ folder - By Jean-François Grailet, December 10, 2015
+About Measurements/ folder - By Jean-François Grailet, February 26, 2016
 ========================================================================
 
 Overview
@@ -40,10 +40,10 @@ Each data set consists of 3 files:
  
  IP - Minimum TTL\n
 
--A larger text file (Analysis.txt) giving the analysis of the network tree 
- built by TreeNET along the inferred routers and dependencies (or linkage) 
- between Neighborhoods. This file always starts with a dump of the tree 
- itself, which the syntax is:
+-(2015 only) A larger text file (Analysis.txt) giving the analysis of the 
+ network tree built by TreeNET along the inferred routers and dependencies 
+ (or linkage) between Neighborhoods. This file always starts with a dump of 
+ the tree itself, which the syntax is:
  
  Depth - Type of node: Label(s) or Subnet\n
  
@@ -56,6 +56,20 @@ Each data set consists of 3 files:
  router which does not provide access to the Neighborhood of the child 
  internal.
 
+-(2016 only) A "Bipartite ..." file containing a double bipartite 
+ representation of the measured AS (one bipartite being router - subnet, the 
+ other being switch (L2) - router), based on its representation as a network 
+ tree (not given, but can be obtained using TreeNET Reader). The bipartite 
+ file can be roughly split into 4 parts: the first lists the routers (and 
+ their labels), the second lists subnets (and their labels), the third 
+ provides links between routers of a same neighborhood with an imaginary 
+ switch and the last gives the links between routers and subnets, using their 
+ respective labels.
+
+-(2016 only) A "Statistics" file giving some statistics on the subnets and the 
+ Neighborhoods observed in the network tree obtained for this AS. Those can be 
+ re-obtained and analyzed in depth using TreeNET Reader.
+
 Sometimes, data sets might also come with a fourth and last file containing 
 the string "xnet++" in the name. It simply is another subnet dump obtained 
 with ExploreNET++ for the same AS, obtained for comparison purpose (i.e., 
@@ -65,7 +79,7 @@ to the regular subnet dump, except it does not have the traceroute line.
 Terminology
 ===========
 
-To better understand the data sets and the .txt file, here are some 
+To better understand the datasets and the provided statistics, here are some 
 definitions.
 
 * ACCURATE subnet: a subnet which, having N responsive interfaces, features 

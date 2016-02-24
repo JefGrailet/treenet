@@ -36,7 +36,7 @@ public:
     ~IPDictionnaryParser();
     
     // Parsing method (parsed IPs are directly put into the dictionnary of env)
-    void parseInputFile(string inputFileContent);
+    void parse(string inputFileContent);
 
 private:
     

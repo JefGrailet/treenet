@@ -258,20 +258,20 @@ void NetworkTree::repairRoute(SubnetSite *ss)
     }
     
     // Completes the incomplete route
-    bool *repairMask = new bool[routeSize];
+    unsigned short *editMask = new unsigned short[routeSize];
     for(unsigned short i = 0; i < routeSize; ++i)
-        repairMask[i] = false;
+        editMask[i] = false;
     
     for(unsigned short i = 0; i < insertionPointDepth; ++i)
     {
         if(route[i] == InetAddress("0.0.0.0"))
         {
             route[i] = similarRoute[i];
-            repairMask[i] = true;
+            editMask[i] = SubnetSite::REPAIRED_INTERFACE;
         }
     }
     
-    ss->setRouteRepairMask(repairMask);
+    ss->setRouteEditMask(editMask);
 }
 
 void NetworkTree::collectAliasResolutionHints(ostream *out, AliasHintCollector *ahc)
@@ -330,6 +330,184 @@ void NetworkTree::outputSubnets(string filename)
     // File must be accessible to all
     string path = "./" + filename;
     chmod(path.c_str(), 0766);
+}
+
+unsigned short NetworkTree::getTrunkSize()
+{
+    unsigned short size = 0;
+    NetworkTreeNode *cur = root;
+    while(cur != NULL && !cur->isLeaf() && cur->getChildren()->size() == 1)
+    {
+        cur = cur->getChildren()->front();
+        size++;
+    }
+    return size;
+}
+
+bool NetworkTree::hasIncompleteTrunk()
+{
+    NetworkTreeNode *cur = root;
+    while(cur != NULL && !cur->isLeaf() && cur->getChildren()->size() == 1)
+    {
+        cur = cur->getChildren()->front();
+        if(cur->getLabels()->size() == 1 && cur->getLabels()->front() == InetAddress("0.0.0.0"))
+            return true;
+    }
+    return false;
+}
+
+list<InetAddress> NetworkTree::listInterfacesAfterTrunk()
+{
+    list<InetAddress> result;
+
+    // Gets to end of trunk
+    NetworkTreeNode *trunkEnd = root;
+    while(trunkEnd != NULL && !trunkEnd->isLeaf() && trunkEnd->getChildren()->size() == 1)
+    {
+        trunkEnd = trunkEnd->getChildren()->front();
+    }
+    
+    // Returns empty list in case of problem or single-leaf tree
+    if(trunkEnd == NULL || trunkEnd->isLeaf())
+        return result;
+    
+    listInterfacesRecursive(&result, trunkEnd);
+    result.sort(InetAddress::smaller);
+    
+    // Removes potential duplicates (rare but possible)
+    InetAddress previous("0.0.0.0");
+    for(list<InetAddress>::iterator i = result.begin(); i != result.end(); ++i)
+    {
+        InetAddress cur = (*i);
+        if(cur == previous)
+        {
+            result.erase(i--);
+        }
+        else
+        {
+            previous = cur;
+        }
+    }
+    
+    return result;
+}
+
+void NetworkTree::nullifyLeaves(SubnetSiteSet *sink)
+{
+    nullifyLeavesRecursive(sink, root);
+}
+
+bool NetworkTree::fittingRoute(SubnetSite *ss)
+{
+    // Gets route details
+    unsigned short routeSize = ss->getRouteSize();
+    InetAddress *route = ss->getRoute();
+
+    // Goes through the main trunk
+    NetworkTreeNode *trunkEnd = root;
+    unsigned short routeIndex = 0;
+    while(trunkEnd != NULL && !trunkEnd->isLeaf() && trunkEnd->getChildren()->size() == 1)
+    {
+        trunkEnd = trunkEnd->getChildren()->front();
+        
+        if(trunkEnd->hasLabel(route[routeIndex]))
+            return true;
+        
+        routeIndex++;
+        if(routeIndex == routeSize)
+            break;
+    }
+    
+    return false;
+}
+
+bool NetworkTree::findTransplantation(SubnetSite *ss, 
+                                      unsigned short *sOld, 
+                                      InetAddress **oldPrefix, 
+                                      unsigned short *sNew, 
+                                      InetAddress **newPrefix)
+{
+    // Gets route information of the new subnet
+    InetAddress *route = ss->getRoute();
+    unsigned short routeSize = ss->getRouteSize();
+    
+    // Finds the earliest node which has a label occurring in route (first interfaces first)
+    NetworkTreeNode *matchingPoint = NULL;
+    unsigned matchingPointDepth = 0; // Depth in the tree
+    unsigned matchingIndex = 0; // Index in route
+    for(unsigned short i = 0; i < routeSize; i++)
+    {
+        if(route[i] == InetAddress("0.0.0.0"))
+            continue;
+        
+        for(unsigned short j = 0; j < maxDepth; j++)
+        {
+            list<NetworkTreeNode*> curLs = this->depthMap[j];
+            for(list<NetworkTreeNode*>::iterator it = curLs.begin(); it != curLs.end(); ++it)
+            {
+                if((*it)->hasLabel(route[i]))
+                {
+                    matchingPoint = (*it);
+                    matchingPointDepth = j;
+                    matchingIndex = i;
+                    break;
+                }
+            }
+            
+            if(matchingPoint != NULL)
+                break;
+        }
+        
+        if(matchingPoint != NULL)
+            break;
+    }
+
+    if (matchingPoint == NULL)
+        return false;
+    
+    // Allocates memory to store old and new route prefix
+    (*oldPrefix) = new InetAddress[matchingIndex];
+    (*newPrefix) = new InetAddress[matchingPointDepth];
+    (*sOld) = matchingIndex;
+    (*sNew) = matchingPointDepth;
+    
+    // Writes the routes
+    InetAddress *oldRoute = (*oldPrefix);
+    for(unsigned short i = 0; i < (*sOld); i++)
+        oldRoute[i] = route[i];
+    
+    InetAddress *newRoute = (*newPrefix);
+    NetworkTreeNode *cur = matchingPoint->getParent();
+    for(unsigned short i = 0; i < (*sNew); i++)
+    {
+        unsigned short index = (*sNew) - 1 - i;
+        list<InetAddress> *labels = cur->getLabels();
+        if(labels->size() == 1)
+        {
+            newRoute[index] = labels->front();
+        }
+        // If multiple labels, take the first that is different than 0.0.0.0
+        else
+        {
+            bool assigned = false;
+            for(list<InetAddress>::iterator it = labels->begin(); it != labels->end(); ++it)
+            {
+                if((*it) != InetAddress("0.0.0.0"))
+                {
+                    newRoute[index] = (*it);
+                    assigned = true;
+                    break;
+                }
+            }
+            
+            // Should theoretically not occur, but just in case...
+            if(!assigned)
+                newRoute[index] = labels->front();
+        }
+        cur = cur->getParent();
+    }
+
+    return true;
 }
 
 BipartiteGraph *NetworkTree::toBipartite()
@@ -1013,6 +1191,48 @@ void NetworkTree::listSubnetsRecursive(list<SubnetSite*> *subnetsList, NetworkTr
     for(list<NetworkTreeNode*>::iterator i = children->begin(); i != children->end(); ++i)
     {
         listSubnetsRecursive(subnetsList, (*i));
+    }
+}
+
+void NetworkTree::listInterfacesRecursive(list<InetAddress> *interfaces, NetworkTreeNode *cur)
+{
+    // Stops if it is a leaf
+    if(cur->isLeaf())
+        return;
+
+    // Goes through children and finds internals among them
+    list<NetworkTreeNode*> *children = cur->getChildren();
+    for(list<NetworkTreeNode*>::iterator i = children->begin(); i != children->end(); ++i)
+    {
+        NetworkTreeNode *curChild = (*i);
+        if(curChild->isInternal())
+        {
+            list<InetAddress> *labels = curChild->getLabels();
+            for(list<InetAddress>::iterator j = labels->begin(); j != labels->end(); ++j)
+            {
+                InetAddress interface = (*j);
+                if(interface != InetAddress("0.0.0.0"))
+                {
+                    interfaces->push_back(interface);
+                }
+            }
+            
+            // Goes deeper
+            listInterfacesRecursive(interfaces, (*i));
+        }
+    }
+}
+
+void NetworkTree::nullifyLeavesRecursive(SubnetSiteSet *sink, NetworkTreeNode *cur)
+{
+    list<NetworkTreeNode*> *children = cur->getChildren();
+    for(list<NetworkTreeNode*>::iterator i = children->begin(); i != children->end(); ++i)
+    {
+        NetworkTreeNode *cur = (*i);
+        if(cur->isLeaf())
+            cur->nullifySubnet(sink);
+        else
+            nullifyLeavesRecursive(sink, cur);
     }
 }
 

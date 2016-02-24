@@ -25,8 +25,7 @@
 #ifndef NETWORKTREE_H_
 #define NETWORKTREE_H_
 
-#include "SubnetSite.h"
-#include "NetworkTreeNode.h"
+#include "./NetworkTreeNode.h"
 #include "../aliasresolution/AliasHintCollector.h"
 #include "../aliasresolution/AliasResolver.h"
 #include "../bipartite/BipartiteGraph.h"
@@ -93,6 +92,50 @@ public:
     // Method to write the leaves in an output file of a given name.
     void outputSubnets(string filename);
     
+    // All methods below this point are exclusive to TreeNET Reader.
+    
+    /*
+     * Methods to evaluate the size of the main trunk (i.e., successions of nodes starting from 
+     * the root with a single child each time), the presence of holes (i.e., 0.0.0.0) and list all 
+     * interfaces occurring beyond that trunk.
+     */
+    
+    unsigned short getTrunkSize();
+    bool hasIncompleteTrunk();
+    list<InetAddress> listInterfacesAfterTrunk();
+    
+    /*
+     * Method to set pointers to subnets in leaves to NULL (for deletion); those pointers are 
+     * however put back in a SubnetSiteSet object if sink (pointer to that object) is not NULL.
+     */
+    
+    void nullifyLeaves(SubnetSiteSet *sink);
+    
+    /*
+     * Method to see if a given subnet has a route that can fit in the tree, using the labels of 
+     * the main trunk as reference.
+     */
+    
+    bool fittingRoute(SubnetSite *ss);
+    
+    /*
+     * Method to study a possible transplantation of the route to a given subnet to fit in the 
+     * tree.
+     *
+     * @param SubnetSite*     ss         The subnet to insert
+     * @param unsigned short* sOld       The size of the array "oldPrefix" (see below)
+     * @param InetAddress**   oldPrefix  The route prefix that should be replaced
+     * @param unsigned short* sNew       The size of the array "newPrefix" (see below)
+     * @param InetAddress**   newPrefix  The route prefix that should replace "oldPrefix"
+     * @return bool                      True if a transplantation has been found, false otherwise
+     */
+    
+    bool findTransplantation(SubnetSite *ss, 
+                             unsigned short *sOld, 
+                             InetAddress **oldPrefix, 
+                             unsigned short *sNew, 
+                             InetAddress **newPrefix);
+    
     // Method to generate a bipartite graph from the tree.
     BipartiteGraph *toBipartite();
     
@@ -118,6 +161,8 @@ private:
     static void listSubnetsRecursive(list<SubnetSite*> *subnetsList, NetworkTreeNode *cur);
     static void inferRoutersRecursive(NetworkTree *tree, NetworkTreeNode *cur, AliasResolver *ar);
     static void internalsRecursive(ostream *out, NetworkTree *tree, NetworkTreeNode *cur);
+    static void listInterfacesRecursive(list<InetAddress> *interfaces, NetworkTreeNode *cur);
+    static void nullifyLeavesRecursive(SubnetSiteSet *sink, NetworkTreeNode *cur);
     
     /*
      * Recursive method (but going back up in the tree) to prune a branch which last node has

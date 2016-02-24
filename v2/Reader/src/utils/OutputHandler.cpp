@@ -41,8 +41,9 @@ void OutputHandler::usage(string programName)
     }
     
     (*out) << "\t-i" << "\t" << "--input-file" << "\t\t\t" << "names of the input file(s) (minus extension, i.e. .subnet or .ip)\n";
-    (*out) << "\t\t\t\t\t\tIf multiple file names, separate them with commas.\n";
-    (*out) << "\t\t\t\t\t\tFor each file name, TreeNET will parse [filename].subnet and [filename].ip." << endl;
+    (*out) << "\t\t\t\t\t\tIf multiple file names, separate them with commas. TreeNET will parse each\n";
+    (*out) << "\t\t\t\t\t\tfile name followed by .subnet and will merge them together into a single set.\n";
+    (*out) << "\t\t\t\t\t\tIf only one file, TreeNET will parse [file name].subnet and [file name].ip." << endl;
     
     (*out) << "\t-a" << "\t" << "--set-refinement" << "\t\t" 
     << "prevents collision and/or merge when parsing an already known subnet/IP (default is true)" << endl;
@@ -87,9 +88,6 @@ void OutputHandler::usage(string programName)
     
     (*out) << "\t-s" << "\t" << "--statistics" << "\t\t\t" << "display various statistics about the inferred subnets" << endl;
     
-    (*out) << "\t-o" << "\t" << "--output-file" << "\t\t\t" << "write parsed subnet set in a new output "
-    << "[label]" << endl;
-    
     (*out) << "\t-n" << "\t" << "--neighborhoods" << "\t\t\t" << "display neighborhood analysis" << endl;
     
     (*out) << "\t-b" << "\t" << "--bipartite" << "\t\t\t" << "generate bipartite graph (given as an output file ";
@@ -97,7 +95,7 @@ void OutputHandler::usage(string programName)
     
     (*out) << "\t-v" << "\t" << "--version" << "\t\t\t" << "program version" << endl;
     (*out) << "\t-?" << "\t" << "--help" << "\t\t\t\t" << "help" << endl;
-    (*out) << "TreeNET Reader v2.0 (" << programName << ") was written by J.-F. Grailet (January 2016)\n";
+    (*out) << "TreeNET Reader v2.1 (" << programName << ") was written by J.-F. Grailet (2016)\n";
     (*out) << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
 }
 

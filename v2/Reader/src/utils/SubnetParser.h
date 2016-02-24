@@ -35,12 +35,15 @@ public:
     ~SubnetParser();
     
     /*
-     * Parsing method (parsed subnets are directly put into the set of env). The additional 
-     * boolean parameter can be set to true in order to store the IPs found in the subnet dump 
-     * in the IP dictionnary. This should be done if there is no IP dictionnary dump.
+     * Parsing method, storing the subnets extracted from an input file provided as a string into 
+     * a given destination SubnetSiteSet. Originally, the method would store directly in the set 
+     * to which env keeps a pointer, but this is not well suited for the merging mode where 
+     * subnets from distinct files should be stored in separate subnet sets. The additional 
+     * boolean parameter can be set to true in order to store the IPs found in the subnet dump in 
+     * the IP dictionnary. This should be done if there is no IP dictionnary dump.
      */
     
-    void parseInputFile(string inputFileContent, bool storeInIPDict);
+    void parse(SubnetSiteSet *dest, string inputFileContent, bool storeInIPDict);
 
 private:
     

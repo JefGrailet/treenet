@@ -51,6 +51,7 @@ using std::list;
 #include "utils/TreeNETEnvironment.h"
 #include "utils/SubnetParser.h"
 #include "utils/IPDictionnaryParser.h"
+#include "utils/VantagePointSelector.h"
 
 #include "paristraceroute/ParisTracerouteTask.h"
 #include "aliasresolution/AliasResolver.h"
@@ -70,7 +71,7 @@ int main(int argc, char *argv[])
     
     InetAddress localIPAddress;
     unsigned short probingProtocol = TreeNETEnvironment::PROBING_PROTOCOL_ICMP;
-    string probeAttentionMessage = string("NOT an ATTACK (mail: Jean-Francois.Grailet@student.ulg.ac.be)");
+    string probeAttentionMessage = string("NOT an ATTACK (mail: Jean-Francois.Grailet@ulg.ac.be)");
     string inputFilePath;
     TimeVal timeoutPeriod(2, TimeVal::HALF_A_SECOND); // 2s + 500 000 microseconds = 2,5s
     TimeVal probeRegulatingPeriod(0, 50000); // 0,05s
@@ -83,7 +84,6 @@ int main(int argc, char *argv[])
     string labelOutputFiles = "";
     bool doubleProbe = false; // TODO: add it in parameters
     bool useFixedFlowID = true;
-    bool newOutputFile = false;
     bool analyzeNeighborhoods = false;
     bool generateBipartite = false;
     bool computeStatistics = false;
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
     int opt = 0;
     int longIndex = 0;
     
-    const char* const shortOpts = "i:e:u:m:f:w:z:t:d:j:x:c:y:l:r:a:sonbgv?";
+    const char* const shortOpts = "i:e:u:m:f:w:z:t:d:j:x:c:y:l:r:a:snbgv?";
     const struct option longOpts[] = {
             {"input-file", required_argument, 0, 'i'}, 
             {"interface", required_argument, 0, 'e'}, 
@@ -126,7 +126,6 @@ int main(int argc, char *argv[])
             {"recomputation-mode", required_argument, NULL, 'r'}, 
             {"set-refinement", required_argument, 0, 'a'}, 
             {"statistics", no_argument, NULL, 's'}, 
-            {"output-file", no_argument, NULL, 'o'}, 
             {"neighborhoods", no_argument, NULL, 'n'}, 
             {"bipartite", no_argument, NULL, 'b'}, 
             {"debug", no_argument, NULL, 'g'}, 
@@ -153,7 +152,6 @@ int main(int argc, char *argv[])
         switch(opt)
         {
             case 's':
-            case 'o':
             case 'n':
             case 'b':
             case 'g':
@@ -284,9 +282,6 @@ int main(int argc, char *argv[])
             case 's':
                 computeStatistics = true;
                 break;
-            case 'o':
-                newOutputFile = true;
-                break;
             case 'n':
                 analyzeNeighborhoods = true;
                 break;
@@ -297,7 +292,7 @@ int main(int argc, char *argv[])
                 debugMode = true;
                 break;
             case 'v':
-                cout << "TreeNET Reader v2.0 (" << string(argv[0]) << ") was written by J.-F. Grailet (January 2016)\n";
+                cout << "TreeNET Reader v2.1 (" << string(argv[0]) << ") was written by J.-F. Grailet (2016)\n";
                 cout << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
                 delete outHandler;
                 return 0;
@@ -371,17 +366,95 @@ int main(int argc, char *argv[])
             throw InvalidParameterException();
         }
         
-        cout << "Parsing subnets/IP dictionnary from the input file(s)...\n" << endl;
+        cout << "Parsing input file(s)...\n" << endl;
     
-        // Retrieving and parsing input dump file(s)
-        SubnetParser *sp = new SubnetParser(env);
-        IPDictionnaryParser *idp = new IPDictionnaryParser(env);
-        string warnings = ""; // To display unrecognized files later (after welcome message)
-        size_t pos = inputFilePath.find(',');
+        // Listing input dump file(s)
+        bool mergingMode = false; // Triggered when multiple files are input
+        list<string> filePaths; // Needs to be declared here for later
         
-        // Single input file
-        if(pos == std::string::npos)
+        size_t pos = inputFilePath.find(',');
+        if(pos != std::string::npos)
         {
+            // Listing all file paths
+            std::stringstream ss(inputFilePath);
+            std::string inputFileStr;
+            while (std::getline(ss, inputFileStr, ','))
+                filePaths.push_back(inputFileStr);
+        
+            // Checking that each file exists
+            for(list<string>::iterator it = filePaths.begin(); it != filePaths.end(); ++it)
+            {
+                // Subnet dump
+                ifstream inFile;
+                inFile.open(((*it) + ".subnet").c_str());
+                if(inFile.is_open())
+                {
+                    inFile.close();
+                }
+                else
+                {
+                    cout << "No " << (*it) << ".subnet to parse.\n" << endl;
+                    filePaths.erase(it--);
+                }
+            }
+            
+            if(filePaths.size() > 1)
+            {
+                mergingMode = true;
+            }
+            else if(filePaths.size() == 1)
+            {
+                cout << "Multiple input files were provided, but only one of them actually ";
+                cout << "exists in the file system. There will be no merging.\n" << endl;
+                inputFilePath = filePaths.front();
+            }
+            else
+            {
+                cout << "Please input existing TreeNET dump files (minus .subnet or .ip ";
+                cout << "extension) to continue.\n" << endl;
+                throw InvalidParameterException();
+            }
+        }
+        
+        /*
+         * If relevant (i.e. in case of route/alias resolution hints re-collection or merging 
+         * mode), the label for the new output files is determined here for convenience. It is 
+         * either the label selected by the user via -l flag, either the current time in the 
+         * format dd-mm-YYYY hh:mm:ss.
+         */
+        
+        string newFileName = "";
+        if(generateBipartite || recomputationMode != 0 || mergingMode)
+        {
+            // Save the subnets with the recomputed routes.
+            if(labelOutputFiles.length() > 0)
+            {
+                newFileName = labelOutputFiles;
+            }
+            else
+            {
+                // Get the current time for the name of output files (if any)
+                time_t rawTime;
+                struct tm *timeInfo;
+                char buffer[80];
+
+                time(&rawTime);
+                timeInfo = localtime(&rawTime);
+
+                // Name for the output file containing the list of subnets
+                strftime(buffer, 80, "%d-%m-%Y %T", timeInfo);
+                string timeStr(buffer);
+                newFileName = timeStr;
+            }
+        }
+        
+        // Single input file: both .subnet and .ip dumps are parsed
+        if(!mergingMode)
+        {
+            // Parsing utilities
+            SubnetParser *sp = new SubnetParser(env);
+            IPDictionnaryParser *idp = new IPDictionnaryParser(env);
+        
             // Subnet dump
             string subnetDumpContent = "";
             ifstream inFileSubnet;
@@ -419,14 +492,14 @@ int main(int argc, char *argv[])
                 // Code also checks the amount of subnets before/after parsing
                 size_t curNbSubnets = set->getSubnetSiteList()->size();
                 cout << "Parsing " << inputFilePath << ".subnet..." << endl;
-                sp->parseInputFile(subnetDumpContent, !IPDumpOk);
+                sp->parse(set, subnetDumpContent, !IPDumpOk);
                 cout << "Parsing of " << inputFilePath << ".subnet completed.\n" << endl;
                 size_t newNbSubnets = set->getSubnetSiteList()->size();
                 
                 if(newNbSubnets > curNbSubnets)
                 {
                     cout << "Parsing " << inputFilePath << ".ip..." << endl;
-                    idp->parseInputFile(IPDumpContent);
+                    idp->parse(IPDumpContent);
                     cout << "Parsing of " << inputFilePath << ".ip completed.\n" << endl;
                 }
                 else if(IPDumpOk)
@@ -441,82 +514,136 @@ int main(int argc, char *argv[])
                     cout << inputFilePath << ".subnet.\n" << endl;
                 }
             }
+            
+            delete sp;
+            delete idp;
         }
-        // Multiple input files
         else
         {
-            std::stringstream ss(inputFilePath);
-            std::string inputFileStr;
-            while (std::getline(ss, inputFileStr, ','))
+            /*
+             * MERGING MODE
+             *
+             * When several files are recognized, TreeNET Reader enter this mode to properly merge 
+             * the different pieces of data together. Indeed, it is very likely these pieces were 
+             * collected from distinct vantage points (or VPs), and therefore, their routes are 
+             * not suited for building a whole tree with all sets together. To overcome this 
+             * issue, TreeNET Reader v2.1+ introduces a "transplant" operation which predicts the 
+             * route that would be obtained from a particular VP (selected via the specific class 
+             * VantagePointSelection) to some subnet, relying on the last interfaces occurring in 
+             * its route. The intuition is that, no matter the VP, the last interface(s) towards 
+             * a subnet should stay the same.
+             */
+             
+            cout << "Multiple input files were recognized. TreeNET Reader will now proceed to ";
+            cout << "merge them together into a single dataset.\n" << endl;
+            
+            // Vantage point selection. Beginning of the full tree is built as well.
+            VantagePointSelector *vps = new VantagePointSelector(env, filePaths);
+            vps->select();
+            NetworkTree *tree = vps->getStartTree();
+            delete vps;
+            
+            // Starts the proper merging
+            SubnetSiteSet *mainSet = env->getSubnetSet();
+            SubnetSite *toInsert = mainSet->getValidSubnet();
+            list<SubnetSite*> scraps;
+            while(toInsert != NULL)
             {
-                // Subnet dump
-                string subnetDumpContent = "";
-                ifstream inFile;
-                inFile.open((inputFileStr + ".subnet").c_str());
-                bool subnetDumpOk = false;
-                if(inFile.is_open())
+                bool fitting = tree->fittingRoute(toInsert);
+                if(!fitting)
                 {
-                    subnetDumpContent.assign((std::istreambuf_iterator<char>(inFile)),
-                                             (std::istreambuf_iterator<char>()));
-
-                    inFile.close();
-                    subnetDumpOk = true;
-                }
-                else
-                {
-                    cout << "No " << inputFilePath << ".subnet to parse.\n" << endl;
-                }
-                
-                // Corresponding IP dictionnary (only if a non-empty subnet dump was parsed)
-                if(subnetDumpOk)
-                {
-                    string IPDumpContent = "";
-                    ifstream inFileIP;
-                    inFileIP.open((inputFileStr + ".ip").c_str());
-                    bool IPDumpOk = false;
-                    if(inFileIP.is_open())
+                    unsigned short oldPrefixSize = 0, newPrefixSize = 0;
+                    InetAddress *oldPrefix = NULL, *newPrefix = NULL;
+                    
+                    bool transplant = tree->findTransplantation(toInsert,
+                                                                &oldPrefixSize,
+                                                                &oldPrefix,
+                                                                &newPrefixSize,
+                                                                &newPrefix);
+                    
+                    if(transplant)
                     {
-                        IPDumpContent.assign((std::istreambuf_iterator<char>(inFileIP)),
-                                             (std::istreambuf_iterator<char>()));
+                        unsigned short res = 1;
+                        toInsert->transplantRoute(oldPrefixSize, newPrefixSize, newPrefix);
+                        res += mainSet->transplantRoutes(oldPrefixSize, 
+                                                         oldPrefix, 
+                                                         newPrefixSize, 
+                                                         newPrefix);
                         
-                        inFileIP.close();
-                        IPDumpOk = true;
-                    }
-                    
-                    // Code also checks the amount of subnets before/after parsing
-                    size_t curNbSubnets = set->getSubnetSiteList()->size();
-                    cout << "Parsing " << inputFileStr << ".subnet..." << endl;
-                    sp->parseInputFile(subnetDumpContent, !IPDumpOk);
-                    cout << "Parsing of " << inputFileStr << ".subnet completed.\n" << endl;
-                    size_t newNbSubnets = set->getSubnetSiteList()->size();
-                    
-                    if(newNbSubnets > curNbSubnets)
-                    {
-                        cout << "Parsing " << inputFileStr << ".ip..." << endl;
-                        idp->parseInputFile(IPDumpContent);
-                        cout << "Parsing of " << inputFileStr << ".ip completed.\n" << endl;
-                    }
-                    else if(IPDumpOk)
-                    {
-                        cout << "No subnet were found. " << inputFileStr << ".ip parsing has been ";
-                        cout << "skipped.\n" << endl;
+                        // Prints out the transplantation that occurred
+                        cout << "Transplantation:\nOriginal: ";
+                        for(unsigned short i = 0; i < oldPrefixSize; i++)
+                        {
+                            if(i > 0)
+                                cout << ", ";
+                            cout << oldPrefix[i];
+                        }
+                        cout << "\nPredicted: ";
+                        for(unsigned short i = 0; i < newPrefixSize; i++)
+                        {
+                            if(i > 0)
+                                cout << ", ";
+                            cout << newPrefix[i];
+                        }
+                        cout << "\n";
+                        
+                        if(res > 1)
+                            cout << res << " transplantations.\n";
+                        else
+                            cout << "One transplantation.\n";
+                        cout << endl;
+                        
+                        tree->insert(toInsert);
                     }
                     else
                     {
-                        cout << "No " << inputFileStr << ".ip to parse. IP Dictionnary has been ";
-                        cout << "partially completed with the IPs mentioned in ";
-                        cout << inputFileStr << ".subnet.\n" << endl;
+                        scraps.push_back(toInsert);
                     }
                 }
+                else
+                {
+                    tree->insert(toInsert);
+                }
+            
+                toInsert = mainSet->getValidSubnet();
+                if(toInsert == NULL)
+                    toInsert = mainSet->getValidSubnet(false);
             }
+            
+            // Displays the tree itself
+            tree->visit(&cout);
+            cout << endl;
+            
+            // Saves the new data
+            tree->outputSubnets(newFileName + ".subnet");
+            cout << "Merged data has been saved in an output file " << newFileName;
+            cout << ".subnet.\n" << endl;
+            
+            // Takes care of "scrap" subnets (i.e. subnets neither inserted, neither transplanted)
+            if(scraps.size() > 0)
+            {
+                SubnetSiteSet *tempSet = new SubnetSiteSet();
+                for(list<SubnetSite*>::iterator it = scraps.begin(); it != scraps.end(); ++it)
+                {
+                    tempSet->addSiteNoRefinement((*it));
+                }
+                tempSet->outputAsFile("Scraps " + newFileName);
+                cout << "Scrap subnets (i.e., they could not be transplanted) have been saved ";
+                cout << "in an output file Scraps " << newFileName << ".\n" << endl;
+                delete tempSet;
+            }
+            
+            cout << "Merging ended. TreeNET Reader will stop running here.\n\n";
+            cout << "It is strongly recommended to re-run TreeNET Reader with the new dataset ";
+            cout << "as input to re-collect alias resolution hints before analyzing the data.";
+            cout << endl;
+            
+            // Stops here
+            delete env;
+            delete tree;
+            delete outHandler;
+            return 1;
         }
-        
-        delete sp;
-        delete idp;
-
-        // Prints the warnings, if any
-        if(warnings.size() > 0)
-            cout << warnings << endl;
         
         // Stops and throws an exception if no valid subnet
         std::list<SubnetSite*> *list = set->getSubnetSiteList();
@@ -624,49 +751,9 @@ int main(int argc, char *argv[])
                     }
                 }
             }
-        }
-        
-        cout << "Successfully parsed subnets:\n" << endl;
-        
-        // Prints out headers
-        outHandler->printHeaderLines();
-        
-        // Outputting the parsed subnets (from the set)
-        for(std::list<SubnetSite*>::iterator it = list->begin(); it != list->end(); ++it)
-        {
-            outHandler->printSubnetSite(*it);
-            cout << endl;
-        }
-        cout << endl;
-        
-        // Get the current time for the name of output files (if any)
-        time_t rawTime;
-        struct tm *timeInfo;
-        char buffer[80];
-
-        time(&rawTime);
-        timeInfo = localtime(&rawTime);
-
-        // Name for the output file containing the list of subnets
-        strftime(buffer, 80, "%d-%m-%Y %T", timeInfo);
-        string timeStr(buffer);
-        
-        string newFileName = "";
-        if(newOutputFile)
-        {
-            /*
-             * Writes a first save of the inferred subnets. If alias resolution works well, 
-             * the produced file will be overwritten. This is a security, in case something 
-             * went wrong during the construction of the tree.
-             */
-             
-            newFileName = timeStr;
-            if(labelOutputFiles.length() > 0)
-                newFileName = labelOutputFiles;
             
+            // First save of the subnets with the new routes (in case tree building fails)
             set->outputAsFile(newFileName + ".subnet");
-            cout << "Parsed subnets (+ (new) routes) have been saved in an output file ";
-            cout << newFileName << ".subnet\n" << endl;
         }
         
         /*
@@ -765,11 +852,15 @@ int main(int argc, char *argv[])
         }
         cout << "Building complete.\n" << endl;
         
-        // Final save of the subnets.
-        tree->outputSubnets(newFileName + ".subnet");
-        cout << "Inferred subnets (+ routes) have been saved in an output file ";
-        cout << newFileName << ".subnet.\n" << endl;
+        // Final save of the subnets (if routes were previously re-computed).
+        if(recomputationMode == RECOMPUTE_ROUTES_AR)
+        {
+            tree->outputSubnets(newFileName + ".subnet");
+            cout << "Parsed subnets with successfully re-computed routes have been saved in an ";
+            cout << "output file " << newFileName << ".subnet.\n" << endl;
+        }
         
+        // Displays the tree itself
         tree->visit(&cout);
         cout << endl;
         
@@ -790,8 +881,8 @@ int main(int argc, char *argv[])
             delete ahc;
 
             env->getIPTable()->outputDictionnary(newFileName + ".ip");
-            cout << "IP dictionnary with alias resolution hints has been saved in an output file ";
-            cout << newFileName << ".ip.\n" << endl;
+            cout << "IP dictionnary with the new alias resolution hints has been saved in an ";
+            cout << "output file " << newFileName << ".ip.\n" << endl;
         }
         
         // Internal node exploration is only done now.
@@ -830,25 +921,21 @@ int main(int argc, char *argv[])
             BipartiteGraph *graph = tree->toBipartite();
             
             // File name
-            string filename = "Bipartite ";
-            if(labelOutputFiles.length() > 0)
-                filename += labelOutputFiles;
-            else
-                filename += timeStr;
+            string bipFileName = "Bipartite " + newFileName;
             
             // Outputs the bipartite graph
             ofstream newFile;
-            newFile.open(filename.c_str());
+            newFile.open(bipFileName.c_str());
             newFile << graph->routersToString() << endl;
             newFile << graph->subnetsToString() << endl;
             newFile << graph->linksSRToString() << endl;
             newFile << graph->linksRSToString() << endl;
             newFile.close();
             
-            string newFilePath = "./" + filename;
+            string newFilePath = "./" + bipFileName;
             chmod(newFilePath.c_str(), 0766);
             
-            cout << "Bipartite graph outputted as " << filename << ".\n" << endl;
+            cout << "Bipartite graph outputted as " << bipFileName << ".\n" << endl;
             
             delete graph;
         }

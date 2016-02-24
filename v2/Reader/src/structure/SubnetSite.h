@@ -48,6 +48,14 @@ public:
         SHADOW_SUBNET // Subnet most probably exists, but we cannot find (contra)pivot(s) for sure**
     };
     
+    // Possible status for interfaces found in the route to the subnet
+    enum RouteInterfaceStatus
+    {
+        OBSERVED_INTERFACE, // Directly observed by TreeNET
+        REPAIRED_INTERFACE, // Appeared after repairment by TreeNET
+        PREDICTED_INTERFACE // Predicted while transplanting the subnet (merging in TreeNET Reader)
+    };
+    
     /*
      * **expanding this subnet collides it with accurate subnets for which the TTLs do not match.
      * For example: we expand a /32 subnet for which the only IP is at 9, but expanding it to /29
@@ -89,12 +97,12 @@ public:
     inline void setStatus(unsigned short s) { this->status = s; }
     inline void setRouteSize(unsigned short rs) { this->routeSize = rs; }
     inline void setRoute(InetAddress *route) { this->route = route; }
-    inline void setRouteRepairMask(bool *mask) { this->routeRepairMask = mask; }
+    inline void setRouteEditMask(unsigned short *mask) { this->routeEditMask = mask; }
     
     // Method to recompute the shortest/greatest TTL after parsing
     void completeRefinedData();
     
-    // Method to adapt the TTLs of the nodes after recomputing the routes (needs to be changed)
+    // Methods to adapt the TTLs of the nodes after recomputing the routes
     void adaptTTLs(unsigned short pivotTTL);
     
     // Accessers to the refined data
@@ -104,8 +112,8 @@ public:
     inline unsigned char getGreatestTTL() { return this->TTL2; }
     inline unsigned short getRouteSize() { return this->routeSize; }
     inline InetAddress *getRoute() { return this->route; }
-    inline bool hasRepairedRoute() { return this->routeRepairMask != NULL; }
-    inline bool *getRouteRepairMask() { return this->routeRepairMask; }
+    inline bool hasEditedRoute() { return this->routeEditMask != NULL; }
+    inline unsigned short *getRouteEditMask() { return this->routeEditMask; }
     
     // Method to know if a given InetAddress is within this subnet boundaries
     bool contains(InetAddress i);
@@ -116,9 +124,11 @@ public:
     // Method to know if a given InetAddress appears in the route to this subnet at a given TTL
     bool hasRouteLabel(InetAddress rl, unsigned short TTL);
     
-    // Method to obtain one or several pivot addresses of this subnet
+    // Method to obtain one or several (Contra-)Pivot addresses of this subnet
     InetAddress getPivotAddress();
     list<InetAddress> getPivotAddresses(unsigned short max);
+    unsigned short countContrapivotAddresses();
+    list<InetAddress> getContrapivotAddresses();
     
     // Method to know if the subnet has a route, and if yes, if it is complete (i.e. no 0.0.0.0)
     bool hasCompleteRoute();
@@ -146,6 +156,10 @@ public:
     inline void setBipEquivalent(BipartiteSubnet *bipSubnet) { this->bipSubnet = bipSubnet; }
     inline BipartiteSubnet *getBipEquivalent() { return this->bipSubnet; }
     
+    // Methods related to transplantation (exclusive to TreeNET Reader)
+    bool matchRoutePrefix(unsigned short sPrefix, InetAddress *prefix);
+    void transplantRoute(unsigned short offset, unsigned short sNew, InetAddress *newPrefix);
+    
 private:
     int getSize(int filterin);
     
@@ -160,7 +174,7 @@ private:
     unsigned short TTL1, TTL2; // Shortest and greatest TTL for this subnet
     unsigned short routeSize;
     InetAddress *route;
-    bool *routeRepairMask;
+    unsigned short *routeEditMask;
     
     // Corresponding bipartite element
     BipartiteSubnet *bipSubnet;

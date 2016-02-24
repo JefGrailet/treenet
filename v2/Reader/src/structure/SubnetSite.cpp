@@ -23,7 +23,7 @@ TTL1(0),
 TTL2(0), 
 routeSize(0), 
 route(0), 
-routeRepairMask(NULL), 
+routeEditMask(NULL), 
 bipSubnet(NULL)
 {
 
@@ -35,8 +35,8 @@ SubnetSite::~SubnetSite()
     if(route != 0)
         delete[] route;
     
-    if(routeRepairMask != NULL)
-        delete[] routeRepairMask;
+    if(routeEditMask != NULL)
+        delete[] routeEditMask;
 }
 
 void SubnetSite::clearIPlist()
@@ -238,8 +238,12 @@ InetAddress SubnetSite::getPivotAddress()
         }
     }
     
-    // Null if no result (very unlikely)
-    return InetAddress(0);
+    // 0.0.0.0 if no node (unlikely)
+    if(IPlist.size() == 0)
+        return InetAddress(0);
+    
+    // Otherwise first IP in the list (better than nothing)
+    return IPlist.front()->ip;
 }
 
 list<InetAddress> SubnetSite::getPivotAddresses(unsigned short max)
@@ -272,6 +276,43 @@ list<InetAddress> SubnetSite::getPivotAddresses(unsigned short max)
             
             if(counter == max)
                 break;
+        }
+    }
+    
+    return result;
+}
+
+unsigned short SubnetSite::countContrapivotAddresses()
+{
+    if(this->status == SubnetSite::ACCURATE_SUBNET)
+        return 1;
+    else if(this->status == SubnetSite::SHADOW_SUBNET)
+        return 0;
+
+    unsigned short count = 0;
+    unsigned short shortestTTL = this->TTL1;
+    
+    for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
+    {
+        if((unsigned short) (*i)->TTL == shortestTTL)
+        {
+            count++;
+        }
+    }
+    
+    return count;
+}
+
+list<InetAddress> SubnetSite::getContrapivotAddresses()
+{
+    list<InetAddress> result;
+    unsigned short shortestTTL = this->TTL1;
+    
+    for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
+    {
+        if((unsigned short) (*i)->TTL == shortestTTL)
+        {
+            result.push_back((*i)->ip);
         }
     }
     
@@ -334,6 +375,7 @@ string SubnetSite::toString()
         
         // Writes route
         guardian = false;
+        bool editedRoute = this->hasEditedRoute();
         for(unsigned int i = 0; i < this->routeSize; i++)
         {
             if(guardian)
@@ -345,8 +387,13 @@ string SubnetSite::toString()
             
             InetAddress cur = this->route[i];
             
-            if(this->hasRepairedRoute() && this->routeRepairMask[i])
-                ss << " [Repaired]";
+            if(editedRoute)
+            {
+                if(this->routeEditMask[i] == REPAIRED_INTERFACE)
+                    ss << " [R]";
+                else if(this->routeEditMask[i] == PREDICTED_INTERFACE)
+                    ss << " [P]";
+            }
         }
         ss << "\n";
     }
@@ -424,4 +471,85 @@ unsigned int SubnetSite::getCapacity()
         return 1;
     
     return (unsigned int) pow(2, power);
+}
+
+bool SubnetSite::matchRoutePrefix(unsigned short sPrefix, InetAddress *prefix)
+{
+    // Equality rejected as well (at least one interface must remain untouched)
+    if(sPrefix >= this->routeSize)
+        return false;
+
+    for(unsigned short i = 0; i < sPrefix; i++)
+    {
+        if(this->route[i] != prefix[i])
+            return false;
+    }
+
+    return true;
+}
+
+void SubnetSite::transplantRoute(unsigned short offset, 
+                                 unsigned short sNew, 
+                                 InetAddress *newPrefix)
+{
+    // First lists interfaces beyond offset (included)
+    list<InetAddress> lastInterfaces;
+    for(unsigned short i = offset; i < this->routeSize; i++)
+        lastInterfaces.push_back(this->route[i]);
+    
+    // Then creates the new route and edition mask
+    unsigned short newRouteSize = sNew + (unsigned short) lastInterfaces.size();
+    InetAddress *newRoute = new InetAddress[newRouteSize];
+    unsigned short *newMask = new unsigned short[newRouteSize];
+    
+    // Inserts the new prefix of the route
+    for(unsigned short i = 0; i < sNew; i++)
+    {
+        newRoute[i] = newPrefix[i];
+        newMask[i] = PREDICTED_INTERFACE;
+    }
+    
+    // Then inserts the last interfaces
+    for(unsigned short i = sNew; i < newRouteSize; i++)
+    {
+        InetAddress cur = lastInterfaces.front();
+        lastInterfaces.pop_front();
+        
+        newRoute[i] = cur;
+        newMask[i] = OBSERVED_INTERFACE;
+    }
+    
+    // Computes the difference in TTL, and modifies it in subnet nodes in consequence
+    bool shorterTTL = true;
+    unsigned short diffTTL = 0;
+    if(newRouteSize > this->routeSize)
+    {
+        shorterTTL = false;
+        diffTTL = newRouteSize - this->routeSize;
+        this->TTL1 += diffTTL;
+        this->TTL2 += diffTTL;
+    }
+    else
+    {
+        diffTTL = this->routeSize - newRouteSize;
+        this->TTL1 -= diffTTL;
+        this->TTL2 -= diffTTL;
+    }
+    
+    for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
+    {
+        SubnetSiteNode *cur = (*i);
+        
+        if(shorterTTL)
+            cur->TTL -= diffTTL;
+        else
+            cur->TTL += diffTTL;
+    }
+    
+    // Updates the route details and delete the previous
+    delete[] this->route;
+    delete[] this->routeEditMask;
+    this->route = newRoute;
+    this->routeEditMask = newMask;
+    this->routeSize = newRouteSize;
 }

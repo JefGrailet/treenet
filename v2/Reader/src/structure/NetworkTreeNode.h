@@ -29,9 +29,10 @@
 using std::list;
 
 #include "../common/inet/InetAddress.h"
-#include "SubnetSite.h"
-#include "Router.h"
-#include "InvalidSubnetException.h"
+#include "./SubnetSite.h"
+#include "./SubnetSiteSet.h"
+#include "./Router.h"
+#include "./InvalidSubnetException.h"
 #include "../bipartite/BipartiteRouter.h"
 
 class NetworkTreeNode
@@ -87,6 +88,9 @@ public:
     
     // Setter
     inline void setParent(NetworkTreeNode *p) { this->parent = p; }
+    
+    // Nullifies pointer to associated subnet
+    void nullifySubnet(SubnetSiteSet *sink);
     
     /*
      * Methods to handle labels/types:

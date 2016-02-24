@@ -54,7 +54,8 @@ NetworkTreeNode::~NetworkTreeNode()
 {
     if(type == NetworkTreeNode::T_SUBNET)
     {
-        delete this->associatedSubnet;
+        if(this->associatedSubnet != NULL)
+            delete this->associatedSubnet;
         this->associatedSubnet = NULL;
     }
     else
@@ -70,6 +71,18 @@ NetworkTreeNode::~NetworkTreeNode()
             delete (*i);
         }
         inferredRouters.clear();
+    }
+}
+
+void NetworkTreeNode::nullifySubnet(SubnetSiteSet *sink)
+{
+    if(this->associatedSubnet != NULL)
+    {
+        if(sink != NULL)
+        {
+            sink->getSubnetSiteList()->push_back(this->associatedSubnet);
+        }
+        this->associatedSubnet = NULL;
     }
 }
 

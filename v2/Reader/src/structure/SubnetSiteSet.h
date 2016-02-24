@@ -91,6 +91,20 @@ public:
     // Method to write the complete set in an output file of a given name.
     void outputAsFile(string filename);
     
+    /*
+     * (TreeNET Reader exclusive, related to merging mode)
+     * Method to travel through the subnet list and update their routes depending on a route 
+     * segment to match (prefix) and a route segment to replace (newPrefix). If a subnet has a 
+     * route that exactly matches the former, its route is resized, starting with the latter. This 
+     * operation is called "transplantation", and the method returns the amount of subnets for 
+     * which a transplantation occurred.
+     */
+    
+    unsigned short transplantRoutes(unsigned short sPrefix, 
+                                    InetAddress *prefix, 
+                                    unsigned short sNew, 
+                                    InetAddress *newPrefix);
+    
 private:
 
     // Sites are stored with a list

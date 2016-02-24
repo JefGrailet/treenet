@@ -1,5 +1,5 @@
-About TreeNET Reader v2.0 (treenet_reader) - By J.-F. Grailet, January 25, 2016
-===============================================================================
+About TreeNET Reader v2.0 (treenet_reader) - By J.-F. Grailet, February 24, 2016
+================================================================================
 
 Compilation
 ===========
@@ -50,8 +50,23 @@ The options are:
 * -i (verbose: --input-file)
   Option to provide a string giving one or several paths to input files 
   containing inferred subnets. Target files should be strictly formatted, just 
-  like the files TreeNET ("Full") typically outputs. Separate the paths with 
-  commas.
+  like the files TreeNET ("Full") typically outputs. There are two ways to use 
+  this parameter:
+  
+  1) Provide a single output file from TreeNET, minus .subnet/.ip. TreeNET 
+     Reader will parse both to rebuild the network tree and re-conduct the 
+     association between IPs into routers (alias resolution) using the alias 
+     resolutions hints provided in the .ip file.
+  
+  2) Provide multiple output files, minus .subnet extension, separated with 
+     commas. TreeNET Reader will then enter a specific mode named "Merging 
+     mode" where it will adapt the traceroutes to each subnet to produce a 
+     single dataset which can be used to build a coherent tree (i.e., it has 
+     a single branch starting at the root), assuming all output files provide 
+     data from a same network but from distinct vantage points (or VPs). 
+     TreeNET Reader immediately stops after merging, and might also produce an 
+     additional output file "Scraps ..." which lists subnets from any input 
+     dataset for which it could not adapt the route.
 
 * -a (verbose: --set-refinement)
   Option to change the policy of TreeNET Reader while parsing input files. By 
@@ -130,11 +145,14 @@ The options are:
   with the closest integer is lower than this parameter.
 
 * -l (verbose: --label-output-files)
-  If any output file is generated (new measures file or bipartite output 
-  file), this option can be used to set a "label". The output files will then 
-  be named as:
-  -[label] for the measurements output file
-  -Bipartite [label] (with a space) for the bipartite output file
+  If any output file is generated (new measurement file, merged dataset or 
+  bipartite output file), this option can be used to set a "label". The output 
+  files will then be named as:
+  -[label] for the new measurements output file or a merged dataset,
+  -Scraps [label] for the scrap subnets at the end of the merging mode,
+  -Bipartite [label] (with a space) for the bipartite output file.
+  By default, [label] is the date at which TreeNET Reader is being used, in 
+  the format dd-mm-yyyy hh:mm:ss.
 
 * -r (verbose: --recomputation-mode)
   Add this flag to the command and type "1" or "2" besides to make TreeNET 
@@ -143,19 +161,12 @@ The options are:
   -1: only alias resolution hints are re-computed via probing.
   -2: both the routes and alias resolution hints are re-computed by scheduling 
       new probing work.
-  
   By default, TreeNET Reader v2.0 solely relies on the data it parsed in the 
   input files.
 
 * -s (verbose: --statistics)
   Flag to add to the command line to compute some statistics from the network 
   tree. These are displayed at the very end of the execution of TreeNET Reader.
-
-* -o (verbose: --output-file)
-  Flag to add to the command line to create a new output file with the data 
-  parsed (and maybe edited, if -r was used) by TreeNET Reader. The name of the 
-  output file is given with another option (-l); otherwise it is dd-mm-yyyy 
-  hh:mm:ss by default.
 
 * -n (verbose: --neighborhoods)
   Flag to add to the command line to obtain analysis of the neighborhoods in 
@@ -219,15 +230,53 @@ for each subnets nor their routes, only providing their CIDR notation.
 Furthermore, the bipartite graph can be parsed and analyzed by other pieces of 
 software for further analysis of the topology.
 
+About merging mode
+==================
+
+When a target AS (for Autonomous System) is too large and/or contains too many 
+responsive IPs, it is useful to split the targets between several vantage 
+points (or VPs) to get the measurements in a reasonable amount of time. 
+However, doing so will result in having no a single network tree, but rather 
+multiple trees sharing a common root node, as the routes will be obtained from 
+distinct VPs.
+
+The user is offered two approaches to mitigate this:
+
+1) First approach consists in re-doing the traceroutes for every subnet after 
+   concatenating the different datasets together. Since the subnet inference 
+   is the most time-consuming task, the operation does not take too long but 
+   is more agressive in terms of probing. This can potentially deteriorate the 
+   initial measurements.
+
+2) Second approach is providing the different datasets to TreeNET Reader to 
+   merge them together with a specific operation simply named "merging mode". 
+   This will adapt the routes to each subnet without any probing work, such 
+   that a single network tree can be built.
+   
+   The underlying intuition is the following: despite the distinct VPs, all 
+   routes should have similar interfaces in their late steps (since they all 
+   belong to the target AS). The merging mode relies on this idea to modify 
+   the first steps of any route that does not fit such that the associated 
+   subnet can eventually be inserted in the tree.
+   
+   Of course, this requires a careful selection of the "best" vantage point, 
+   i.e. the one where the first steps will be used to modify all routes that 
+   do not fit (this operation is also called "transplantation"). This step is 
+   however fully automated in TreeNET Reader; you can learn more on this 
+   matter by reviewing the "VantagePointSelector" class in src/utils/.
+
 Contact
 =======
 
-TreeNET v1.0 was written by Jean-François Grailet during the academic year 
-2014-2015 in the context of a master thesis at the University of Liège 
+TreeNET Reader v1.0 was written by Jean-François Grailet during the academic 
+year 2014-2015 in the context of a master thesis at the University of Liège 
 (Belgium), using the sources of ExploreNET v2.1 as a basis. It was upgraded 
 to v2.0 in January 2016 to take into account all improvements brought by 
-TreeNET v2.0 and v2.1. Jean-François is currently a Ph. D. student at the same 
-university, in the Research Unit in Networking (RUN).
+TreeNET v2.0 and v2.1. It was further upgraded to v2.1 in February 2016 to 
+add dataset merging algorithms. 
+
+Jean-François is currently a Ph. D. student at the same university, in the 
+Research Unit in Networking (RUN).
 
 E-mail address: Jean-Francois.Grailet@ulg.ac.be
 
