@@ -7,19 +7,22 @@ CPP_SRCS += \
 ../src/utils/OutputHandler.cpp \
 ../src/utils/TreeNETEnvironment.cpp \
 ../src/utils/SubnetParser.cpp \
-../src/utils/IPDictionnaryParser.ccp 
+../src/utils/IPDictionnaryParser.ccp \
+../src/utils/VantagePointSelector.cpp 
 
 OBJS += \
 ./src/utils/OutputHandler.o \
 ./src/utils/TreeNETEnvironment.o \
 ./src/utils/SubnetParser.o \
-./src/utils/IPDictionnaryParser.o 
+./src/utils/IPDictionnaryParser.o \
+./src/utils/VantagePointSelector.o 
 
 CPP_DEPS += \
 ./src/utils/OutputHandler.d \
 ./src/utils/TreeNETEnvironment.d \
 ./src/utils/SubnetParser.d \
-./src/utils/IPDictionnaryParser.d 
+./src/utils/IPDictionnaryParser.d \
+./src/utils/VantagePointSelector.d
 
 
 # Each subdirectory must supply rules for building sources it contributes

@@ -118,8 +118,14 @@ def isCredible(interfaces):
     ratioPivot = float(interfacesAmount[1]) / float(n_interfaces)
     ratioOutliers = float(interfacesAmount[2]) / float(n_interfaces)
     
-    if ratioPivot >= 0.7 and ratioContraPivot <= 0.1:
-        return True
+    if ratioOutliers > 0:
+        if ratioPivot >= 0.7 and ratioContraPivot <= 0.1:
+            return True            
+    else:
+        if interfacesAmount[0] == 1 and interfacesAmount[1] > 0:
+            return True
+        elif ratioPivot > ratioContraPivot and (ratioPivot - ratioContraPivot) > 0.25:
+            return True
     
     return False
 
@@ -167,6 +173,10 @@ if __name__ == "__main__":
                 coveredIPsCredible += nbIPs
         else:
             classifications[2] += 1
+            # Rare occurrences of SHADOW subnets which should be re-classed
+            if isCredible(formatted[i][3]):
+                credibleSubnets[index] += 1
+                coveredIPsCredible += nbIPs
     
     ratioAccurate = (float(classifications[0]) / float(nbSubnets)) * 100
     ratioOdd = (float(classifications[1]) / float(nbSubnets)) * 100
