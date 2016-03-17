@@ -11,7 +11,7 @@
  * execution of TreeNET, as multiple InetAddress objects are used for a same IP and are not kept 
  * during next steps, therefore not suited for keeping such details.
  *
- * Note (Jan 5, 2016): this class is copy-pasted from TreeNET "full".
+ * Note (Jan 5, 2016): this class is (almost) copy-pasted from TreeNET "full".
  */
 
 #ifndef IPTABLEENTRY_H_
@@ -34,6 +34,15 @@ public:
     // Minimum amount of [Token, IP ID] pairs
     const static unsigned short MIN_ALIAS_RESOLUTION_PAIRS = 3;
     
+    // Possible "classes" of IP ID counter
+    enum IPIDCounterClasses
+    {
+        NO_IDEA, // No available IP ID data to infer anything, or not inferred yet
+        HEALTHY_COUNTER, // Increases normally, velocity can be inferred
+        RANDOM_COUNTER, // Increases abnomally fast; the sent IP IDs are probably random
+        ECHO_COUNTER // Echoes the IP ID that was in the initial probe
+    };
+    
     // Constructor, destructor
     IPTableEntry(InetAddress ip, unsigned short nbIPIDs);
     ~IPTableEntry();
@@ -47,25 +56,40 @@ public:
     // Comparison method for sorting purposes
     static bool compare(IPTableEntry *ip1, IPTableEntry *ip2);
     
-    // Regarding alias resolution
+    // Various boolean methods related to alias resolution
     bool hasIPIDData();
+    bool safeIPIDData();
+    bool hasDNS();
     
-	inline void setProbeToken(unsigned short index, unsigned long pt) { this->probeTokens[index] = pt; }
-	inline void setIPIdentifier(unsigned short index, unsigned short ii) { this->IPIdentifiers[index] = ii; }
-	inline void setDelay(unsigned short index, unsigned long d) { this->delays[index] = d; }
-	inline void setStoredHostName(string hn) { this->storedHostName = hn; }
-	inline void setVelocityLowerBound(double vlb) { this->velocityLowerBound = vlb; }
-	inline void setVelocityUpperBound(double vub) { this->velocityUpperBound = vub; }
-	
-	inline unsigned long getProbeToken(unsigned short index) { return this->probeTokens[index]; }
+    // Methods to handle "processedForAR" flag
+    inline bool isProcessedForAR() { return this->processedForAR; }
+    inline void raiseFlagProcessed() { this->processedForAR = true; }
+    
+    // Accessers for alias resolution data
+    inline unsigned long getProbeToken(unsigned short index) { return this->probeTokens[index]; }
 	inline unsigned short getIPIdentifier(unsigned short index) { return this->IPIdentifiers[index]; }
+	inline bool getEcho(unsigned short index) { return this->echoMask[index]; }
 	inline unsigned long getDelay(unsigned short index) { return this->delays[index]; }
-	inline string getStoredHostName() { return this->storedHostName; }
+	inline string getHostName() { return this->hostName; }
 	inline double getVelocityLowerBound() { return this->velocityLowerBound; }
 	inline double getVelocityUpperBound() { return this->velocityUpperBound; }
+	inline unsigned short getIPIDCounterType() { return this->IPIDCounterType; }
+	inline unsigned char getEchoInitialTTL() { return this->echoInitialTTL; }
+    
+    // Setters for alias resolution data
+	inline void setProbeToken(unsigned short index, unsigned long pt) { this->probeTokens[index] = pt; }
+	inline void setIPIdentifier(unsigned short index, unsigned short ii) { this->IPIdentifiers[index] = ii; }
+	inline void setEcho(unsigned short index) { this->echoMask[index] = true; }
+	inline void setDelay(unsigned short index, unsigned long d) { this->delays[index] = d; }
+	inline void setHostName(string hn) { this->hostName = hn; }
+	inline void setVelocityLowerBound(double vlb) { this->velocityLowerBound = vlb; }
+	inline void setVelocityUpperBound(double vub) { this->velocityUpperBound = vub; }
+	inline void setCounterType(unsigned short cType) { this->IPIDCounterType = cType; }
+	inline void setEchoInitialTTL(unsigned char iTTL) { this->echoInitialTTL = iTTL; }
 	
-	// toString() method, for output purposes
+	// toString() methods (for outputting an entry in a dump file, either plain or fingerprint)
     string toString();
+    string toStringFingerprint();
 
 private:
     unsigned char TTL;
@@ -75,11 +99,26 @@ private:
     unsigned short nbIPIDs;
     unsigned long *probeTokens;
 	unsigned short *IPIdentifiers;
+	bool *echoMask;
 	unsigned long *delays;
-	string storedHostName;
+	string hostName;
 	
-	// Velocity of IP ID counter
+	/*
+	 * About echo mask: it records "true" for the corresponding index when the IP ID is the same 
+	 * as in the initial probe. The reason why this is done for every IP ID is to avoid bad 
+	 * diagnosis when a collision (= the "echo" is a pure coincidence) occurs, which might occur 
+	 * a few times during the whole execution of TreeNET. If every IP ID is an echo, then it is 
+	 * an "echo" counter. Otherwise, it is either a random or a healthy counter.
+	 */
+	
+	// Flag to know if this IP has been processed for alias resolution
+	bool processedForAR;
+	
+	// Data inferred from the probes which collected IP IDs
 	double velocityLowerBound, velocityUpperBound;
+	unsigned short IPIDCounterType;
+	unsigned char echoInitialTTL; // Inferred initial TTL of an ECHO reply packet
+	
 };
 
 #endif /* IPTABLEENTRY_H_ */

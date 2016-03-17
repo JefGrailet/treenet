@@ -33,6 +33,14 @@ public:
     static const unsigned short MAX_IP_ID_DIFFERENCE = 3268; // 0.05 * 65355 (max value)
     static const double MAX_VELOCITY_ERROR = 0.3;
     static const double BASE_VELOCITY_TOLERANCE = 5.0;
+    
+    // Possible results for Ally method
+    enum AllyResults
+    {
+        ALLY_NO_SEQUENCE, // A token sequence could not be found
+        ALLY_REJECTED, // The sequence exists, but Ally rejects it
+        ALLY_ACCEPTED // The sequences exists and Ally acknowledges the association
+    };
 
     // Constructor/destructor
     AliasResolver(TreeNETEnvironment *env);
@@ -55,19 +63,19 @@ private:
      * @param IPTableEntry* ip1       The first IP to associate
      * @param IPTableEntry* ip2       The second IP to associate
      * @param unsigned short maxDiff  The largest gap to be accepted between 2 consecutive IDs
-     * @return bool                   True if ip1 and ip2 should be associated
+     * @return unsigned short         One of the results listed in "enum AllyResults"
      */
     
-    bool Ally(IPTableEntry *ip1, IPTableEntry *ip2, unsigned short maxDiff);
+    unsigned short Ally(IPTableEntry *ip1, IPTableEntry *ip2, unsigned short maxDiff);
     
     /*
-     * Method to evaluate the velocity of an IP ID counter. It returns nothing, but gives a lower 
-     * and upper bound on the velocity which are stored in the IPTableEntry object for convenience.
+     * Method to evaluate an IP ID counter, which amounts to computing its velocity and/or 
+     * labelling it with a (unsigned short) class defined in IPTableEntry.h. It returns nothing.
      *
-     * @param IPTableEntry* ip  The IP for which the velocity is being evaluated
+     * @param IPTableEntry* ip  The IP for which the IP ID counter needs to be evaluated
      */
     
-    void computeVelocity(IPTableEntry *ip);
+    void evaluateIPIDCounter(IPTableEntry *ip);
     
     /*
      * Method to check if the velocity ranges of two distinct IPs (given as IPTableEntry objects) 

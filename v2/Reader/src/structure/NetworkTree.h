@@ -89,8 +89,9 @@ public:
     // Prints the interesting internal nodes (i.e. more than one child that is not an internal)
     void internals(ostream *out);
     
-    // Method to write the leaves in an output file of a given name.
+    // Method to write the leaves/inferred routers in an output file of a given name.
     void outputSubnets(string filename);
+    void outputAliases(string filename);
     
     // All methods below this point are exclusive to TreeNET Reader.
     
@@ -159,6 +160,7 @@ private:
                                       NetworkTreeNode *cur, 
                                       unsigned short depth);
     static void listSubnetsRecursive(list<SubnetSite*> *subnetsList, NetworkTreeNode *cur);
+    static void outputAliasesRecursive(NetworkTreeNode *cur, string *aliasesStr);
     static void inferRoutersRecursive(NetworkTree *tree, NetworkTreeNode *cur, AliasResolver *ar);
     static void internalsRecursive(ostream *out, NetworkTree *tree, NetworkTreeNode *cur);
     static void listInterfacesRecursive(list<InetAddress> *interfaces, NetworkTreeNode *cur);

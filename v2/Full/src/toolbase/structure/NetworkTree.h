@@ -72,11 +72,15 @@ public:
     // Gets a subnet contained in the tree which contains the given input address.
     SubnetSite *getSubnetContaining(InetAddress needle);
     
-    // Prints the interesting internal nodes (i.e. more than one child that is not an internal)
-    void internals(ostream *out, AliasResolver *ar);
+    /*
+     * Prints the interesting internal nodes (i.e. more than one child that is not an internal) 
+     * and writes in an output file the inferred routers/alias lists.
+     */
+    
+    void internals(ostream *out, AliasResolver *ar, string outputFileName);
     
     // Method to write the subnets/leaves in an output file of a given name.
-    void outputSubnets(string filename);
+    void outputSubnets(string fileName);
     
 private:
 
@@ -100,7 +104,8 @@ private:
     static void internalsRecursive(ostream *out, 
                                    NetworkTree *tree, 
                                    NetworkTreeNode *cur, 
-                                   AliasResolver *ar);
+                                   AliasResolver *ar, 
+                                   string *aliasLists);
       
     /*
      * Recursive method (but going back up in the tree) to prune a branch which last node has

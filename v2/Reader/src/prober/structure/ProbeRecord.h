@@ -1,5 +1,9 @@
 /*
  * Undescribed class (though usage is obvious). Edited by J.-F. Grailet to improve coding style.
+ *
+ * March 4, 2016: this class was edited to add a new field, "srcIPidentifier". Indeed, some IPs 
+ * echoes the IP identifier that was in the initial packet rather than providing their own, which 
+ * can result in inconsistencies while performing alias resolution.
  */
 
 #ifndef PROBERECORD_H_
@@ -25,6 +29,7 @@ public:
 			out << "dstAddress:" << setiosflags(ios::left) << setw(15) << record.dstAddress
 			<< " rplyAddress:" << setiosflags(ios::left) << setw(30) << "***"
 			<< " reqTTL:" << setiosflags(ios::left) << setw(3) << (int) record.reqTTL
+			<< " srcIPidentifier:" << setiosflags(ios::left) << setw(5) << "***"
 			<< " rplyIPidentifier:" << setiosflags(ios::left) << setw(5) << "***"
 			<< " rplyICMPtype:" << setiosflags(ios::left) << setw(2) << "***"
 			<< " rplyICMPcode:" << setiosflags(ios::left) << setw(2) << "***"
@@ -54,6 +59,7 @@ public:
 			out<< "dstAddress:" << setiosflags(ios::left) << setw(15) << record.dstAddress
 			<< " rplyAddress:" << setiosflags(ios::left) << setw(30) << record.rplyAddress
 			<< " reqTTL:" << setiosflags(ios::left) << setw(3) << (int) record.reqTTL
+			<< " srcIPidentifier:" << setiosflags(ios::left) << setw(5) << record.srcIPidentifier
 			<< " rplyIPidentifier:" << setiosflags(ios::left) << setw(5) << record.rplyIPidentifier
 			<< " rplyICMPtype:" << setiosflags(ios::left) << setw(2) << (int) record.rplyICMPtype
 			<< " rplyICMPcode:" << setiosflags(ios::left) << setw(2) << (int) record.rplyICMPcode
@@ -90,12 +96,13 @@ public:
 			    unsigned char reqTTL = 0,
 			    unsigned char rplyTTL = 0,
 			    unsigned char rplyICMPtype = 255,
-			    unsigned char rplyICMPcode = 255,
-			    unsigned short rplyIPidentifier = 0,
-			    unsigned char payloadTTL = 0,
-			    int probingCost = 1,
-			    bool usingFixedFlowID = false,
-			    InetAddress *RR = 0,
+			    unsigned char rplyICMPcode = 255, 
+			    unsigned short srcIPidentifier = 0, 
+			    unsigned short rplyIPidentifier = 0, 
+			    unsigned char payloadTTL = 0, 
+			    int probingCost = 1, 
+			    bool usingFixedFlowID = false, 
+			    InetAddress *RR = 0, 
 			    int RRlength = 0);
 	
 	// Copy constructor
@@ -115,6 +122,7 @@ public:
 	void setRplyTTL(unsigned char rplyTTL) { this->rplyTTL = rplyTTL; }
 	void setRplyICMPtype(unsigned char rplyICMPtype) { this->rplyICMPtype = rplyICMPtype; }
 	void setRplyICMPcode(unsigned char rplyICMPcode) { this->rplyICMPcode = rplyICMPcode; }
+	void setSrcIPidentifier(unsigned short srcIPidentifier) { this->srcIPidentifier = srcIPidentifier; }
 	void setRplyIPidentifier(unsigned short rplyIPidentifier) { this->rplyIPidentifier = rplyIPidentifier; }
 	void setPayloadTTL(unsigned char payloadTTL) { this->payloadTTL = payloadTTL; }
 	void setProbingCost(int probingCost) { this->probingCost = probingCost; }
@@ -131,6 +139,7 @@ public:
 	unsigned char getRplyTTL() const { return rplyTTL; }
 	unsigned char getRplyICMPtype() const { return rplyICMPtype; }
 	unsigned char getRplyICMPcode() const { return rplyICMPcode; }
+	unsigned short getSrcIPidentifier() const { return srcIPidentifier; }
 	unsigned short getRplyIPidentifier() const { return rplyIPidentifier; }
 	unsigned char getPayloadTTL() const { return payloadTTL; }
 	int getProbingCost() const { return this->probingCost; }
@@ -160,6 +169,7 @@ protected:
 	unsigned char rplyTTL;
 	unsigned char rplyICMPtype; // 101 implies TCP RESET obtained
 	unsigned char rplyICMPcode; // 101 implies TCP RESET obtained
+	unsigned short srcIPidentifier;
 	unsigned short rplyIPidentifier;
 	unsigned char payloadTTL;
 	int probingCost;

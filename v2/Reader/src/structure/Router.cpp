@@ -126,11 +126,40 @@ string Router::toString()
             case RouterInterface::REVERSE_DNS:
                 routerStream << " (Reverse DNS)";
                 break;
+            case RouterInterface::GROUP_ECHO:
+                routerStream << " (Echo group)";
+                break;
+            case RouterInterface::GROUP_ECHO_DNS:
+                routerStream << " (Echo group & DNS)";
+                break;
+            case RouterInterface::GROUP_RANDOM:
+                routerStream << " (Random group)";
+                break;
+            case RouterInterface::GROUP_RANDOM_DNS:
+                routerStream << " (Random group & DNS)";
+                break;
             default:
                 break;
         }
     }
     routerStream << "]";
+    
+    return routerStream.str();
+}
+
+string Router::toStringBis()
+{
+    stringstream routerStream;
+    
+    bool first = true;
+    for(list<RouterInterface*>::iterator j = interfaces.begin(); j != interfaces.end(); ++j)
+    {
+        if(!first)
+            routerStream << " ";
+        else
+            first = false;
+        routerStream << (*j)->ip;
+    }
     
     return routerStream.str();
 }

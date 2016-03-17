@@ -97,3 +97,33 @@ void IPLookUpTable::outputDictionnary(string filename)
     string path = "./" + filename;
     chmod(path.c_str(), 0766);
 }
+
+void IPLookUpTable::outputFingerprints(string filename)
+{
+    string output = "";
+    
+    for(unsigned long i = 0; i < SIZE_TABLE; i++)
+    {
+        list<IPTableEntry*> IPList = this->haystack[i];
+        for(list<IPTableEntry*>::iterator j = IPList.begin(); j != IPList.end(); ++j)
+        {
+            IPTableEntry *cur = (*j);
+            if(cur->isProcessedForAR())
+            {
+                string curStr = cur->toStringFingerprint();
+                
+                if(!curStr.empty())
+                    output += curStr + "\n";
+            }
+        }
+    }
+    
+    ofstream newFile;
+    newFile.open(filename.c_str());
+    newFile << output;
+    newFile.close();
+    
+    // File must be accessible to all
+    string path = "./" + filename;
+    chmod(path.c_str(), 0766);
+}

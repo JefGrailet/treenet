@@ -54,8 +54,9 @@ public:
     
     IPTableEntry *createAnyway(InetAddress needle);
     
-    // Output method
+    // Output methods
     void outputDictionnary(string filename);
+    void outputFingerprints(string filename);
 
 private:
     list<IPTableEntry*> *haystack;

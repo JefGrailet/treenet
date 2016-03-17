@@ -5,6 +5,8 @@
  *      Author: root
  *
  * Slightly edited in September 2015 by J.-F. Grailet to improve coding style.
+ *
+ * March 4, 2016: slightly edited to comply to the (slightly) extended ProbeRecord class.
  */
 
 #ifndef DIRECTTCPPROBER_H_
@@ -74,7 +76,8 @@ protected:
                                   unsigned char rplyTTL, 
                                   unsigned char replyType, 
                                   unsigned char rplyCode, 
-                                  unsigned short rplyIPidentifier, 
+                                  unsigned short srcIPidentifier, 
+                                  unsigned short rplyIPidentifier,  
                                   unsigned char payloadTTL, 
                                   int probingCost, 
                                   bool usingFixedFlowID, 

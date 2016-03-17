@@ -28,7 +28,11 @@ public:
         FIRST_IP, 
         ALLY, 
         IPID_VELOCITY, 
-        REVERSE_DNS
+        REVERSE_DNS,
+        GROUP_ECHO, 
+        GROUP_ECHO_DNS, 
+        GROUP_RANDOM, 
+        GROUP_RANDOM_DNS
     };
 
     RouterInterface(InetAddress ip, unsigned short aliasMethod);

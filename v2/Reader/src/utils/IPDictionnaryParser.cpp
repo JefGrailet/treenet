@@ -106,7 +106,7 @@ void IPDictionnaryParser::parse(string inputFileContent)
         }
         
         string IPAndTTLStr = targetStr.substr(0, pos);
-        string ARHintsStr = targetStr.substr(pos + 1);
+        string ARHintsStr = targetStr.substr(pos + 2);
         
         size_t pos2 = IPAndTTLStr.find('-');
         if(pos2 == std::string::npos)
@@ -142,8 +142,38 @@ void IPDictionnaryParser::parse(string inputFileContent)
             continue;    
         
         newEntry->setTTL(TTL);
+
+        // Parsing alias resolution hints starts here; first checks that there is an initial TTL
+        size_t pos3 = ARHintsStr.find(" - ");
+        if(pos3 != std::string::npos)
+        {
+            string iTTLStr = ARHintsStr.substr(0, pos3);
+            ARHintsStr = ARHintsStr.substr(pos3 + 3);
+            
+            unsigned char iTTL = (unsigned char) std::atoi(iTTLStr.c_str());
+            newEntry->setEchoInitialTTL(iTTL);
+        }
+       
+        if(ARHintsStr.find(',') == std::string::npos)
+        {
+            // Echo counter
+            if(ARHintsStr.compare("ECHO") == 0)
+            {
+                if(newEntry->getEchoInitialTTL() == 0)
+                    newEntry->setEchoInitialTTL(255);
+            
+                newEntry->setCounterType(IPTableEntry::ECHO_COUNTER);
+                newEntry->raiseFlagProcessed();
+            }
+            // Host name
+            else
+            {
+                newEntry->setHostName(ARHintsStr);
+            }
+            continue;
+        }
         
-        // Parsing alias resolution hints starts here
+        // Starts parsing IP IDs and host name
         list<string> hints = explode(ARHintsStr, ',');
         size_t nbHints = hints.size();
         
@@ -156,24 +186,36 @@ void IPDictionnaryParser::parse(string inputFileContent)
         if(candidateHostName.find(';') == std::string::npos)
         {
             hostName = candidateHostName;
+            newEntry->setHostName(hostName);
             
-            // Last chunk is removed to only keep delays and token/IP-ID pairs
+            // Last chunk is removed to only keep delays and token/IP ID pairs
             hints.pop_back();
             nbHints--;
         }
         
         if(hints.size() == 0)
         {
-            // No token/IP-ID pair, just DNS: goes to next iteration without any print out
+            // No token/IP ID pair, just DNS: goes to next iteration without any print out
+            continue;
+        }
+        
+        // If a single "hint" that is equal to string "ECHO", already sets an IP ID counter type
+        if(hints.size() == 1 && hints.front().compare("ECHO") == 0)
+        {
+            if(newEntry->getEchoInitialTTL() == 0)
+                newEntry->setEchoInitialTTL(255);
+        
+            newEntry->setCounterType(IPTableEntry::ECHO_COUNTER);
+            newEntry->raiseFlagProcessed();
             continue;
         }
         
         /*
-         * Policy regarding the amount of IP-IDS: during alias resolution, TreeNET Reader will use 
+         * Policy regarding the amount of IP IDS: during alias resolution, TreeNET Reader will use 
          * its input parameters, even if the parsed IP dictionnary contained more. For example, if 
-         * -a has the value "4" but the dictionnary lists up to 5 IP-IDs, only the 4 first will be 
-         * considered. Reciprocally, if -a has "5" but the dictionnary lists at most 4 IP-IDs, 
-         * these IP-IDs will not be parsed.
+         * -a has the value "4" but the dictionnary lists up to 5 IP IDs, only the 4 first will be 
+         * considered. Reciprocally, if -a has "5" but the dictionnary lists at most 4 IP IDs, 
+         * these IP IDs will not be parsed.
          */
         
         unsigned short expectedSize = (env->getNbIPIDs() * 2) - 1;
@@ -191,7 +233,7 @@ void IPDictionnaryParser::parse(string inputFileContent)
             string curHint = hints.front();
             hints.pop_front();
         
-            // Token/IP-ID pair
+            // Token/IP ID pair
             if((i % 2) == 0)
             {
                 if(curHint.find(';') == std::string::npos)
@@ -240,7 +282,7 @@ void IPDictionnaryParser::parse(string inputFileContent)
             continue;
         }
         
-        // Now saving the parsed IP-IDs and delays.
+        // Now saving the parsed IP IDs and delays.
         unsigned short expectedIPIDs = env->getNbIPIDs();
         for(unsigned short i = 0; i < expectedIPIDs; i++)
         {

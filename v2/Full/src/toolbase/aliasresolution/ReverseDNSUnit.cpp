@@ -35,6 +35,6 @@ void ReverseDNSUnit::run()
     string hostName = *(target.getHostName());
     if(!hostName.empty())
     {
-        entry->setStoredHostName(hostName);
+        entry->setHostName(hostName);
     }
 }

@@ -4,52 +4,55 @@
 
 const int ProbeRecord::MAXIMUM_RECORDE_ROUTE_SIZE = 9;
 
-ProbeRecord::ProbeRecord(InetAddress dstAddr,
-	                     InetAddress rpAddr,
-	                     TimeVal rqTime,
-	                     TimeVal rpTime,
-	                     unsigned char rqTTL,
-	                     unsigned char rpTTL,
-	                     unsigned char rpICMPtype,
-	                     unsigned char rpICMPcode,
-	                     unsigned short rpIPidentifier,
-	                     unsigned char payTTL,
-	                     int prbCost,
-	                     bool ffID,
-	                     InetAddress *RecRec,
+ProbeRecord::ProbeRecord(InetAddress dstAddr, 
+	                     InetAddress rpAddr, 
+	                     TimeVal rqTime, 
+	                     TimeVal rpTime, 
+	                     unsigned char rqTTL, 
+	                     unsigned char rpTTL, 
+	                     unsigned char rpICMPtype, 
+	                     unsigned char rpICMPcode, 
+	                     unsigned short srIPidentifier, 
+	                     unsigned short rpIPidentifier, 
+	                     unsigned char payTTL, 
+	                     int prbCost, 
+	                     bool ffID, 
+	                     InetAddress *RecRec, 
 	                     int RRlen):
-dstAddress(dstAddr),
-rplyAddress(rpAddr),
-reqTime(rqTime),
-rplyTime(rpTime),
-reqTTL(rqTTL),
-rplyTTL(rpTTL),
-rplyICMPtype(rpICMPtype),
-rplyICMPcode(rpICMPcode),
-rplyIPidentifier(rpIPidentifier),
-payloadTTL(payTTL),
-probingCost(prbCost),
-usingFixedFlowID(ffID),
-RR(RecRec),
+dstAddress(dstAddr), 
+rplyAddress(rpAddr), 
+reqTime(rqTime), 
+rplyTime(rpTime), 
+reqTTL(rqTTL), 
+rplyTTL(rpTTL), 
+rplyICMPtype(rpICMPtype), 
+rplyICMPcode(rpICMPcode), 
+srcIPidentifier(srIPidentifier), 
+rplyIPidentifier(rpIPidentifier), 
+payloadTTL(payTTL), 
+probingCost(prbCost), 
+usingFixedFlowID(ffID), 
+RR(RecRec), 
 RRlength(RRlen)
 {
 
 }
 
 ProbeRecord::ProbeRecord(const ProbeRecord &toClone):
-dstAddress(toClone.dstAddress),
-rplyAddress(toClone.rplyAddress),
-reqTime(toClone.reqTime),
-rplyTime(toClone.rplyTime),
-reqTTL(toClone.reqTTL),
-rplyTTL(toClone.rplyTTL),
-rplyICMPtype(toClone.rplyICMPtype),
-rplyICMPcode(toClone.rplyICMPcode),
-rplyIPidentifier(toClone.rplyIPidentifier),
-payloadTTL(toClone.payloadTTL),
-probingCost(toClone.probingCost),
-usingFixedFlowID(toClone.usingFixedFlowID),
-RR(0),
+dstAddress(toClone.dstAddress), 
+rplyAddress(toClone.rplyAddress), 
+reqTime(toClone.reqTime), 
+rplyTime(toClone.rplyTime), 
+reqTTL(toClone.reqTTL), 
+rplyTTL(toClone.rplyTTL), 
+rplyICMPtype(toClone.rplyICMPtype), 
+rplyICMPcode(toClone.rplyICMPcode), 
+srcIPidentifier(toClone.srcIPidentifier), 
+rplyIPidentifier(toClone.rplyIPidentifier), 
+payloadTTL(toClone.payloadTTL), 
+probingCost(toClone.probingCost), 
+usingFixedFlowID(toClone.usingFixedFlowID), 
+RR(0), 
 RRlength(toClone.RRlength)
 {
 	if(toClone.RR == 0)
@@ -95,6 +98,7 @@ const ProbeRecord &ProbeRecord::operator=(const ProbeRecord &right)
 		this->rplyTTL = right.rplyTTL;
 		this->rplyICMPtype = right.rplyICMPtype;
 		this->rplyICMPcode = right.rplyICMPcode;
+		this->srcIPidentifier = right.srcIPidentifier;
 		this->rplyIPidentifier = right.rplyIPidentifier;
 		this->payloadTTL = right.payloadTTL;
 		this->probingCost = right.probingCost;

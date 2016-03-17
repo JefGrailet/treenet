@@ -287,5 +287,21 @@ list<InetAddress> NetworkTreeNode::listInterfaces()
         }
     }
     
+    // Sorts and removes duplicata (rare but possible in some cases)
+    interfacesList.sort(InetAddress::smaller);
+    InetAddress previous("0.0.0.0");
+    for(list<InetAddress>::iterator i = interfacesList.begin(); i != interfacesList.end(); ++i)
+    {
+        InetAddress cur = (*i);
+        if(cur == previous)
+        {
+            interfacesList.erase(i--);
+        }
+        else
+        {
+            previous = cur;
+        }
+    }
+    
     return interfacesList;
 }

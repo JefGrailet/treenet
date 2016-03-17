@@ -27,13 +27,6 @@ void ReverseDNSUnit::run()
     IPLookUpTable *table = env->getIPTable();
     IPTableEntry *entry = table->lookUp(target);
     
-    /*
-     * Exclusive to TreeNET Reader: we first reset the values for this IP Entry, because there 
-     * might already be some data due to previous parsing.
-     */
-    
-    entry->setStoredHostName("");
-    
     // Just in case (normally, should not occur, but we never know with PlanetLab)
     if(entry == NULL)
         return;
@@ -42,6 +35,6 @@ void ReverseDNSUnit::run()
     string hostName = *(target.getHostName());
     if(!hostName.empty())
     {
-        entry->setStoredHostName(hostName);
+        entry->setHostName(hostName);
     }
 }

@@ -1,5 +1,5 @@
-About Measurements/ folder - By Jean-François Grailet, February 26, 2016
-========================================================================
+About Measurements/ folder - By Jean-François Grailet, March 17, 2016
+=====================================================================
 
 Overview
 ========
@@ -69,6 +69,16 @@ Each data set consists of 3 files:
 -(2016 only) A "Statistics" file giving some statistics on the subnets and the 
  Neighborhoods observed in the network tree obtained for this AS. Those can be 
  re-obtained and analyzed in depth using TreeNET Reader.
+
+-(From 12/03/2016 onwards) an .alias file which contains alias lists (one per 
+ line) as inferred by TreeNET v2.2.
+
+-(From 12/03/2016 onwards) a .fingerprint file which contains the IP 
+ fingerprints TreeNET computed for each IP. The main purpose of this file is 
+ to evaluate the overall behaviour of (alleged) router interfaces in a given 
+ AS, and to evaluate if some alias resolution techniques are (still) relevant 
+ or outdated. See TreeNET own README file to learn more about its 
+ fingerprinting method.
 
 Sometimes, data sets might also come with a fourth and last file containing 
 the string "xnet++" in the name. It simply is another subnet dump obtained 

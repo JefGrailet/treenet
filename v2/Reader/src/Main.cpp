@@ -77,8 +77,8 @@ int main(int argc, char *argv[])
     TimeVal probeRegulatingPeriod(0, 50000); // 0,05s
     TimeVal probeThreadDelay(0, 250000); // 0,25s
     unsigned short nbIPIDs = 4; // For Alias Resolution
-    unsigned short maxRollovers = 50; // Idem
-    double baseTolerance = 0.3; // Idem
+    unsigned short maxRollovers = 10; // Idem
+    double baseTolerance = 0.2; // Idem
     double maxError = 0.35; // Idem
     unsigned short nbThreads = 256;
     string labelOutputFiles = "";
@@ -292,7 +292,7 @@ int main(int argc, char *argv[])
                 debugMode = true;
                 break;
             case 'v':
-                cout << "TreeNET Reader v2.1 (" << string(argv[0]) << ") was written by J.-F. Grailet (2016)\n";
+                cout << "TreeNET Reader v2.2 (" << string(argv[0]) << ") was written by J.-F. Grailet (2016)\n";
                 cout << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
                 delete outHandler;
                 return 0;
@@ -889,6 +889,18 @@ int main(int argc, char *argv[])
         AliasResolver *ar = new AliasResolver(env);
         tree->inferRouters(ar);
         delete ar;
+        
+        // Outputs new .alias and .fingerprint files if necessary
+        if(recomputationMode == RECOMPUTE_AR_HINTS || recomputationMode == RECOMPUTE_ROUTES_AR)
+        {
+            tree->outputAliases(newFileName + ".alias");
+            cout << "Inferred alias lists have been saved in an output file ";
+            cout << newFileName << ".alias.\n";
+        
+            env->getIPTable()->outputFingerprints(newFileName + ".fingerprint");
+            cout << "IP dictionnary with fingerprints has been saved in an output file ";
+            cout << newFileName << ".fingerprint." << endl;
+        }
         
         // Statistics regarding the tree itself
         if(computeStatistics)

@@ -5,13 +5,12 @@
  *      Author: grailet
  *
  * This class, inheriting Runnable, probes a single IP and retrieves the IP identifier found in 
- * the ICMP reply. This identifier is stored, along a token, in an InetAddress object which 
- * corresponds to the probed IP.
+ * the ICMP reply. The results are stored within IPIDUnit, but can later be retrieved by the 
+ * calling code with a IPIDTuple object created by it.
  *
- * As its name suggests, IPIDUnit is used by AliasHintCollector for its probing. The 
- * AliasHintCollector object itself must be provided in the constructor to obtain a probe token.
- *
- * N.B.: this class is practically the same as what can be found in TreeNET "Full".
+ * As its name suggests, IPIDUnit is used by IPIDCollector for its probing, which itself has a 
+ * AliasHintCollector object as parent. This same object must be provided in the constructor to 
+ * be able to obtain a probe token.
  */
 
 #ifndef IPIDUNIT_H_
@@ -28,6 +27,7 @@
 #include "../prober/exception/SocketException.h"
 #include "../prober/structure/ProbeRecord.h"
 #include "AliasHintCollector.h"
+#include "IPIDTuple.h" // Provides <ctime> as well
 
 class IPIDUnit : public Runnable
 {
@@ -41,8 +41,8 @@ public:
     
     // Constructor
     IPIDUnit(TreeNETEnvironment *env, 
-             AliasHintCollector *parent, 
-             InetAddress &IPToProbe, 
+             AliasHintCollector *grandParent, 
+             InetAddress IPToProbe, 
              unsigned short lowerBoundICMPid = DirectICMPProber::DEFAULT_LOWER_ICMP_IDENTIFIER,
              unsigned short upperBoundICMPid = DirectICMPProber::DEFAULT_UPPER_ICMP_IDENTIFIER,
              unsigned short lowerBoundICMPseq = DirectICMPProber::DEFAULT_LOWER_ICMP_SEQUENCE,
@@ -52,14 +52,25 @@ public:
     ~IPIDUnit();
     void run();
     
+    // Methods to check results and get a IPIDTuple object after completion of run()
+    bool hasExploitableResults();
+    IPIDTuple *getTuple();
+    
 private:
 
     // Pointer to the environment object (=> probing parameters)
     TreeNETEnvironment *env;
     
     // Private fields
-    AliasHintCollector *parent;
-    InetAddress &IPToProbe;
+    AliasHintCollector *grandParent;
+    InetAddress IPToProbe;
+    
+    // Private fields to maintain results
+    unsigned short probeToken;
+    unsigned long int IPID;
+    timeval timeValue;
+    bool echo;
+    unsigned char replyTTL;
     
     // Probing stuff
     DirectProber *prober;

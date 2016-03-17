@@ -39,7 +39,7 @@ public:
     // Accesser to environment pointer
     inline TreeNETEnvironment *getEnvironment() { return this->env; }
     
-    // Setter for the list of IPs to probe/current TTL (depends on the internal)
+    // Setters for the list of IPs to probe/current TTL (depends on the internal tree node)
     inline void setIPsToProbe(std::list<InetAddress> IPsToProbe) { this->IPsToProbe = IPsToProbe; }
     inline void setCurrentTTL(unsigned char newTTL) { this->currentTTL = newTTL; }
     

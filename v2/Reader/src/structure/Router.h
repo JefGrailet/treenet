@@ -45,6 +45,7 @@ public:
     
     // Converts the router into a string
     string toString();
+    string toStringBis(); // For .alias files
     
     // Accessor/setter to the bipartite element
     inline bool hasBipEquivalent() { return this->bipRouter != NULL; }

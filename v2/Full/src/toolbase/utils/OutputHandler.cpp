@@ -89,17 +89,17 @@ void OutputHandler::usage(string programName)
     << "milliseconds amount to wait between the launch of two threads using probes (default is 250)" << endl;
     
     (*out) << "\t-j" << "\t" << "--amount-ip-ids" << "\t\t\t" << "(alias resol.) amount of collected IP IDs (default: 4)" << endl;
-    (*out) << "\t-x" << "\t" << "--max-rollovers" << "\t\t\t" << "(alias resol.) maximum amount of IP ID counter rollover (default: 50)" << endl;
-    (*out) << "\t-b" << "\t" << "--base-tolerance" << "\t\t" << "(alias resol.) tolerance for velocity overlap checking (default: 0.3)" << endl;
+    (*out) << "\t-x" << "\t" << "--max-rollovers" << "\t\t\t" << "(alias resol.) maximum amount of IP ID counter rollover (default: 10)" << endl;
+    (*out) << "\t-b" << "\t" << "--base-tolerance" << "\t\t" << "(alias resol.) tolerance for velocity overlap checking (default: 0.2)" << endl;
     (*out) << "\t-y" << "\t" << "--max-error" << "\t\t\t" << "(alias resol.) maximum error while rounding (default: 0.35)" << endl;
     
-    (*out) << "\t-o" << "\t" << "--output-file" << "\t\t\t" << "name of the output file "
+    (*out) << "\t-o" << "\t" << "--output-file" << "\t\t\t" << "label of the output files "
     << "(default is dd-mm-yyyy hh:mm:ss)" << endl;
     
     (*out) << "\t-g" << "\t" << "--debug" << "\t\t\t\t" << "enter debug mode" << endl;
     (*out) << "\t-v" << "\t" << "--version" << "\t\t\t" << "program version" << endl;
     (*out) << "\t-?" << "\t" << "--help" << "\t\t\t\t" << "help" << endl;
-    (*out) << "TreeNET v2.1, written by Jean-Francois Grailet (v1.0: 04/2015, v2.0: 11/2015, v2.1: 01/2016)" << endl;
+    (*out) << "TreeNET v2.2, written by Jean-Francois Grailet (last updated: March 2016)" << endl;
     (*out) << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
     
     out->flush();

@@ -14,10 +14,8 @@
  * (obtained in the network tree), therefore allowing the inference of routers. The alias 
  * resolution itself is performed with the class AliasResolver.
  *
- * N.B.:
- * -here, the TTL of each probe is a constant. Indeed, TTL is not relevant for these new probes 
- *  This constant is defined by the class AliasHintCollectorUnit.
- * -this class is practically the same as what can be found in TreeNET "Full".
+ * N.B.: here, the TTL of each probe is a constant. Indeed, TTL is not relevant for these new
+ * probes. This constant is defined by the class AliasHintCollectorUnit.
  */
 
 #ifndef ALIASHINTCOLLECTOR_H_
@@ -41,7 +39,7 @@ public:
     // Accesser to environment pointer
     inline TreeNETEnvironment *getEnvironment() { return this->env; }
     
-    // Setter for the list of IPs to probe/current TTL (depends on the internal)
+    // Setters for the list of IPs to probe/current TTL (depends on the internal tree node)
     inline void setIPsToProbe(std::list<InetAddress> IPsToProbe) { this->IPsToProbe = IPsToProbe; }
     inline void setCurrentTTL(unsigned char newTTL) { this->currentTTL = newTTL; }
     

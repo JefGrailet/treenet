@@ -591,6 +591,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
                                                             ip->ip_ttl, 
                                                             icmp->type, 
                                                             icmp->code, 
+                                                            IPIdentifier, 
                                                             ntohs(ip->ip_id), 
                                                             payloadip->ip_ttl, 
                                                             1, 
@@ -619,6 +620,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
                                                 ip->ip_ttl, 
                                                 icmp->type, 
                                                 icmp->code, 
+                                                IPIdentifier, 
                                                 ntohs(ip->ip_id), 
                                                 payloadip->ip_ttl, 
                                                 1, 
@@ -658,6 +660,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
                                             ip->ip_ttl, 
                                             DirectProber::PSEUDO_TCP_RESET_ICMP_TYPE, 
                                             DirectProber::PSEUDO_TCP_RESET_ICMP_CODE, 
+                                            IPIdentifier, 
                                             ntohs(ip->ip_id), 
                                             0, 
                                             1, 
@@ -681,6 +684,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
                                     0, 
                                     255, 
                                     255, 
+                                    IPIdentifier, 
                                     0, 
                                     0, 
                                     1, 
@@ -716,6 +720,7 @@ ProbeRecord *DirectTCPProber::buildProbeRecord(const auto_ptr<TimeVal> &reqTime,
                                                unsigned char rplyTTL, 
                                                unsigned char replyType, 
                                                unsigned char rplyCode, 
+                                               unsigned short srcIPidentifier, 
                                                unsigned short rplyIPidentifier, 
                                                unsigned char payloadTTL, 
                                                int probingCost, 
@@ -732,6 +737,7 @@ ProbeRecord *DirectTCPProber::buildProbeRecord(const auto_ptr<TimeVal> &reqTime,
     recordPtr->setRplyTTL(rplyTTL);
     recordPtr->setRplyICMPtype(replyType);
     recordPtr->setRplyICMPcode(rplyCode);
+    recordPtr->setSrcIPidentifier(srcIPidentifier);
     recordPtr->setRplyIPidentifier(rplyIPidentifier);
     recordPtr->setPayloadTTL(payloadTTL);
     recordPtr->setProbingCost(probingCost);
@@ -744,6 +750,7 @@ ProbeRecord *DirectTCPProber::buildProbeRecord(const auto_ptr<TimeVal> &reqTime,
         << " dstAddress=" << recordPtr->getDstAddress() 
         << " rplyAddress=" << recordPtr->getRplyAddress() 
         << " reqTTL=" << (int) recordPtr->getReqTTL() 
+        << " srcIPidentifier=" << recordPtr->getSrcIPidentifier() 
         << " rplyIPidentifier=" << recordPtr->getRplyIPidentifier() 
         << " rplyICMPtype=" << (int) recordPtr->getRplyICMPtype() 
         << " rplyICMPcode=" << (int) recordPtr->getRplyICMPcode() 

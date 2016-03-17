@@ -5,6 +5,8 @@
  *      Author: root
  *
  * Coding style slightly edited by Jean-François Grailet in December 2014.
+ *
+ * March 4, 2016: slightly edited to comply to the (slightly) extended ProbeRecord class.
  */
 
 #ifndef DIRECTICMPPROBER_H_
@@ -66,6 +68,7 @@ protected:
 	                              unsigned char rplyTTL, 
 	                              unsigned char replyType, 
 	                              unsigned char rplyCode, 
+	                              unsigned short srcIPidentifier, 
 	                              unsigned short rplyIPidentifier, 
 	                              unsigned char payloadTTL, 
 	                              int probingCost, 

@@ -76,8 +76,8 @@ int main(int argc, char *argv[])
     TimeVal probeRegulatingPeriod(0, 50000); // 0,05s
     TimeVal probeThreadDelay(0, 250000); // 0,25s
     unsigned short nbIPIDs = 4; // For Alias Resolution
-    unsigned short maxRollovers = 50; // Idem
-    double baseTolerance = 0.3; // Idem
+    unsigned short maxRollovers = 10; // Idem
+    double baseTolerance = 0.2; // Idem
     double maxError = 0.35; // Idem
     bool doubleProbe = false;
     bool useFixedFlowID = true;
@@ -306,7 +306,7 @@ int main(int argc, char *argv[])
                 debugMode = true;
                 break;
             case 'v':
-                cout << "TreeNET v2.1, written by Jean-Francois Grailet (v1.0: 04/2015, v2.0: 11/2015, v2.1: 01/2016)" << endl;
+                cout << "TreeNET v2.2, written by Jean-Francois Grailet (last updated: March 2016)" << endl;
                 cout << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
                 delete outputHandler;
                 return 0;
@@ -413,7 +413,7 @@ int main(int argc, char *argv[])
         parser->parseInputFile(inputFileContent);
         
         // Some welcome message
-        cout << "Welcome to TreeNET v2.1.\n" << endl;
+        cout << "Welcome to TreeNET v2.2.\n" << endl;
         
         // Announces that it will ignore LAN.
         if(parser->targetsEncompassLAN())
@@ -926,10 +926,14 @@ int main(int argc, char *argv[])
         
         string newFileNameSubnet = "";
         string newFileNameIP = "";
+        string newFileNameAlias = "";
+        string newFileNameFingerprints = "";
         if(outputFileName.length() > 0)
         {
             newFileNameSubnet = outputFileName + ".subnet";
             newFileNameIP = outputFileName + ".ip";
+            newFileNameAlias = outputFileName + ".alias";
+            newFileNameFingerprints = outputFileName + ".fingerprint";
         }
         else
         {
@@ -946,6 +950,8 @@ int main(int argc, char *argv[])
             
             newFileNameSubnet = timeStr + ".subnet";
             newFileNameIP = timeStr + ".ip";
+            newFileNameAlias = timeStr + ".alias";
+            newFileNameFingerprints = timeStr + ".fingerprint";
         }
         
         subnetSet->outputAsFile(newFileNameSubnet);
@@ -1018,13 +1024,19 @@ int main(int argc, char *argv[])
         cout << endl;
         delete ahc;
         
-        env->getIPTable()->outputDictionnary(newFileNameIP);
-        cout << "IP dictionnary with alias resolution hints has been saved in an output file ";
-        cout << newFileNameIP << ".\n" << endl;
-
         // Internal node exploration is only done now.
         AliasResolver *ar = new AliasResolver(env);
-        tree->internals(&cout, ar);
+        tree->internals(&cout, ar, newFileNameAlias);
+        cout << "Inferred alias lists have been saved in an output file ";
+        cout << newFileNameAlias << ".\n";
+        
+        env->getIPTable()->outputDictionnary(newFileNameIP);
+        cout << "IP dictionnary with alias resolution hints has been saved in an output file ";
+        cout << newFileNameIP << ".\n";
+        
+        env->getIPTable()->outputFingerprints(newFileNameFingerprints);
+        cout << "IP dictionnary with fingerprints has been saved in an output file ";
+        cout << newFileNameFingerprints << "." << endl;
         
         delete ar;
         delete tree;

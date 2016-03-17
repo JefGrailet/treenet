@@ -73,8 +73,8 @@ void OutputHandler::usage(string programName)
     (*out) << "\t\t\t\t\t\tWARNING: this amount is also considered while parsing an IP dictionnary. If a line contains more\n";
     (*out) << "\t\t\t\t\t\tIP-IDs than specified, the exceeding will not be read. Reciprocally, line with less IP-IDs than\n";
     (*out) << "\t\t\t\t\t\tspecified will not be fully parsed." << endl;
-    (*out) << "\t-x" << "\t" << "--max-rollovers" << "\t\t\t" << "(alias resol.) maximum amount of IP ID counter rollover (default: 50)" << endl;
-    (*out) << "\t-c" << "\t" << "--base-tolerance" << "\t\t" << "(alias resol.) tolerance for velocity overlap checking (default: 0.3)" << endl;
+    (*out) << "\t-x" << "\t" << "--max-rollovers" << "\t\t\t" << "(alias resol.) maximum amount of IP ID counter rollover (default: 10)" << endl;
+    (*out) << "\t-c" << "\t" << "--base-tolerance" << "\t\t" << "(alias resol.) tolerance for velocity overlap checking (default: 0.2)" << endl;
     (*out) << "\t-y" << "\t" << "--max-error" << "\t\t\t" << "(alias resol.) maximum error while rounding (default: 0.35)" << endl;
 
     (*out) << "\t-l" << "\t" << "--label-output-files" << "\t\t" 
@@ -95,7 +95,7 @@ void OutputHandler::usage(string programName)
     
     (*out) << "\t-v" << "\t" << "--version" << "\t\t\t" << "program version" << endl;
     (*out) << "\t-?" << "\t" << "--help" << "\t\t\t\t" << "help" << endl;
-    (*out) << "TreeNET Reader v2.1 (" << programName << ") was written by J.-F. Grailet (2016)\n";
+    (*out) << "TreeNET Reader v2.2 (" << programName << ") was written by J.-F. Grailet (2016)\n";
     (*out) << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
 }
 

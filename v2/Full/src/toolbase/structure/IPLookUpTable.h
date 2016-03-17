@@ -43,8 +43,9 @@ public:
     IPTableEntry *create(InetAddress needle); // NULL if already existed
     IPTableEntry *lookUp(InetAddress needle); // NULL if not found
     
-    // Output method
+    // Output methods
     void outputDictionnary(string filename);
+    void outputFingerprints(string filename);
 
 private:
     list<IPTableEntry*> *haystack;

@@ -1,5 +1,5 @@
-About TreeNET v2.1 (treenet) - By Jean-François Grailet, January 18, 2015
-=========================================================================
+About TreeNET v2.2 (treenet) - By Jean-François Grailet, March 17, 2016
+=======================================================================
 
 Compilation
 ===========
@@ -146,7 +146,7 @@ The options are:
 
 * -x (verbose: --max-rollovers)
   Alias resolution: maximum amount of IP-ID counter rollover which to consider 
-  when using the velocity technique (default is 50). A low value for this 
+  when using the velocity technique (default is 10). A low value for this 
   parameter can induce a large amount of IPs having an "infinite" velocity, 
   while a great value can lead to unrealistic results. TreeNET limits the 
   possible values for this parameter in [1, 256].
@@ -154,7 +154,7 @@ The options are:
 * -b (verbose: --base-tolerance)
   Alias resolution: tolerance value used to extend a velocity range when 
   checking if two velocity ranges overlap while using the velocity alias 
-  resolution technique (default is 0.3). As it is rather common to see ranges 
+  resolution technique (default is 0.2). As it is rather common to see ranges 
   being very close while never overlapping, this tolerance value helps to 
   associate them.
 
@@ -167,8 +167,11 @@ The options are:
   with the closest integer is lower than this parameter.
 
 * -o (verbose: --output-file)
-  Option to choose the name of the output file. By default, the name of the 
-  output file (always generated) is dd-mm-yyyy hh:mm:ss.
+  Option to choose the name of the output files. By default, the name of the 
+  output files (always generated) is dd-mm-yyyy hh:mm:ss. Note that there are 
+  4 different output files with their own extension (.subnet for the subnet 
+  dump, .ip for the IP dictionnary, .alias for alias lists and .fingerprint 
+  for IP fingerprints).
 
 * -g (verbose: --debug) (from ExploreNET v2.1)
   Shows debug information during the subnet inference (with the mechanisms 
@@ -203,14 +206,18 @@ Other remarks
   Note that the file might get quite big for a large amount of targets 
   (several Megaoctets to dozens of Megaoctets).
 
-Contact
-=======
+Contact and disclaimer
+======================
 
-TreeNET v2.1 was written by Jean-François Grailet, currently Ph. D. student at 
+TreeNET v2.2 was written by Jean-François Grailet, currently Ph. D. student at 
 the University of Liège (Belgium) in the Research Unit in Networking (RUN), 
 using the sources of ExploreNET v2.1 as a basis.
 
 E-mail address: Jean-Francois.Grailet@ulg.ac.be
+Personal website: http://www.run.montefiore.ulg.ac.be/~grailet/
+
+Feel free to send an e-mail in case of issues while running TreeNET and 
+related software.
 
 ExploreNET v2.1 has been elaborated and written by Dr. Mehmet Engin Tozal, 
 currently assistant teacher at the University of Louisiana at Lafayette (USA).

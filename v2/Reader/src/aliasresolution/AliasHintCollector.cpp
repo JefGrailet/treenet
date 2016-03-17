@@ -9,7 +9,7 @@
  */
 
 #include "AliasHintCollector.h"
-#include "IPIDUnit.h"
+#include "IPIDCollector.h"
 #include "ReverseDNSUnit.h"
 #include "../common/thread/Thread.h"
 
@@ -27,6 +27,7 @@ void AliasHintCollector::collect()
 {
     IPLookUpTable *table = env->getIPTable();
     unsigned short maxThreads = env->getMaxThreads();
+    unsigned short nbIPIDs = env->getNbIPIDs();
     unsigned long int nbIPs = (unsigned long int) IPsToProbe.size();
     if(nbIPs == 0)
     {
@@ -34,9 +35,10 @@ void AliasHintCollector::collect()
     }
     unsigned short nbThreads = 1;
     
-    // Computes amount of threads needed
-    if(nbIPs > (unsigned long int) maxThreads)
-        nbThreads = maxThreads;
+    // Computes the amount of required threads (+1 is due to collector thread itself)
+    unsigned short maxCollectors = maxThreads / (nbIPIDs + 1);
+    if(nbIPs > (unsigned long int) maxCollectors)
+        nbThreads = maxCollectors;
     else
         nbThreads = (unsigned short) nbIPs;
     
@@ -45,12 +47,11 @@ void AliasHintCollector::collect()
     for(unsigned short i = 0; i < nbThreads; i++)
         th[i] = NULL;
 
-    // Does a copy of the IPs list for host name retrieval (after IP ID retrieval)
+    // Does a copy of the IPs list for host name retrieval (after IP-ID retrieval)
     list<InetAddress> backUpIPsToProbe(IPsToProbe);
 
-    // Starts scheduling for IP ID retrieval
-    unsigned short range = (DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID - DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID) / nbThreads;
-    unsigned short j = 0; // For circular movement in the thread array
+    // Starts scheduling for IP-ID retrieval
+    unsigned short j = 0;
     for(unsigned long int i = 0; i < nbIPs; i++)
     {
         InetAddress IPToProbe(IPsToProbe.front());
@@ -70,36 +71,12 @@ void AliasHintCollector::collect()
             newEntry->setTTL(currentTTL);
         }
         
-        try
-        {
-            th[j] = new Thread(new IPIDUnit(env, 
-                                            this, 
-                                            IPToProbe, 
-                                            DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (j * range), 
-                                            DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (j * range) + range - 1, 
-                                            DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ, 
-                                            DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ));
-            
-            th[j]->start();
-        }
-        catch(SocketException e)
-        {
-            // Properly frees stuff in case of SocketException, before throwing it to calling code
-            for(unsigned short i = 0; i < nbThreads; i++)
-            {
-                if(th[i] != NULL)
-                {
-                    th[i]->join();
-                    delete th[i];
-                    th[i] = NULL;
-                }
-            }
-            delete[] th;
-            throw e;
-        }
+        th[j] = new Thread(new IPIDCollector(env, this, IPToProbe, j * nbIPIDs));
+        
+        th[j]->start();
         
         j++;
-        if(j == maxThreads)
+        if(j == nbThreads)
             j = 0;
         
         // 0,01s of delay before next thread
@@ -116,6 +93,18 @@ void AliasHintCollector::collect()
             th[i] = NULL;
         }
     }
+    
+    delete[] th;
+    
+    // Re-sizes th[] for reverse DNS (because there is a single thread per IP)
+    if(nbIPs > (unsigned long int) maxThreads)
+        nbThreads = maxThreads;
+    else
+        nbThreads = (unsigned short) nbIPs;
+    
+    th = new Thread*[nbThreads];
+    for(unsigned short i = 0; i < nbThreads; i++)
+        th[i] = NULL;
     
     // Now schedules to resolve host names of each IP by reverse DNS
     j = 0;
@@ -137,6 +126,9 @@ void AliasHintCollector::collect()
         j++;
         if(j == maxThreads)
             j = 0;
+        
+        // 0,01s of delay before next thread
+        Thread::invokeSleep(TimeVal(0, 10000));
     }
     
     // Waiting for all remaining threads to complete

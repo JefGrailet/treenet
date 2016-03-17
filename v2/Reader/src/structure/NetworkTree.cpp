@@ -332,6 +332,21 @@ void NetworkTree::outputSubnets(string filename)
     chmod(path.c_str(), 0766);
 }
 
+void NetworkTree::outputAliases(string filename)
+{
+    string output = "";
+    outputAliasesRecursive(root, &output);
+    
+    ofstream newFile;
+    newFile.open(filename.c_str());
+    newFile << output;
+    newFile.close();
+    
+    // File must be accessible to all
+    string path = "./" + filename;
+    chmod(path.c_str(), 0766);
+}
+
 unsigned short NetworkTree::getTrunkSize()
 {
     unsigned short size = 0;
@@ -1191,6 +1206,31 @@ void NetworkTree::listSubnetsRecursive(list<SubnetSite*> *subnetsList, NetworkTr
     for(list<NetworkTreeNode*>::iterator i = children->begin(); i != children->end(); ++i)
     {
         listSubnetsRecursive(subnetsList, (*i));
+    }
+}
+
+void NetworkTree::outputAliasesRecursive(NetworkTreeNode *cur, string *aliasesStr)
+{
+    // Prints aliases
+    if(!cur->isRoot())
+    {
+        list<Router*> *routers = cur->getInferredRouters();
+        unsigned short nbRouters = (unsigned short) routers->size();
+        if(nbRouters > 0)
+        {
+            for(list<Router*>::iterator i = routers->begin(); i != routers->end(); ++i)
+            {
+                (*aliasesStr) += (*i)->toStringBis() + "\n";
+            }
+        }
+    }
+
+    // Goes deeper in the tree
+    list<NetworkTreeNode*> *children = cur->getChildren();
+    for(list<NetworkTreeNode*>::iterator i = children->begin(); i != children->end(); ++i)
+    {
+        if(!(*i)->isLeaf())
+            outputAliasesRecursive((*i), aliasesStr);
     }
 }
 

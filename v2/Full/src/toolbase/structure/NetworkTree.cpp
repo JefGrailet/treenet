@@ -197,12 +197,22 @@ SubnetSite *NetworkTree::getSubnetContaining(InetAddress needle)
     return NULL;
 }
 
-void NetworkTree::internals(ostream *out, AliasResolver *ar)
+void NetworkTree::internals(ostream *out, AliasResolver *ar, string outputFileName)
 {
-    internalsRecursive(out, this, root, ar);
+    string output;
+    internalsRecursive(out, this, root, ar, &output);
+    
+    ofstream newFile;
+    newFile.open(outputFileName.c_str());
+    newFile << output;
+    newFile.close();
+    
+    // File must be accessible to all
+    string path = "./" + outputFileName;
+    chmod(path.c_str(), 0766);
 }
 
-void NetworkTree::outputSubnets(string filename)
+void NetworkTree::outputSubnets(string fileName)
 {
     string output = "";
     list<SubnetSite*> siteList;
@@ -219,12 +229,12 @@ void NetworkTree::outputSubnets(string filename)
     }
     
     ofstream newFile;
-    newFile.open(filename.c_str());
+    newFile.open(fileName.c_str());
     newFile << output;
     newFile.close();
     
     // File must be accessible to all
-    string path = "./" + filename;
+    string path = "./" + fileName;
     chmod(path.c_str(), 0766);
 }
 
@@ -526,38 +536,43 @@ void NetworkTree::collectHintsRecursive(ostream *out,
     // Any other case: internal node
     else
     {
-        (*out) << "Collecting alias resolution hints for ";
-        if(cur->isHedera())
+        list<InetAddress> interfacesToProbe = cur->listInterfaces();
+        
+        if(interfacesToProbe.size() > 1)
         {
-            (*out) << "Hedera {";
-            list<InetAddress> *labels = cur->getLabels();
-            bool guardian = false;
-            for(list<InetAddress>::iterator i = labels->begin(); i != labels->end(); ++i)
+            (*out) << "Collecting alias resolution hints for ";
+            if(cur->isHedera())
             {
-                if (guardian)
-                    (*out) << ", ";
-                else
-                    guardian = true;
-            
-                (*out) << (*i);
+                (*out) << "Hedera {";
+                list<InetAddress> *labels = cur->getLabels();
+                bool guardian = false;
+                for(list<InetAddress>::iterator i = labels->begin(); i != labels->end(); ++i)
+                {
+                    if (guardian)
+                        (*out) << ", ";
+                    else
+                        guardian = true;
+                
+                    (*out) << (*i);
+                }
+                (*out) << "}";
             }
-            (*out) << "}";
+            else
+            {
+                (*out) << "Neighborhood {" << cur->getLabels()->front() << "}";
+            }
+            
+            (*out) << "... ";
+            
+            ahc->setIPsToProbe(interfacesToProbe);
+            ahc->setCurrentTTL((unsigned char) depth);
+            ahc->collect();
+            
+            (*out) << "Done." << endl;
+            
+            // Small delay before analyzing next internal (typically quarter of a second)
+            Thread::invokeSleep(ahc->getEnvironment()->getProbeThreadDelay());
         }
-        else
-        {
-            (*out) << "Neighborhood {" << cur->getLabels()->front() << "}";
-        }
-        
-        (*out) << "... ";
-        
-        ahc->setIPsToProbe(cur->listInterfaces());
-        ahc->setCurrentTTL((unsigned char) depth);
-        ahc->collect();
-        
-        (*out) << "Done." << endl;
-        
-        // Small delay before analyzing next internal (typically half a second)
-        Thread::invokeSleep(ahc->getEnvironment()->getProbeThreadDelay() * 2);
         
         // Goes deeper
         list<NetworkTreeNode*> *children = cur->getChildren();
@@ -571,7 +586,8 @@ void NetworkTree::collectHintsRecursive(ostream *out,
 void NetworkTree::internalsRecursive(ostream *out, 
                                      NetworkTree *tree, 
                                      NetworkTreeNode *cur,
-                                     AliasResolver *ar)
+                                     AliasResolver *ar,
+                                     string *aliasLists)
 {
     list<NetworkTreeNode*> *children = cur->getChildren();
     list<InetAddress> *labels = cur->getLabels();
@@ -761,7 +777,7 @@ void NetworkTree::internalsRecursive(ostream *out,
             (*out) << "All labels belong to subnets appearing in the tree." << endl;
         }
         
-        // Router inference
+        // Router inference (+ writing results in the string object aliasLists)
         list<Router> routers = ar->resolve(cur);
         unsigned short nbRouters = (unsigned short) routers.size();
         if(nbRouters > 0)
@@ -775,20 +791,40 @@ void NetworkTree::internalsRecursive(ostream *out,
             for(list<Router>::iterator i = routers.begin(); i != routers.end(); ++i)
             {
                 Router cur = (*i);
+                stringstream aliasList;
                 list<RouterInterface> *IPs = cur.getInterfacesList();
-                (*out) << "[";
                 bool first = true;
+                
+                (*out) << "[";
                 for(list<RouterInterface>::iterator j = IPs->begin(); j != IPs->end(); ++j)
                 {
                     if(!first)
+                    {
                         (*out) << ", ";
+                        aliasList << " ";
+                    }
                     else
+                    {
                         first = false;
+                    }
                     (*out) << (*j).ip;
+                    aliasList << (*j).ip;
                     
-                    // Precise alias resolution method
+                    // Precise alias resolution method (N.B.: not written in .alias file)
                     switch((*j).aliasMethod)
                     {
+                        case RouterInterface::GROUP_ECHO:
+                            (*out) << " (Echo group)";
+                            break;
+                        case RouterInterface::GROUP_ECHO_DNS:
+                            (*out) << " (Echo group & DNS)";
+                            break;
+                        case RouterInterface::GROUP_RANDOM:
+                            (*out) << " (Random group)";
+                            break;
+                        case RouterInterface::GROUP_RANDOM_DNS:
+                            (*out) << " (Random group & DNS)";
+                            break;
                         case RouterInterface::ALLY:
                             (*out) << " (Ally)";
                             break;
@@ -803,6 +839,8 @@ void NetworkTree::internalsRecursive(ostream *out,
                     }
                 }
                 (*out) << "]" << endl;
+                
+                (*aliasLists) += aliasList.str() + "\n";
             }
         }
         else
@@ -899,7 +937,7 @@ void NetworkTree::internalsRecursive(ostream *out,
     for(list<NetworkTreeNode*>::iterator i = children->begin(); i != children->end(); ++i)
     {
         if((*i) != NULL && (*i)->isInternal())
-            internalsRecursive(out, tree, (*i), ar);
+            internalsRecursive(out, tree, (*i), ar, aliasLists);
     }
 }
 

@@ -9,34 +9,42 @@
  */
 
 #include "IPIDUnit.h"
-#include <ctime> // For clock()
 #include "../../common/thread/Thread.h"
 
 Mutex IPIDUnit::collectorMutex(Mutex::ERROR_CHECKING_MUTEX);
 
 IPIDUnit::IPIDUnit(TreeNETEnvironment *e, 
-                   AliasHintCollector *p, 
-                   InetAddress &IP, 
+                   AliasHintCollector *gP, 
+                   InetAddress IP, 
                    unsigned short lbii, 
                    unsigned short ubii, 
                    unsigned short lbis, 
                    unsigned short ubis) throw (SocketException):
 env(e), 
-parent(p), 
+grandParent(gP), 
 IPToProbe(IP)
 {
+    // Default values for results
+    this->probeToken = 0;
+    this->IPID = 0;
+    gettimeofday(&this->timeValue, NULL);
+    this->echo = false;
+    this->replyTTL = (unsigned char) 0;
+
+    // Initial timeout
     baseTimeout = env->getTimeoutPeriod();
     
     // If a higher timeout is suggested for this IP, uses it
     IPLookUpTable *table = env->getIPTable();
     IPTableEntry *IPEntry = table->lookUp(IPToProbe);
-    if(IPEntry != NULL) // Just in case (but should not occur)
+    if(IPEntry != NULL)
     {
         TimeVal suggestedTimeout = IPEntry->getPreferredTimeout();
         if(suggestedTimeout > baseTimeout)
             baseTimeout = suggestedTimeout;
     }
 
+    // Instantiates probing objects
     try
     {
         unsigned short protocol = env->getProbingProtocol();
@@ -109,82 +117,57 @@ ProbeRecord *IPIDUnit::probe(const InetAddress &dst, unsigned char TTL)
 
 void IPIDUnit::run()
 {
-    // Finds entry in IP table
-    InetAddress target = this->IPToProbe;
-    IPLookUpTable *table = env->getIPTable();
-    IPTableEntry *IPEntry = table->lookUp(target);
+    InetAddress target(this->IPToProbe);
     
-    // Just in case (normally, should not occur, but we never know with PlanetLab)
-    if(IPEntry == NULL)
-        return;
-    
-    /*
-     * Now, #nbIPIDs different IP IDs are being collected. The time between each IP ID is measured 
-     * and saved afterwards. Probe tokens help to "locate" each probe on a timeline, which can be 
-     * useful for straightforward Ally (i.e., if for 2 addresses x, y we got the pairs 
-     * [t_0,x_id_0], [t_1,y_id_0] and [t_2,x_id_1] with t_0 < t_1 < t_2 and x_id_0 < y_id_0 < 
-     * x_id_1 and x_id_1 - y_id_0 < some threshold, those IPs belong to the same router).
-     */
-     
-    timeval startTime;
-    bool startSet = false;
-    unsigned short nbIPIDs = env->getNbIPIDs();
-    
-    for(unsigned short i = 0; i < nbIPIDs; i++)
+    // Tries to get IP ID up to 3 times with increasing timeout
+    for(unsigned int nbAttempts = 0; nbAttempts < 3; nbAttempts++)
     {
-        bool success = false;
+        // Gets a token
+        collectorMutex.lock();
+        unsigned long int token = grandParent->getProbeToken();
+        collectorMutex.unlock();
         
-        // Tries to get IP ID up to 3 times with increasing timeout
-        for(unsigned int nbAttempts = 0; nbAttempts < 3; nbAttempts++)
+        // Adapts timeout
+        TimeVal currentTimeout = prober->getTimeout();
+        TimeVal suggestedTimeout = baseTimeout * (nbAttempts + 1);
+        if(suggestedTimeout > currentTimeout)
+            prober->setTimeout(suggestedTimeout);
+        
+        // Performs the probe; gets and saves results and breaks out of current loop if successful
+        ProbeRecord *newProbe = probe(target, PROBE_TTL);
+        if(newProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY && newProbe->getRplyAddress() == target)
         {
-            // Gets a token
-            collectorMutex.lock();
-            unsigned long int probeToken = parent->getProbeToken();
-            collectorMutex.unlock();
-            
-            // Adapts timeout
-            TimeVal currentTimeout = prober->getTimeout();
-            TimeVal suggestedTimeout = baseTimeout * (nbAttempts + 1);
-            if(suggestedTimeout > currentTimeout)
-                prober->setTimeout(suggestedTimeout);
-            
-            // Performs the probe; gets delay and breaks out of current loop if successful
-            ProbeRecord *newProbe = probe(target, PROBE_TTL);
-            if(newProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY && newProbe->getRplyAddress() == target)
-            {
-                IPEntry->setProbeToken(i, probeToken);
-                IPEntry->setIPIdentifier(i, newProbe->getRplyIPidentifier());
-                
-                if(startSet)
-                {
-                    timeval endTime;
-                    gettimeofday(&endTime, NULL);
-                    unsigned long seconds, useconds;
-                    
-                    seconds  = endTime.tv_sec  - startTime.tv_sec;
-                    useconds = endTime.tv_usec - startTime.tv_usec;
-                    
-                    unsigned long delay = seconds + useconds;
-                    IPEntry->setDelay(i - 1, delay);
-                }
-                gettimeofday(&startTime, NULL);
-                startSet = true;
-                
-                delete newProbe;
-                success = true;
-                break;
-            }
-            
+            this->probeToken = token;
+            this->IPID = newProbe->getRplyIPidentifier();
+            gettimeofday(&this->timeValue, NULL);
+            if(newProbe->getSrcIPidentifier() == this->IPID)
+                this->echo = true;
+            this->replyTTL = newProbe->getRplyTTL();
+
             delete newProbe;
+            break;
         }
+        
+        delete newProbe;
         
         // Small delay of 0,01s before next probe
         Thread::invokeSleep(TimeVal(0,10000));
-        
-        // If we cannot get an IP ID at this point, there is not point in continuing
-        if(!success)
-        {
-            break;
-        }
     }
+}
+
+bool IPIDUnit::hasExploitableResults()
+{
+    if(this->probeToken != 0)
+        return true;
+    return false;
+}
+
+IPIDTuple *IPIDUnit::getTuple()
+{
+    IPIDTuple *res = new IPIDTuple(this->probeToken, 
+                                   this->IPID, 
+                                   this->timeValue,
+                                   this->echo, 
+                                   this->replyTTL);
+    return res;
 }

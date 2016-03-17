@@ -13,8 +13,6 @@
  *
  * While one could argue that reverse DNS could be done sequentially, this class helps to 
  * run this part of the program in parallel, to speed up the whole procedure.
- *
- * N.B.: this class is practically the same as what can be found in TreeNET "Full".
  */
 
 #ifndef REVERSEDNSUNIT_H_
