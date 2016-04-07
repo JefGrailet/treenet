@@ -298,7 +298,7 @@ SubnetSite *NetworkTree::getSubnetContaining(InetAddress needle)
 
 void NetworkTree::inferRouters(AliasResolver *ar)
 {
-    inferRoutersRecursive(this, root, ar);
+    inferRoutersRecursive(this, root, ar, 0);
 }
 
 void NetworkTree::internals(ostream *out)
@@ -815,38 +815,43 @@ void NetworkTree::collectHintsRecursive(ostream *out,
     // Any other case: internal node
     else
     {
-        (*out) << "Collecting alias resolution hints for ";
-        if(cur->isHedera())
+        list<InetAddress> interfacesToProbe = cur->listInterfaces();
+        
+        if(interfacesToProbe.size() > 1)
         {
-            (*out) << "Hedera {";
-            list<InetAddress> *labels = cur->getLabels();
-            bool guardian = false;
-            for(list<InetAddress>::iterator i = labels->begin(); i != labels->end(); ++i)
+            (*out) << "Collecting alias resolution hints for ";
+            if(cur->isHedera())
             {
-                if (guardian)
-                    (*out) << ", ";
-                else
-                    guardian = true;
-            
-                (*out) << (*i);
+                (*out) << "Hedera {";
+                list<InetAddress> *labels = cur->getLabels();
+                bool guardian = false;
+                for(list<InetAddress>::iterator i = labels->begin(); i != labels->end(); ++i)
+                {
+                    if (guardian)
+                        (*out) << ", ";
+                    else
+                        guardian = true;
+                
+                    (*out) << (*i);
+                }
+                (*out) << "}";
             }
-            (*out) << "}";
+            else
+            {
+                (*out) << "Neighborhood {" << cur->getLabels()->front() << "}";
+            }
+            
+            (*out) << "... ";
+            
+            ahc->setIPsToProbe(interfacesToProbe);
+            ahc->setCurrentTTL((unsigned char) depth);
+            ahc->collect();
+            
+            (*out) << "Done." << endl;
+            
+            // Small delay before analyzing next internal (typically quarter of a second)
+            Thread::invokeSleep(ahc->getEnvironment()->getProbeThreadDelay());
         }
-        else
-        {
-            (*out) << "Neighborhood {" << cur->getLabels()->front() << "}";
-        }
-        
-        (*out) << "... ";
-        
-        ahc->setIPsToProbe(cur->listInterfaces());
-        ahc->setCurrentTTL((unsigned char) depth);
-        ahc->collect();
-        
-        (*out) << "Done." << endl;
-        
-        // Small delay before analyzing next internal (typically half a second)
-        Thread::invokeSleep(ahc->getEnvironment()->getProbeThreadDelay() * 2);
         
         // Goes deeper
         list<NetworkTreeNode*> *children = cur->getChildren();
@@ -857,7 +862,10 @@ void NetworkTree::collectHintsRecursive(ostream *out,
     }
 }
 
-void NetworkTree::inferRoutersRecursive(NetworkTree *tree, NetworkTreeNode *cur, AliasResolver *ar)
+void NetworkTree::inferRoutersRecursive(NetworkTree *tree, 
+                                        NetworkTreeNode *cur, 
+                                        AliasResolver *ar, 
+                                        unsigned short depth)
 {
     list<NetworkTreeNode*> *children = cur->getChildren();
     
@@ -880,13 +888,16 @@ void NetworkTree::inferRoutersRecursive(NetworkTree *tree, NetworkTreeNode *cur,
 
     // Router inference
     if(nbNeighborSubnets > 0)
+    {
+        ar->setCurrentTTL(depth);
         ar->resolve(cur);
+    }
     
     // Goes deeper in the tree (avoids exploring leaves)
     for(list<NetworkTreeNode*>::iterator i = children->begin(); i != children->end(); ++i)
     {
         if((*i) != NULL && (*i)->isInternal())
-            inferRoutersRecursive(tree, (*i), ar);
+            inferRoutersRecursive(tree, (*i), ar, depth + 1);
     }
 }
 

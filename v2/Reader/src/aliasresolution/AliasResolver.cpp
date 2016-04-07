@@ -18,6 +18,7 @@ using std::list;
 AliasResolver::AliasResolver(TreeNETEnvironment *env)
 {
     this->env = env;
+    this->currentTTL = 0;
 }
 
 AliasResolver::~AliasResolver()
@@ -426,7 +427,6 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
         InetAddress current = (*i);
         if(current == previous)
             interfaces.erase(i--);
-        
         previous = current;
     }
     
@@ -437,8 +437,14 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
         InetAddress cur = interfaces.front();
         interfaces.pop_front();
         IPTableEntry *entryCur = table->lookUp(cur);
+        
+        // Creates entry in IP table if it does not exist
         if(entryCur == NULL)
-            continue;
+        {
+            IPTableEntry *newEntry = table->create(cur);
+            newEntry->setTTL(currentTTL);
+            entryCur = newEntry;
+        }
         
         this->evaluateIPIDCounter(entryCur);
         

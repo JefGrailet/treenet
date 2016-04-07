@@ -46,6 +46,9 @@ public:
     AliasResolver(TreeNETEnvironment *env);
     ~AliasResolver();
     
+    // Setter for currentTTL
+    inline void setCurrentTTL(unsigned char newTTL) { this->currentTTL = newTTL; }
+    
     // Method to infer routers in an internal NetworkTreeNode (hints are obtained via IP Table)
     void resolve(NetworkTreeNode *internal);
     
@@ -53,6 +56,9 @@ private:
 
     // Pointer to the environment object (=> IP table)
     TreeNETEnvironment *env;
+    
+    // currentTTL field (identical to AliasHintCollector)
+    unsigned char currentTTL;
     
     /*
      * Method to perform Ally method for alias resolution, i.e., if for 2 distinct IPs, we have

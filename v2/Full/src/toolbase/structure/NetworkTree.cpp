@@ -200,7 +200,7 @@ SubnetSite *NetworkTree::getSubnetContaining(InetAddress needle)
 void NetworkTree::internals(ostream *out, AliasResolver *ar, string outputFileName)
 {
     string output;
-    internalsRecursive(out, this, root, ar, &output);
+    internalsRecursive(out, this, root, ar, 0, &output);
     
     ofstream newFile;
     newFile.open(outputFileName.c_str());
@@ -586,7 +586,8 @@ void NetworkTree::collectHintsRecursive(ostream *out,
 void NetworkTree::internalsRecursive(ostream *out, 
                                      NetworkTree *tree, 
                                      NetworkTreeNode *cur,
-                                     AliasResolver *ar,
+                                     AliasResolver *ar, 
+                                     unsigned short depth, 
                                      string *aliasLists)
 {
     list<NetworkTreeNode*> *children = cur->getChildren();
@@ -778,6 +779,7 @@ void NetworkTree::internalsRecursive(ostream *out,
         }
         
         // Router inference (+ writing results in the string object aliasLists)
+        ar->setCurrentTTL(depth);
         list<Router> routers = ar->resolve(cur);
         unsigned short nbRouters = (unsigned short) routers.size();
         if(nbRouters > 0)
@@ -937,7 +939,7 @@ void NetworkTree::internalsRecursive(ostream *out,
     for(list<NetworkTreeNode*>::iterator i = children->begin(); i != children->end(); ++i)
     {
         if((*i) != NULL && (*i)->isInternal())
-            internalsRecursive(out, tree, (*i), ar, aliasLists);
+            internalsRecursive(out, tree, (*i), ar, depth + 1, aliasLists);
     }
 }
 

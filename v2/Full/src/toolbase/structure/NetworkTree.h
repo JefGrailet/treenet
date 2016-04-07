@@ -105,6 +105,7 @@ private:
                                    NetworkTree *tree, 
                                    NetworkTreeNode *cur, 
                                    AliasResolver *ar, 
+                                   unsigned short depth,  
                                    string *aliasLists);
       
     /*

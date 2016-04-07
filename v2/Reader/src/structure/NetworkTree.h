@@ -161,7 +161,10 @@ private:
                                       unsigned short depth);
     static void listSubnetsRecursive(list<SubnetSite*> *subnetsList, NetworkTreeNode *cur);
     static void outputAliasesRecursive(NetworkTreeNode *cur, string *aliasesStr);
-    static void inferRoutersRecursive(NetworkTree *tree, NetworkTreeNode *cur, AliasResolver *ar);
+    static void inferRoutersRecursive(NetworkTree *tree, 
+                                      NetworkTreeNode *cur,  
+                                      AliasResolver *ar, 
+                                      unsigned short depth);
     static void internalsRecursive(ostream *out, NetworkTree *tree, NetworkTreeNode *cur);
     static void listInterfacesRecursive(list<InetAddress> *interfaces, NetworkTreeNode *cur);
     static void nullifyLeavesRecursive(SubnetSiteSet *sink, NetworkTreeNode *cur);
