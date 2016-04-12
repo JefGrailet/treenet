@@ -562,13 +562,11 @@ void NetworkTree::collectHintsRecursive(ostream *out,
                 (*out) << "Neighborhood {" << cur->getLabels()->front() << "}";
             }
             
-            (*out) << "... ";
+            (*out) << "... " << endl;
             
             ahc->setIPsToProbe(interfacesToProbe);
             ahc->setCurrentTTL((unsigned char) depth);
             ahc->collect();
-            
-            (*out) << "Done." << endl;
             
             // Small delay before analyzing next internal (typically quarter of a second)
             Thread::invokeSleep(ahc->getEnvironment()->getProbeThreadDelay());

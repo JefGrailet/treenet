@@ -26,9 +26,39 @@ AliasHintCollector::~AliasHintCollector()
 void AliasHintCollector::collect()
 {
     IPLookUpTable *table = env->getIPTable();
+    ostream *out = env->getOutputStream();
+    
+    /*
+     * Sorts and removes duplicata (possible because ingress interface of neighborhood can be a 
+     * contra-pivot). Also inserts the IPs that are missing from the IP table.
+     */
+    
+    this->IPsToProbe.sort(InetAddress::smaller);
+    InetAddress previous(0);
+    for(list<InetAddress>::iterator i = this->IPsToProbe.begin(); i != this->IPsToProbe.end(); ++i)
+    {
+        InetAddress current = (*i);
+        
+        if(current == previous)
+        {
+            this->IPsToProbe.erase(i--);
+        }
+        else
+        {
+            if(table->lookUp(current) == NULL)
+            {
+                IPTableEntry *newEntry = table->create(current);
+                newEntry->setTTL(this->currentTTL);
+            }
+        }
+        
+        previous = current;
+    }
+    
+    // Amounts of threads and collected IP-IDs
     unsigned short maxThreads = env->getMaxThreads();
     unsigned short nbIPIDs = env->getNbIPIDs();
-    unsigned long int nbIPs = (unsigned long int) IPsToProbe.size();
+    unsigned long int nbIPs = (unsigned long int) this->IPsToProbe.size();
     if(nbIPs == 0)
     {
         return;
@@ -48,14 +78,16 @@ void AliasHintCollector::collect()
         th[i] = NULL;
 
     // Does a copy of the IPs list for host name retrieval (after IP-ID retrieval)
-    list<InetAddress> backUpIPsToProbe(IPsToProbe);
+    list<InetAddress> backUpIPsToProbe(this->IPsToProbe);
+    
+    (*out) << "IP-ID collection... " << std::flush;
 
     // Starts scheduling for IP-ID retrieval
     unsigned short j = 0;
     for(unsigned long int i = 0; i < nbIPs; i++)
     {
-        InetAddress IPToProbe(IPsToProbe.front());
-        IPsToProbe.pop_front();
+        InetAddress IPToProbe(this->IPsToProbe.front());
+        this->IPsToProbe.pop_front();
         
         if(th[j] != NULL)
         {
@@ -63,16 +95,8 @@ void AliasHintCollector::collect()
             delete th[j];
             th[j] = NULL;
         }
-        
-        // Creates entry in IP table if it does not exist
-        if(table->lookUp(IPToProbe) == NULL)
-        {
-            IPTableEntry *newEntry = table->create(IPToProbe);
-            newEntry->setTTL(currentTTL);
-        }
-        
+
         th[j] = new Thread(new IPIDCollector(env, this, IPToProbe, j * nbIPIDs));
-        
         th[j]->start();
         
         j++;
@@ -96,6 +120,8 @@ void AliasHintCollector::collect()
     
     delete[] th;
     
+    (*out) << "done." << endl;
+    
     // Re-sizes th[] for reverse DNS (because there is a single thread per IP)
     if(nbIPs > (unsigned long int) maxThreads)
         nbThreads = maxThreads;
@@ -105,6 +131,8 @@ void AliasHintCollector::collect()
     th = new Thread*[nbThreads];
     for(unsigned short i = 0; i < nbThreads; i++)
         th[i] = NULL;
+    
+    (*out) << "Reverse DNS... " << std::flush;
     
     // Now schedules to resolve host names of each IP by reverse DNS
     j = 0;
@@ -143,6 +171,8 @@ void AliasHintCollector::collect()
     }
     
     delete[] th;
+    
+    (*out) << "done." << endl;
 }
 
 unsigned long int AliasHintCollector::getProbeToken()

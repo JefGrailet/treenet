@@ -172,9 +172,10 @@ string IPTableEntry::toStringFingerprint()
     }
     ss << ",";
     if(!this->hostName.empty())
-        ss << "Yes>";
+        ss << "Yes";
     else
-        ss << "No>";
+        ss << "No";
+    ss << ">";
 
     return ss.str();
 }

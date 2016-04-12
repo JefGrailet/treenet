@@ -119,8 +119,8 @@ void IPIDUnit::run()
 {
     InetAddress target(this->IPToProbe);
     
-    // Tries to get IP ID up to 3 times with increasing timeout
-    for(unsigned int nbAttempts = 0; nbAttempts < 3; nbAttempts++)
+    // Tries to get IP ID up to 2 times with increasing timeout
+    for(unsigned int nbAttempts = 0; nbAttempts < 2; nbAttempts++)
     {
         // Gets a token
         collectorMutex.lock();
