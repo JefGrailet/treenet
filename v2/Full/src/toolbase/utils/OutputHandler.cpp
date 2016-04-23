@@ -99,7 +99,7 @@ void OutputHandler::usage(string programName)
     (*out) << "\t-g" << "\t" << "--debug" << "\t\t\t\t" << "enter debug mode" << endl;
     (*out) << "\t-v" << "\t" << "--version" << "\t\t\t" << "program version" << endl;
     (*out) << "\t-?" << "\t" << "--help" << "\t\t\t\t" << "help" << endl;
-    (*out) << "TreeNET v2.2, written by Jean-Francois Grailet (last updated: March 2016)" << endl;
+    (*out) << "TreeNET v2.3, written by Jean-Francois Grailet (last updated: April 2016)" << endl;
     (*out) << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
     
     out->flush();

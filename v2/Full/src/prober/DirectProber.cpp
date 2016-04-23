@@ -21,6 +21,7 @@ using std::cout;
 using std::endl;
 #include <set>
 using std::set;
+#include <sys/time.h> // For gettimeofday (by J.-F. G)
 
 #include "DirectProber.h"
 #include "../common/thread/Thread.h"
@@ -56,6 +57,11 @@ const unsigned char DirectProber::ICMP_TYPE_ECHO_REQUEST = 8;
 const unsigned char DirectProber::ICMP_TYPE_ECHO_REPLY = 0;
 const unsigned char DirectProber::ICMP_TYPE_DESTINATION_UNREACHABLE = 3;
 const unsigned char DirectProber::ICMP_TYPE_TIME_EXCEEDED = 11;
+
+const unsigned char DirectProber::ICMP_TYPE_TS_REQUEST = 13;
+const unsigned char DirectProber::ICMP_TYPE_TS_REPLY = 14;
+const uint16_t DirectProber::ICMP_TS_FIELDS_LENGTH = 12;
+const size_t DirectProber::TIMESTAMP_LENGTH_BYTES = 4;
 
 const unsigned char DirectProber::ICMP_CODE_NETWORK_UNREACHABLE = 0;
 const unsigned char DirectProber::ICMP_CODE_HOST_UNREACHABLE = 1;
@@ -663,4 +669,14 @@ uint16_t DirectProber::onesComplementAddition(uint16_t num1, uint16_t num2)
 	sum += (sum >> 16);
 
 	return sum;
+}
+
+uint32_t DirectProber::getUTTimeSinceMidnight()
+{
+    timeval UTTime;
+    gettimeofday(&UTTime, NULL);
+    
+    unsigned long inMilliseconds = (UTTime.tv_sec % 86400) * 1000 + (UTTime.tv_usec / 1000);
+    
+    return (uint32_t) inMilliseconds;
 }

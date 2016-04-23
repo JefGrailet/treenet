@@ -39,6 +39,8 @@ IPTableEntry::IPTableEntry(InetAddress ip, unsigned short nbIPIDs) : InetAddress
     this->velocityUpperBound = 0.0;
     this->IPIDCounterType = NO_IDEA;
     this->echoInitialTTL = 0;
+    this->replyingToTSRequest = false;
+    this->portUnreachableSrcIP = InetAddress(0);
 }
 
 IPTableEntry::~IPTableEntry()
@@ -98,7 +100,10 @@ string IPTableEntry::toString()
 {
     stringstream ss;
     
+    // IP - TTL
     ss << (*this) << " - " << (unsigned short) TTL;
+    
+    // : [Initial echo TTL] - ECHO
     if(this->IPIDCounterType == ECHO_COUNTER)
     {
         ss << ": ";
@@ -108,9 +113,12 @@ string IPTableEntry::toString()
             ss << iTTL << " - ";
         
         ss << "ECHO";
+        
+        // ,[Host name]
         if(!hostName.empty())
             ss << "," << hostName;
     }
+    // : [Initial echo TTL] - [IP-ID data]
     else if(this->hasIPIDData())
     {
         ss << ": ";
@@ -128,13 +136,29 @@ string IPTableEntry::toString()
                 ss << "," << this->delays[i - 1] << ",";
             ss << this->probeTokens[i] << ";" << this->IPIdentifiers[i];
         }
+        
+        // ,[Host name]
         if(!hostName.empty())
             ss << "," << hostName;
     }
+    // : [Host name]
     else if(!hostName.empty())
     {
         ss << ": " << hostName;
     }
+    
+    // ... | [Yes or nothing] (yes ~= replies to ICMP timestamp request)
+    if(this->replyingToTSRequest)
+    {
+        ss << " | Yes";
+        
+        // ,[Unreachable port reply IP]
+        if(this->portUnreachableSrcIP != InetAddress("0"))
+            ss << "," << this->portUnreachableSrcIP;
+    }
+    // ... | [Unreachable port reply IP] (if available)
+    else if(this->portUnreachableSrcIP != InetAddress("0"))
+        ss << " | " << this->portUnreachableSrcIP;
     
     return ss.str();
 }
@@ -155,6 +179,11 @@ string IPTableEntry::toStringFingerprint()
     else
         ss << "*";
     ss << ",";
+    if(this->portUnreachableSrcIP != InetAddress("0"))
+        ss << this->portUnreachableSrcIP;
+    else
+        ss << "*";
+    ss << ",";
     switch(this->IPIDCounterType)
     {
         case HEALTHY_COUNTER:
@@ -172,9 +201,15 @@ string IPTableEntry::toStringFingerprint()
     }
     ss << ",";
     if(!this->hostName.empty())
-        ss << "Yes>";
+        ss << "Yes";
     else
-        ss << "No>";
+        ss << "No";
+    ss << ",";
+    if(this->replyingToTSRequest)
+        ss << "Yes";
+    else
+        ss << "No";
+    ss << ">";
 
     return ss.str();
 }

@@ -91,17 +91,20 @@ int main(int argc, char *argv[])
     bool debugMode = false;
     
     /*
-     * "Re-computation mode": integer value telling whether we are recomputing some data to merge 
-     * different data sets together. The possibilities are:
+     * "Re-computation mode": integer value telling whether we are recomputing some data and output
+     * files to improve their results. The possibilities are:
      * -0: only the input data will be used,
-     * -1: alias resolution hints (and only them) are re-computed to replace the available data,
-     * -2: both routes and alias resolution hints are re-computed to replace the available data,
-     * -3 and above: not used.
+     * -1: available data is used to produce new .alias/.fingerprint files,
+     * -2: alias resolution hints (and only them) are re-computed to replace the available data,
+     * -3: both routes and alias resolution hints are re-computed to replace the available data,
+     * -Above 3: not used.
+     * Note that in the case of 2 and 3, .alias/.fingerprint files are also produced again.
      */
     
     const static unsigned short NO_RECOMPUTATION = 0;
-    const static unsigned short RECOMPUTE_AR_HINTS = 1;
-    const static unsigned short RECOMPUTE_ROUTES_AR = 2;
+    const static unsigned short RECOMPUTE_AR_RESULTS = 1;
+    const static unsigned short RECOMPUTE_AR_HINTS = 2;
+    const static unsigned short RECOMPUTE_ROUTES_AR = 3;
     unsigned short recomputationMode = 0;
 
     int opt = 0;
@@ -292,7 +295,7 @@ int main(int argc, char *argv[])
                 debugMode = true;
                 break;
             case 'v':
-                cout << "TreeNET Reader v2.2 (" << string(argv[0]) << ") was written by J.-F. Grailet (2016)\n";
+                cout << "TreeNET Reader v2.3 (" << string(argv[0]) << ") was written by J.-F. Grailet (2016)\n";
                 cout << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
                 delete outHandler;
                 return 0;
@@ -891,7 +894,9 @@ int main(int argc, char *argv[])
         delete ar;
         
         // Outputs new .alias and .fingerprint files if necessary
-        if(recomputationMode == RECOMPUTE_AR_HINTS || recomputationMode == RECOMPUTE_ROUTES_AR)
+        if(recomputationMode == RECOMPUTE_AR_RESULTS || 
+           recomputationMode == RECOMPUTE_AR_HINTS || 
+           recomputationMode == RECOMPUTE_ROUTES_AR)
         {
             tree->outputAliases(newFileName + ".alias");
             cout << "Inferred alias lists have been saved in an output file ";

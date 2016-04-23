@@ -1,8 +1,6 @@
 /*
  * This file implements the class described in DirectUDPProber.h. Date at which it was implemented 
  * is unknown (though it should be the same as DirectUDPProber.h).
- * 
- * Edited by J.-F. Grailet in September 2015 to improve coding style.
  */
 
 #include <cstdlib>
@@ -172,7 +170,7 @@ ProbeRecord *DirectUDPProber::basic_probe(const InetAddress &src,
         IPOptionsLength = (uint32_t) 4 * DirectProber::DEFAULT_MAX_RECORD_ROUTE_ADDRESS_SIZE + 3;
         // 3 comes from the type/length/offset-pointer of RR routing option
     }
-
+    
     uint32_t IPHeaderLength = DirectProber::MINIMUM_IP_HEADER_LENGTH + IPOptionsLength;
     if(IPHeaderLength % 4 != 0)
     {
@@ -240,7 +238,7 @@ ProbeRecord *DirectUDPProber::basic_probe(const InetAddress &src,
         memset(optionsField, 0, DirectProber::DEFAULT_MAX_RECORD_ROUTE_ADDRESS_SIZE * (uint32_t) 4);
         optionsField += DirectProber::DEFAULT_MAX_RECORD_ROUTE_ADDRESS_SIZE * (uint32_t) 4;
     }
-
+    
     if(IPPaddingLength > 0)
     {
         memset(optionsField, 0, IPPaddingLength);
@@ -437,6 +435,7 @@ ProbeRecord *DirectUDPProber::basic_probe(const InetAddress &src,
 
             uint16_t receivedIPtotalLength = ntohs(ip->ip_len);
             uint16_t receivedIPheaderLength = ((uint16_t)ip->ip_hl) * (uint16_t) 4;
+            unsigned short payloadLength = (unsigned short) (receivedIPtotalLength - receivedIPheaderLength);
 
             if(receivedBytes < receivedIPtotalLength)
             {
@@ -546,6 +545,7 @@ ProbeRecord *DirectUDPProber::basic_probe(const InetAddress &src,
                                                         IPIdentifier, 
                                                         ntohs(ip->ip_id), 
                                                         payloadip->ip_ttl, 
+                                                        payloadLength, 
                                                         1, 
                                                         usingFixedFlowID, 
                                                         RRarray, 
@@ -562,6 +562,7 @@ ProbeRecord *DirectUDPProber::basic_probe(const InetAddress &src,
                             // Some weird thing happened: even though we asked for IP options, we could not get that
                         }
                     }
+                    
                     return buildProbeRecord(REQTime, 
                                             dst, 
                                             rplyAddress, 
@@ -572,6 +573,7 @@ ProbeRecord *DirectUDPProber::basic_probe(const InetAddress &src,
                                             IPIdentifier, 
                                             ntohs(ip->ip_id), 
                                             payloadip->ip_ttl, 
+                                            payloadLength, 
                                             1, 
                                             usingFixedFlowID, 
                                             0, 
@@ -585,7 +587,7 @@ ProbeRecord *DirectUDPProber::basic_probe(const InetAddress &src,
             }
         }
         // Select timeout occured
-        else if(selectResult==0)
+        else if(selectResult == 0)
         {
             if(verbose)
                 cout << "select(...) function timed out" << endl;
@@ -597,6 +599,7 @@ ProbeRecord *DirectUDPProber::basic_probe(const InetAddress &src,
                                     255, 
                                     255, 
                                     IPIdentifier, 
+                                    0, 
                                     0, 
                                     0, 
                                     1, 
@@ -636,6 +639,7 @@ ProbeRecord *DirectUDPProber::buildProbeRecord(const auto_ptr<TimeVal> &reqTime,
                                                unsigned short srcIPidentifier, 
                                                unsigned short rplyIPidentifier, 
                                                unsigned char payloadTTL, 
+                                               unsigned short payloadLength, 
                                                int probingCost, 
                                                bool usingFixedFlowID, 
                                                InetAddress *const RR, 
@@ -653,6 +657,7 @@ ProbeRecord *DirectUDPProber::buildProbeRecord(const auto_ptr<TimeVal> &reqTime,
     recordPtr->setSrcIPidentifier(srcIPidentifier);
     recordPtr->setRplyIPidentifier(rplyIPidentifier);
     recordPtr->setPayloadTTL(payloadTTL);
+    recordPtr->setPayloadLength(payloadLength);
     recordPtr->setProbingCost(probingCost);
     recordPtr->setUsingFixedFlowID(usingFixedFlowID);
     recordPtr->setRR(RR);
@@ -667,7 +672,8 @@ ProbeRecord *DirectUDPProber::buildProbeRecord(const auto_ptr<TimeVal> &reqTime,
         << " rplyICMPtype=" << (int) recordPtr->getRplyICMPtype()
         << " rplyICMPcode=" << (int) recordPtr->getRplyICMPcode()
         << " rplyTTL=" << (int) recordPtr->getRplyTTL()
-        << " payloadTTL=" << (int) recordPtr->getPayloadTTL();
+        << " payloadTTL=" << (int) recordPtr->getPayloadTTL()
+        << " payloadLength=" << (int) recordPtr->getPayloadLength();
         if(RR != 0)
             cout << " RR[" << RRlength << "]=";
 

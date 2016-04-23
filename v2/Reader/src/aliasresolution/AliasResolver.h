@@ -61,6 +61,20 @@ private:
     unsigned char currentTTL;
     
     /*
+     * Method to perform the UDP unreachable port source IP method for alias resolution, which is 
+     * implemented in the "iffinder" tool. As TreeNET sent a UDP probe with an unlikely high port 
+     * number to each candidate IP while collecting data, we can try to alias them by looking at 
+     * the source IPs found in the replies (if they had the "Port Unreachable" code) and compare 
+     * them.
+     *
+     * @param IPTableEntry* ip1  The first IP to associate
+     * @param IPTableEntry* ip2  The second IP to associate
+     * @return bool              True if the IPs can be associated, False otherwise
+     */
+    
+    bool portUnreachableAliasing(IPTableEntry *ip1, IPTableEntry *ip2);
+    
+    /*
      * Method to perform Ally method for alias resolution, i.e., if for 2 distinct IPs, we have
      * 3 IP IDs with increasing tokens which are also increasing themselves and close in values, 
      * 2 of them being from the first IP and the last one from the second, they are likely from 

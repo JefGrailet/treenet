@@ -1,8 +1,6 @@
 /*
  * This file implements the class described in DirectICMPPProber.h. Date at which it was implemented 
  * is unknown (though it should be the same as DirectICMPProber.h).
- * 
- * Edited by J.-F. Grailet in December 2014 to improve coding style.
  */
 
 #include <netinet/ip.h>
@@ -109,6 +107,7 @@ DirectProber(attentionMessage,
              upperBoundICMPseq, 
              verbose)
 {
+    this->usingTimestampRequests = false;
 }
 
 DirectICMPProber::~DirectICMPProber()
@@ -117,14 +116,15 @@ DirectICMPProber::~DirectICMPProber()
 
 ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 			                               const InetAddress &dst,
-			                               unsigned short IPIdentifier,
-			                               unsigned char TTL,
-			                               bool usingFixedFlowID,
-			                               unsigned short ICMPidentifier,
-			                               unsigned short ICMPsequence,
-			                               bool recordRoute,
+			                               unsigned short IPIdentifier, 
+			                               unsigned char TTL, 
+			                               bool usingFixedFlowID, 
+			                               unsigned short ICMPidentifier, 
+			                               unsigned short ICMPsequence, 
+			                               bool recordRoute, 
 			                               InetAddress **looseSourceList) throw (SocketSendException, SocketReceiveException)
 {
+    bool timestampRequest = this->usingTimestampRequests;
 	uint32_t src_32 = (uint32_t) (src.getULongAddress());
 	uint32_t dst_32 = (uint32_t) (dst.getULongAddress());
 	uint16_t IPIdentifier_16 = (uint16_t) IPIdentifier;
@@ -137,6 +137,14 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 		string msg = "Enabling both record route and loose source addressing is discouraged ";
 		msg += "because of security concerns. Please enable only one of these IP options.";
 		throw SocketSendException(msg);
+	}
+	
+	// Exception stating usingFixedFlowID and ICMP timestamp request are not compatible
+	if(timestampRequest && usingFixedFlowID)
+	{
+	    string msg = "It is not possible to both use the ICMP timestamp request message and have ";
+	    msg + "a fixed flow ID (with Paris traceroute). Please only use one feature at a time.";
+	    throw SocketSendException(msg);
 	}
 
 	int looseSourceListSize = 0;
@@ -152,15 +160,19 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
     // 1) Prepares packet to send; sets IP fields
 	uint32_t IPOptionsLength = 0; // Assumed to be zero by default (in bytes)
 	uint32_t IPPaddingLength = 0;
-	if(looseSourceList!=0)
+	
+	// recordRoute and looseSourceList should not be used together
+	if(looseSourceList != 0)
 	{
-		// Sets the options length (3 comes from the type/length/offset - pointer of loose source routing option)
+		// Sets the options length
 		IPOptionsLength = (uint32_t) 4 * looseSourceListSize + 3;
+		// 3 comes from the type/length/offset - pointer of loose source routing option
 	}
 	else if(recordRoute == true)
 	{
-		// Sets the options length (3 comes from the type/length/offset - pointer of RR routing option)
-		IPOptionsLength = (uint32_t) 4 * DirectProber::DEFAULT_MAX_RECORD_ROUTE_ADDRESS_SIZE + 3; 
+		// Sets the options length
+		IPOptionsLength = (uint32_t) 4 * DirectProber::DEFAULT_MAX_RECORD_ROUTE_ADDRESS_SIZE + 3;
+		// 3 comes from the type/length/offset - pointer of RR routing option
 	}
 
 	uint32_t IPHeaderLength = DirectProber::MINIMUM_IP_HEADER_LENGTH + IPOptionsLength;
@@ -174,7 +186,11 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 	ip->ip_hl = IPHeaderLength / ((uint32_t) 4); // In terms of 4 byte units
 	ip->ip_tos = DirectProber::DEFAULT_IP_TOS;
 	uint16_t totalPacketLength = IPHeaderLength + DirectProber::DEFAULT_ICMP_HEADER_LENGTH;
-	totalPacketLength += DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH + (uint32_t) getAttentionMsg().length();
+	// Size depends on the fact that we use timestamp request or not
+	if(timestampRequest)
+	    totalPacketLength += DirectProber::ICMP_TS_FIELDS_LENGTH;
+	else
+	    totalPacketLength += DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH + (uint32_t) getAttentionMsg().length();
 	ip->ip_len = htons(totalPacketLength);
 	ip->ip_id = htons(IPIdentifier_16);
 	ip->ip_off = htons(DirectProber::DEFAULT_IP_FRAGMENT_OFFSET);
@@ -201,13 +217,13 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 	if(looseSourceList != 0)
 	{
 		// Works for both LS and LSRR
-		optionsField = buffer+DirectProber::MINIMUM_IP_HEADER_LENGTH;
+		optionsField = buffer + DirectProber::MINIMUM_IP_HEADER_LENGTH;
 		memset(optionsField++, 131, 1); // 131 is type of loose source routing
 		memset(optionsField++, IPOptionsLength, 1);
-		memset(optionsField++, 4,1); // 4 is the offset of the first address in options field
+		memset(optionsField++, 4, 1); // 4 is the offset of the first address in options field
 		uint32_t addr;
 
-		for(int i=1; i<looseSourceListSize;i++)
+		for(int i = 1; i < looseSourceListSize; i++)
 		{
 			addr = htonl((uint32_t) (looseSourceList[i]->getULongAddress()));
 			memcpy(optionsField, &addr, 4);
@@ -228,7 +244,6 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 
 		memset(optionsField, 0, DirectProber::DEFAULT_MAX_RECORD_ROUTE_ADDRESS_SIZE * (uint32_t) 4);
 		optionsField += DirectProber::DEFAULT_MAX_RECORD_ROUTE_ADDRESS_SIZE * (uint32_t) 4;
-
 	}
 
 	if(IPPaddingLength > 0)
@@ -245,54 +260,98 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 	// Set ICMP fields
 	struct icmphdr *icmp = (struct icmphdr*) (buffer + IPHeaderLength);
 
-	icmp->type = DirectProber::ICMP_TYPE_ECHO_REQUEST;
-	icmp->code = 0x0;
-	(icmp->un).echo.id = htons(ICMPidentifier_16);
-	(icmp->un).echo.sequence = htons(ICMPsequence_16);
+	// Building up an ICMP timestamp request
+	uint32_t UTTimeSinceMidnight = 0; // For saving in probeRecord later
+    if(timestampRequest)
+    {
+        // Main fields
+        icmp->type = DirectProber::ICMP_TYPE_TS_REQUEST;
+        icmp->code = 0x0;
+	    (icmp->un).echo.id = htons(ICMPidentifier_16);
+	    (icmp->un).echo.sequence = htons(ICMPsequence_16);
+	    
+	    UTTimeSinceMidnight = DirectProber::getUTTimeSinceMidnight();
+	    
+	    // Writing Originate (= cur UT time since midnight), Receive and Transmit (= 0) timestamps
+	    uint8_t *icmpts = (((uint8_t*) icmp) + DirectProber::DEFAULT_ICMP_HEADER_LENGTH);
+	    memcpy(icmpts, &UTTimeSinceMidnight, DirectProber::TIMESTAMP_LENGTH_BYTES);
+	    icmpts += DirectProber::TIMESTAMP_LENGTH_BYTES;
+	    memset(icmpts, 0x0, DirectProber::TIMESTAMP_LENGTH_BYTES);
+	    icmpts += DirectProber::TIMESTAMP_LENGTH_BYTES;
+	    memset(icmpts, 0x0, DirectProber::TIMESTAMP_LENGTH_BYTES);
+	    
+	    // Checksum
+	    icmp->checksum = 0x0; // Before computing checksum, the sum field must be zero
+	    icmp->checksum = DirectProber::calculateInternetChecksum((uint16_t*) icmp, 
+		DirectProber::DEFAULT_ICMP_HEADER_LENGTH + DirectProber::ICMP_TS_FIELDS_LENGTH);
+		
+		/*
+	     * Even though ICMP checksum is 2 bytes long we don't need to apply htons() or ntohs() on 
+	     * this field.
+	     */
+    }
+    else
+    {
+        // Main fields
+        icmp->type = DirectProber::ICMP_TYPE_ECHO_REQUEST;
+	    icmp->code = 0x0;
+	    (icmp->un).echo.id = htons(ICMPidentifier_16);
+	    (icmp->un).echo.sequence = htons(ICMPsequence_16);
 
-	/**
-	 * the random data must have been generated by the calling function
-	 * to make DOS attack suspections less
-	 */
+	    /**
+	     * The random data must have been generated by the calling function
+	     * to make DOS attack suspections less.
+	     */
 	
-	fillRandomDataBuffer();
-	uint8_t *icmpdata=(((uint8_t*) icmp) + DirectProber::DEFAULT_ICMP_HEADER_LENGTH);
-	if(usingFixedFlowID)
-	{
-		memset(icmpdata, 0x0, DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH);
+	    fillRandomDataBuffer();
+	    uint8_t *icmpdata=(((uint8_t*) icmp) + DirectProber::DEFAULT_ICMP_HEADER_LENGTH);
+	    if(usingFixedFlowID)
+	    {
+		    memset(icmpdata, 0x0, DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH);
 		
-		// Only uses six random bytes, the other two bytes will be computed later to make ones complement sum all-ones
-		memcpy(icmpdata, randomDataBuffer, DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH-2);
-	}
-	else
-	{
-		memcpy(icmpdata, randomDataBuffer, DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH);
-	}
+		    /*
+		     * Only uses six random bytes, the other two bytes will be computed later to make ones 
+		     * complement sum all-ones.
+		     */
+		    
+		    memcpy(icmpdata, randomDataBuffer, DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH - 2);
+	    }
+	    else
+	    {
+		    memcpy(icmpdata, randomDataBuffer, DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH);
+	    }
 
-	icmpdata += DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH;
-	memcpy(icmpdata, getAttentionMsg().c_str(), getAttentionMsg().length());
-	icmpdata += getAttentionMsg().length();
-
-	icmp->checksum = 0x0; // Before computing checksum, the sum field must be zero
-	// Even though ICMP checksum is 2 bytes long we dont need to apply htons() or ntohs() on this field
-	if(usingFixedFlowID)
-	{
-		// Uses middle icmpseq as the constant checksum value
-		icmp->checksum = (uint16_t) ((getLowerBoundDstPortICMPseq() + getUpperBoundDstPortICMPseq()) / 2); 
-		uint16_t ocsum = DirectProber::onesComplementAddition((uint16_t*) icmp, 
-		DirectProber::DEFAULT_ICMP_HEADER_LENGTH + DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH + getAttentionMsg().length());
+	    icmpdata += DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH;
+	
+	    // Copying attention message, setting checksum to 0 before computing it
+	    memcpy(icmpdata, getAttentionMsg().c_str(), getAttentionMsg().length());
+	    icmpdata += getAttentionMsg().length();
+	    icmp->checksum = 0x0;
+	    
+	    /*
+	     * Even though ICMP checksum is 2 bytes long we don't need to apply htons() or ntohs() on 
+	     * this field.
+	     */
+	    
+	    if(usingFixedFlowID)
+	    {
+		    // Uses middle icmpseq as the constant checksum value
+		    icmp->checksum = (uint16_t) ((getLowerBoundDstPortICMPseq() + getUpperBoundDstPortICMPseq()) / 2); 
+		    uint16_t ocsum = DirectProber::onesComplementAddition((uint16_t*) icmp, 
+		    DirectProber::DEFAULT_ICMP_HEADER_LENGTH + DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH + getAttentionMsg().length());
 		
-		// Takes the difference between all-ones and sum
-		uint16_t ocdiff = DirectProber::onesComplementSubtraction(DirectProber::MAX_UINT16_T_NUMBER,ocsum);
-		memcpy(((uint8_t*) icmp) + DirectProber::DEFAULT_ICMP_HEADER_LENGTH + DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH-2, 
-		(uint8_t *) (&ocdiff), 2);
+		    // Takes the difference between all-ones and sum
+		    uint16_t ocdiff = DirectProber::onesComplementSubtraction(DirectProber::MAX_UINT16_T_NUMBER, ocsum);
+		    memcpy(((uint8_t*) icmp) + DirectProber::DEFAULT_ICMP_HEADER_LENGTH + DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH - 2, 
+		    (uint8_t *) (&ocdiff), 2);
+	    }
+	    else
+	    {
+	        // Regular checksum
+		    icmp->checksum = DirectProber::calculateInternetChecksum((uint16_t*) icmp, 
+		    DirectProber::DEFAULT_ICMP_HEADER_LENGTH + DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH + getAttentionMsg().length());
+	    }
 	}
-	else
-	{
-		icmp->checksum = DirectProber::calculateInternetChecksum((uint16_t*) icmp, 
-		DirectProber::DEFAULT_ICMP_HEADER_LENGTH + DirectProber::DEFAULT_ICMP_RADOM_DATA_LENGTH + getAttentionMsg().length());
-	}
-
 
     // 2) Sends the request packet
 	struct sockaddr_in to;
@@ -310,7 +369,7 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 		<< " ICMPidentifier=" << ICMPidentifier
 		<< " ICMPsequence=" << ICMPsequence;
 
-		if(looseSourceList!=0)
+		if(looseSourceList != 0)
 		{
 			cout << " LooseSourceList=";
 			for(int i = 0; i < looseSourceListSize; i++)
@@ -438,6 +497,7 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 
 			uint16_t receivedIPtotalLength = ntohs(ip->ip_len);
 			uint16_t receivedIPheaderLength = ((uint16_t) ip->ip_hl) * (uint16_t) 4;
+			unsigned short payloadLength = (unsigned short) (receivedIPtotalLength - receivedIPheaderLength);
 
 			if(receivedBytes < receivedIPtotalLength)
 			{
@@ -525,7 +585,7 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 				{
 					// This is the reply of the packet that we sent
 					InetAddress rplyAddress((unsigned long int) ntohl((ip->ip_src).s_addr));
-					if(recordRoute==true)
+					if(recordRoute == true)
 					{
 						// We expect some routers on the way filled the options record route field
 						if((uint16_t) 4 * payloadip->ip_hl > DirectProber::MINIMUM_IP_HEADER_LENGTH)
@@ -552,6 +612,10 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 								                        IPIdentifier, 
 								                        ntohs(ip->ip_id), 
 								                        payloadip->ip_ttl, 
+								                        payloadLength, 
+								                        0, 
+								                        0, 
+								                        0, 
 								                        1, 
 								                        usingFixedFlowID, 
 								                        RRarray, 
@@ -571,6 +635,7 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 						}
 
 					}
+					
 					return buildProbeRecord(REQTime, 
 					                        dst, 
 					                        rplyAddress, 
@@ -581,6 +646,10 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 					                        IPIdentifier, 
 					                        ntohs(ip->ip_id), 
 					                        payloadip->ip_ttl, 
+					                        payloadLength, 
+					                        0, 
+					                        0, 
+					                        0, 
 					                        1, 
 					                        usingFixedFlowID, 
 					                        0, 
@@ -592,6 +661,7 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 				if(ntohs((icmp->un).echo.id) == ICMPidentifier_16 && ntohs((icmp->un).echo.sequence) == ICMPsequence_16)
 				{
 					InetAddress rplyAddress((unsigned long int) ntohl((ip->ip_src).s_addr));
+					
 					return buildProbeRecord(REQTime, 
 					                        dst, 
 					                        rplyAddress, 
@@ -602,11 +672,54 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 					                        IPIdentifier, 
 					                        ntohs(ip->ip_id), 
 					                        0, 
+					                        payloadLength, 
+					                        0, 
+					                        0, 
+					                        0, 
 					                        1, 
 					                        usingFixedFlowID, 
 					                        0, 
 					                        0);
 				}
+			}
+			// Received an ICMP timestamp reply
+			else if(icmp->type == DirectProber::ICMP_TYPE_TS_REPLY)
+			{
+			    // Picks the obtained timestamps
+			    uint8_t* timestamps = (buffer + (ip->ip_hl) * 4) + 12;
+			    
+			    // + 12 because 8 bytes for ICMP headers and 4 bytes for originate timestamp
+
+			    unsigned long receiveTs = 0, transmitTs = 0;
+			    receiveTs = (unsigned short) timestamps[0] * 256 * 256 * 256;
+			    receiveTs += (unsigned short) timestamps[1] * 256 * 256;
+			    receiveTs += (unsigned short) timestamps[2] * 256;
+			    receiveTs += (unsigned short) timestamps[3];
+			    
+			    transmitTs = (unsigned short) timestamps[4] * 256 * 256 * 256;
+			    transmitTs += (unsigned short) timestamps[5] * 256 * 256;
+			    transmitTs += (unsigned short) timestamps[6] * 256;
+			    transmitTs += (unsigned short) timestamps[7];
+
+			    InetAddress rplyAddress((unsigned long int) ntohl((ip->ip_src).s_addr));
+			    return buildProbeRecord(REQTime, 
+				                        dst, 
+				                        rplyAddress, 
+				                        TTL, 
+				                        ip->ip_ttl, 
+				                        icmp->type, 
+				                        icmp->code, 
+				                        IPIdentifier, 
+				                        ntohs(ip->ip_id), 
+				                        0, 
+				                        payloadLength, 
+				                        (unsigned long) UTTimeSinceMidnight, 
+				                        receiveTs, 
+				                        transmitTs, 
+				                        1, 
+				                        usingFixedFlowID, 
+				                        0, 
+				                        0);
 			}
 			else
 			{
@@ -625,11 +738,11 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
 			{
 				cout << "select(...) function timed out" << endl;
 			}
-			return buildProbeRecord(REQTime, dst, InetAddress(0), TTL, 0, 255, 255, IPIdentifier, 0, 0, 1, usingFixedFlowID, 0, 0);
+			return buildProbeRecord(REQTime, dst, InetAddress(0), TTL, 0, 255, 255, IPIdentifier, 0, 0, 0, 0, 0, 0, 1, usingFixedFlowID, 0, 0);
 		}
 		else
 		{
-			//**********************     select error occured    *******************
+			//**********************     Select error occured    *******************
 			if(verbose)
 			{
 				if(errno == EINVAL)
@@ -659,6 +772,10 @@ ProbeRecord *DirectICMPProber::buildProbeRecord(const auto_ptr<TimeVal> &reqTime
                                                 unsigned short srcIPidentifier, 
                                                 unsigned short rplyIPidentifier, 
                                                 unsigned char payloadTTL, 
+                                                unsigned short payloadLength, 
+                                                unsigned long originateTs, 
+                                                unsigned long receiveTs, 
+                                                unsigned long transmitTs, 
                                                 int probingCost, 
                                                 bool usingFixedFlowID, 
                                                 InetAddress* const RR, 
@@ -676,6 +793,10 @@ ProbeRecord *DirectICMPProber::buildProbeRecord(const auto_ptr<TimeVal> &reqTime
 	recordPtr->setSrcIPidentifier(srcIPidentifier);
 	recordPtr->setRplyIPidentifier(rplyIPidentifier);
 	recordPtr->setPayloadTTL(payloadTTL);
+	recordPtr->setPayloadLength(payloadLength);
+	recordPtr->setOriginateTs(originateTs);
+	recordPtr->setReceiveTs(receiveTs);
+	recordPtr->setTransmitTs(transmitTs);
 	recordPtr->setProbingCost(probingCost);
 	recordPtr->setUsingFixedFlowID(usingFixedFlowID);
 	recordPtr->setRR(RR);
@@ -692,7 +813,20 @@ ProbeRecord *DirectICMPProber::buildProbeRecord(const auto_ptr<TimeVal> &reqTime
 		<< " rplyICMPtype=" << (int) recordPtr->getRplyICMPtype()
 		<< " rplyICMPcode=" << (int) recordPtr->getRplyICMPcode()
 		<< " rplyTTL=" << (int) recordPtr->getRplyTTL()
-		<< " payloadTTL=" << (int) recordPtr->getPayloadTTL();
+		<< " payloadTTL=" << (int) recordPtr->getPayloadTTL()
+		<< " payloadLength=" << (int) recordPtr->getPayloadLength();
+		if(recordPtr->getRplyICMPtype() == DirectProber::ICMP_TYPE_TS_REPLY)
+		{
+		    cout << " originateTs=" << recordPtr->getOriginateTs()
+		    << " receiveTs=" << recordPtr->getReceiveTs()
+		    << " transmitTs=" << recordPtr->getTransmitTs();
+		}
+		else
+		{
+		    cout << " originateTs:" << setiosflags(ios::left) << setw(3) << "***"
+		    << " receiveTs:" << setiosflags(ios::left) << setw(3) << "***"
+		    << " transmitTs:" << setiosflags(ios::left) << setw(3) << "***";
+		}
 		
 		if(RR != 0)
 		{

@@ -135,26 +135,26 @@ void ParisTracerouteTask::run()
     {
         try
         {
-            ProbeRecord *probe = this->probe(probeDst, probeTTL);
+            ProbeRecord *record = this->probe(probeDst, probeTTL);
             
-            InetAddress rplyAddress = probe->getRplyAddress();
+            InetAddress rplyAddress = record->getRplyAddress();
             if(rplyAddress == InetAddress("0.0.0.0"))
             {
-                delete probe;
+                delete record;
                 
                 // New probe with twice the timeout period
                 prober->setTimeout(usedTimeout * 2);
-                probe = this->probe(probeDst, probeTTL);
-                rplyAddress = probe->getRplyAddress();
+                record = this->probe(probeDst, probeTTL);
+                rplyAddress = record->getRplyAddress();
                 
                 // If still nothing different than 0.0.0.0, last try with 4 times the timeout
                 if(rplyAddress == InetAddress("0.0.0.0"))
                 {
-                    delete probe;
+                    delete record;
                     
                     prober->setTimeout(usedTimeout * 4);
-                    probe = this->probe(probeDst, probeTTL);
-                    rplyAddress = probe->getRplyAddress();
+                    record = this->probe(probeDst, probeTTL);
+                    rplyAddress = record->getRplyAddress();
                 }
                 
                 // Restores default timeout
@@ -163,7 +163,7 @@ void ParisTracerouteTask::run()
             
             route[probeTTL - 1] = rplyAddress;
             
-            delete probe;
+            delete record;
         }
         catch(SocketSendException e)
         {

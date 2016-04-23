@@ -10,6 +10,8 @@
 
 #include "AliasHintCollector.h"
 #include "IPIDCollector.h"
+#include "UDPUnreachablePortUnit.h"
+#include "TimestampCheckUnit.h"
 #include "ReverseDNSUnit.h"
 #include "../common/thread/Thread.h"
 
@@ -77,10 +79,12 @@ void AliasHintCollector::collect()
     for(unsigned short i = 0; i < nbThreads; i++)
         th[i] = NULL;
 
-    // Does a copy of the IPs list for host name retrieval (after IP-ID retrieval)
-    list<InetAddress> backUpIPsToProbe(this->IPsToProbe);
-    
-    (*out) << "IP-ID collection... " << std::flush;
+    // Does a copy of the IPs list for next hints
+    list<InetAddress> backUp1(this->IPsToProbe);
+    list<InetAddress> backUp2(this->IPsToProbe);
+    list<InetAddress> backUp3(this->IPsToProbe);
+
+    (*out) << "1. IP-ID collection... " << std::flush;
 
     // Starts scheduling for IP-ID retrieval
     unsigned short j = 0;
@@ -95,7 +99,7 @@ void AliasHintCollector::collect()
             delete th[j];
             th[j] = NULL;
         }
-
+        
         th[j] = new Thread(new IPIDCollector(env, this, IPToProbe, j * nbIPIDs));
         th[j]->start();
         
@@ -122,7 +126,7 @@ void AliasHintCollector::collect()
     
     (*out) << "done." << endl;
     
-    // Re-sizes th[] for reverse DNS (because there is a single thread per IP)
+    // Re-sizes th[] for the other hints (because each time, there is a single thread per IP)
     if(nbIPs > (unsigned long int) maxThreads)
         nbThreads = maxThreads;
     else
@@ -132,14 +136,105 @@ void AliasHintCollector::collect()
     for(unsigned short i = 0; i < nbThreads; i++)
         th[i] = NULL;
     
-    (*out) << "Reverse DNS... " << std::flush;
+    // Now schedules threads to try the UDP/ICMP Port Unreachable approach
+    (*out) << "2. Probing each IP with UDP (unreachable port)... " << std::flush;
     
-    // Now schedules to resolve host names of each IP by reverse DNS
+    unsigned short range = (DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID - DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID) / maxThreads;
     j = 0;
     for(unsigned long int i = 0; i < nbIPs; i++)
     {
-        InetAddress IPToProbe = backUpIPsToProbe.front();
-        backUpIPsToProbe.pop_front();
+        InetAddress IPToProbe = backUp1.front();
+        backUp1.pop_front();
+        
+        if(th[j] != NULL)
+        {
+            th[j]->join();
+            delete th[j];
+            th[j] = NULL;
+        }
+        
+        th[j] = new Thread(new UDPUnreachablePortUnit(env, 
+                                                      IPToProbe, 
+                                                      DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (j * range), 
+                                                      DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (j * range) + range - 1, 
+                                                      DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ, 
+                                                      DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ));
+        th[j]->start();
+        
+        j++;
+        if(j == maxThreads)
+            j = 0;
+        
+        // 0,1s of delay before next thread (if same router, avoids to "bomb" it)
+        Thread::invokeSleep(TimeVal(0, 100000));
+    }
+    
+    // Waiting for all remaining threads to complete
+    for(unsigned short i = 0; i < nbThreads; i++)
+    {
+        if(th[i] != NULL)
+        {
+            th[i]->join();
+            delete th[i];
+            th[i] = NULL;
+        }
+    }
+    
+    (*out) << "done." << endl;
+    
+    // Now schedules to check if each IP is compatible with prespecified timestamp option...
+    (*out) << "3. Sending ICMP timestamp request to each IP... " << std::flush;
+    
+    j = 0;
+    for(unsigned long int i = 0; i < nbIPs; i++)
+    {
+        InetAddress IPToProbe = backUp2.front();
+        backUp2.pop_front();
+        
+        if(th[j] != NULL)
+        {
+            th[j]->join();
+            delete th[j];
+            th[j] = NULL;
+        }
+        
+        th[j] = new Thread(new TimestampCheckUnit(env, 
+                                                  IPToProbe, 
+                                                  DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (j * range), 
+                                                  DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (j * range) + range - 1, 
+                                                  DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ, 
+                                                  DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ));
+        th[j]->start();
+        
+        j++;
+        if(j == maxThreads)
+            j = 0;
+        
+        // 0,1s of delay before next thread (if same router, avoids to "bomb" it)
+        Thread::invokeSleep(TimeVal(0, 100000));
+    }
+    
+    // Waiting for all remaining threads to complete
+    for(unsigned short i = 0; i < nbThreads; i++)
+    {
+        if(th[i] != NULL)
+        {
+            th[i]->join();
+            delete th[i];
+            th[i] = NULL;
+        }
+    }
+    
+    (*out) << "done." << endl;
+    
+    // Now schedules to resolve host names of each IP by reverse DNS
+    (*out) << "4. Reverse DNS... " << std::flush;
+    
+    j = 0;
+    for(unsigned long int i = 0; i < nbIPs; i++)
+    {
+        InetAddress IPToProbe = backUp3.front();
+        backUp3.pop_front();
         
         if(th[j] != NULL)
         {

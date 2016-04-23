@@ -25,6 +25,31 @@ AliasResolver::~AliasResolver()
 {
 }
 
+bool AliasResolver::portUnreachableAliasing(IPTableEntry *ip1, IPTableEntry *ip2)
+{
+    // Checks ip1 and ip2 are non null
+    if(ip1 != NULL && ip2 != NULL)
+    {
+        InetAddress srcIP1 = ip1->getPortUnreachableSrcIP();
+        InetAddress srcIP2 = ip2->getPortUnreachableSrcIP();
+        
+        // Multiple cases for aliasing these IPs.
+        if(srcIP1 != InetAddress("0.0.0.0") && srcIP1 == srcIP2)
+        {
+            return true;
+        }
+        else if(srcIP1 != InetAddress("0.0.0.0") && srcIP1 == (InetAddress) (*ip2))
+        {
+            return true;
+        }
+        else if(srcIP2 != InetAddress("0.0.0.0") && srcIP2 == (InetAddress) (*ip1))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 unsigned short AliasResolver::Ally(IPTableEntry *ip1, IPTableEntry *ip2, unsigned short maxDiff)
 {
     // The first condition is just in case; normally calling code checks it first
@@ -442,6 +467,18 @@ list<Router> AliasResolver::resolve(NetworkTreeNode *internal)
     }
     fingerprints.sort(Fingerprint::compare);
     
+    // Displays sorted fingerprints (since v2.3)
+    if(fingerprints.size() > 0)
+    {
+        ostream *out = env->getOutputStream();
+        (*out) << "Fingerprints (sorted):\n";
+        for(list<Fingerprint>::iterator it = fingerprints.begin(); it != fingerprints.end(); ++it)
+        {
+            (*out) << (InetAddress) (*((*it).ipEntry)) << " - " << (*it) << "\n";
+        }
+        (*out) << endl;
+    }
+    
     // Starts association...
     list<Router> result;
     while(fingerprints.size() > 0)
@@ -475,22 +512,77 @@ list<Router> AliasResolver::resolve(NetworkTreeNode *internal)
                 next = fingerprints.front();
         }
         
+        /*
+         * If cur has its field "portUnreachableSrcIP" different from 0.0.0.0, we also look for 
+         * a fingerprint which the IP is identical to the value of this field in "fingerprints" 
+         * list. Indeed, the fingerprinting of such IP does not always work, for some reason.
+         */
+        
+        if(cur.portUnreachableSrcIP != InetAddress("0.0.0.0"))
+        {
+            for(list<Fingerprint>::iterator i = fingerprints.begin(); i != fingerprints.end(); ++i)
+            {
+                Fingerprint subCur = (*i);
+                if((InetAddress) (*subCur.ipEntry) == cur.portUnreachableSrcIP)
+                {
+                    similar.push_back(subCur);
+                    fingerprints.erase(i--);
+                }
+            }
+        }
+        
         if(similar.size() == 0)
         {
             /*
              * Case 1: there is no similar fingerprint in the list, therefore one creates a router 
-             * for this IP only.
+             * for this IP only, except if features the data for the UDP port unreachable method. 
+             * In this case, the fingerprint is edited to remove the port unreachable source IP, 
+             * in order to try other aliasing methods with this fingerprint.
              */
             
+            if(cur.portUnreachableSrcIP != InetAddress("0.0.0.0"))
+            {
+                cur.portUnreachableSrcIP = InetAddress("0.0.0.0");
+                fingerprints.push_front(cur);
+                continue;
+            }
+            else
+            {
+                Router curRouter;
+                curRouter.addInterface(InetAddress((InetAddress) (*cur.ipEntry)), 
+                                       RouterInterface::FIRST_IP);
+                result.push_back(curRouter);
+            }
+        }
+        else if(cur.portUnreachableSrcIP != InetAddress("0.0.0.0"))
+        {
+            /*
+             * Case 2: similar fingerprints for which we have the data needed for the UDP 
+             * port unreachable alias resolution method. Due to the sorting process and the usage 
+             * of equals() while picking similar fingerprints (that is, the source IP in the Port 
+             * Unreachable response is the same for all fingerprints), one can just create a 
+             * single router with all the listed IPs and "cur".
+             */
+        
             Router curRouter;
             curRouter.addInterface(InetAddress((InetAddress) (*cur.ipEntry)), 
                                    RouterInterface::FIRST_IP);
+            
+            while(similar.size() > 0)
+            {
+                Fingerprint subCur = similar.front();
+                similar.pop_front();
+                
+                curRouter.addInterface(InetAddress((InetAddress) (*subCur.ipEntry)), 
+                                       RouterInterface::UDP_PORT_UNREACHABLE);
+            }
+            
             result.push_back(curRouter);
         }
         else if(cur.toGroupByDefault())
         {
             /*
-             * Case 2: similar fingerprints and "group by default" policy (applied to echo and 
+             * Case 3: similar fingerprints and "group by default" policy (applied to echo and 
              * random counters): the fingerprints with DNS are double checked to exclude IPs with 
              * similar fingerprints but host names that do not match. The process is repeated as 
              * long as there excluded IPs.
@@ -609,7 +701,7 @@ list<Router> AliasResolver::resolve(NetworkTreeNode *internal)
         else if(cur.IPIDCounterType == IPTableEntry::HEALTHY_COUNTER)
         {
             /*
-             * Case 3: similar fingerprint and "healthy" counter: the traditional IP ID based 
+             * Case 4: similar fingerprint and "healthy" counter: the traditional IP ID based 
              * methods are used to group the IPs together as routers.
              */
             
@@ -698,7 +790,7 @@ list<Router> AliasResolver::resolve(NetworkTreeNode *internal)
         else if(cur.IPIDCounterType == IPTableEntry::NO_IDEA)
         {
             /*
-             * Case 4: case of IPs for which no IP ID data could be collected. There are two 
+             * Case 5: case of IPs for which no IP ID data could be collected. There are two 
              * possibilites:
              * -either there is no host name (easily checked with cur, since fingerprints with 
              *  host names should come first), then a single router is created for each IP,

@@ -1,4 +1,4 @@
-About Measurements/ folder - By Jean-François Grailet, March 17, 2016
+About Measurements/ folder - By Jean-François Grailet, April 23, 2016
 =====================================================================
 
 Overview
@@ -75,16 +75,22 @@ Each data set consists of 3 files:
 
 -(From 12/03/2016 onwards) a .fingerprint file which contains the IP 
  fingerprints TreeNET computed for each IP. The main purpose of this file is 
- to evaluate the overall behaviour of (alleged) router interfaces in a given 
- AS, and to evaluate if some alias resolution techniques are (still) relevant 
- or outdated. See TreeNET own README file to learn more about its 
- fingerprinting method.
+ to evaluate the overall behaviour of router interfaces in a given AS, and to 
+ evaluate if some alias resolution techniques are (still) relevant or 
+ outdated. See TreeNET main README file to learn more about its 
+ fingerprinting method. Note that the fingerprints might change from one 
+ dataset to another due to extensions/refinements brought by the different 
+ versions TreeNET used at the time (for example, v2.3 brings 2 new parts to 
+ the usual fingerprints).
 
-Sometimes, data sets might also come with a fourth and last file containing 
-the string "xnet++" in the name. It simply is another subnet dump obtained 
-with ExploreNET++ for the same AS, obtained for comparison purpose (i.e., 
-assessing the refinement techniques added by TreeNET). The syntax is identical 
-to the regular subnet dump, except it does not have the traceroute line.
+-(From 23/04/2016 onwards) a last file named "VP.txt" which gives the 
+ PlanetLab node from which TreeNET was run to get the corresponding dataset.
+
+Sometimes, early datasets might also come with a last file containing the 
+string "xnet++" in the name. It simply is another subnet dump obtained with 
+ExploreNET++ for the same AS, obtained for comparison purpose (i.e., assessing 
+the refinement techniques added by TreeNET). The syntax is identical to the 
+regular subnet dump, except it does not have the traceroute line.
 
 Terminology
 ===========

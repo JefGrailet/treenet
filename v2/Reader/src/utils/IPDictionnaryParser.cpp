@@ -153,6 +153,68 @@ void IPDictionnaryParser::parse(string inputFileContent)
             unsigned char iTTL = (unsigned char) std::atoi(iTTLStr.c_str());
             newEntry->setEchoInitialTTL(iTTL);
         }
+        
+        /*
+         * Next, we remove the " | [Yes],..." part that can occur at the end of the line, which 
+         * corresponds to compliance with ICMP timestamp request and UDP. We also process this 
+         * part after parsing it out. After, ARHintsStr should only contain the hints relative to 
+         * IP ID-based techniques.
+         */
+        
+        size_t pos4 = ARHintsStr.find(" | ");
+        if(pos4 != std::string::npos)
+        {
+            string complianceStr = ARHintsStr.substr(pos4 + 3);
+            ARHintsStr = ARHintsStr.substr(0, pos4);
+            
+            // There might be a comma, hinting there is compliance to both UDP and ICMP timestamp
+            size_t pos5 = complianceStr.find(",");
+            if(pos5 != std::string::npos)
+            {
+                newEntry->setReplyingToTSRequest(); // Anyway
+                string replyingSrcIPStr = complianceStr.substr(pos5 + 1);
+                InetAddress replyingSrcIP(0);
+                
+                try
+                {
+                    replyingSrcIP.setInetAddress(replyingSrcIPStr);
+                    newEntry->setPortUnreachableSrcIP(replyingSrcIP);
+                }
+                catch (InetAddressException &e)
+                {
+                    (*out) << "Malformed/Unrecognized IP (source IP of ICMP Port ";
+                    (*out) << "Unreachable) \"" + replyingSrcIPStr;
+                    (*out) << "\" at line " << nbLine << "." << endl;
+                    continue;
+                }
+            }
+            // If no comma: we have to check if this is a "Yes" or an IP
+            else
+            {
+                string compliancePrefix = complianceStr.substr(0, 3);
+                if(compliancePrefix.compare("Yes") == 0)
+                {
+                    newEntry->setReplyingToTSRequest();
+                }
+                else
+                {
+                    InetAddress replyingSrcIP(0);
+                
+                    try
+                    {
+                        replyingSrcIP.setInetAddress(complianceStr);
+                        newEntry->setPortUnreachableSrcIP(replyingSrcIP);
+                    }
+                    catch (InetAddressException &e)
+                    {
+                        (*out) << "Malformed/Unrecognized IP (source IP of ICMP Port ";
+                        (*out) << "Unreachable) \"" + complianceStr;
+                        (*out) << "\" at line " << nbLine << "." << endl;
+                        continue;
+                    }
+                }
+            }
+        }
        
         if(ARHintsStr.find(',') == std::string::npos)
         {

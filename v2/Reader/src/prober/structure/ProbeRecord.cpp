@@ -15,6 +15,10 @@ ProbeRecord::ProbeRecord(InetAddress dstAddr,
 	                     unsigned short srIPidentifier, 
 	                     unsigned short rpIPidentifier, 
 	                     unsigned char payTTL, 
+	                     unsigned short payLen, 
+	                     unsigned long oTs, 
+	                     unsigned long rTs, 
+	                     unsigned long tTs, 
 	                     int prbCost, 
 	                     bool ffID, 
 	                     InetAddress *RecRec, 
@@ -30,6 +34,10 @@ rplyICMPcode(rpICMPcode),
 srcIPidentifier(srIPidentifier), 
 rplyIPidentifier(rpIPidentifier), 
 payloadTTL(payTTL), 
+payloadLength(payLen), 
+originateTs(oTs), 
+receiveTs(rTs), 
+transmitTs(tTs), 
 probingCost(prbCost), 
 usingFixedFlowID(ffID), 
 RR(RecRec), 
@@ -50,6 +58,10 @@ rplyICMPcode(toClone.rplyICMPcode),
 srcIPidentifier(toClone.srcIPidentifier), 
 rplyIPidentifier(toClone.rplyIPidentifier), 
 payloadTTL(toClone.payloadTTL), 
+payloadLength(toClone.payloadLength), 
+originateTs(toClone.originateTs), 
+receiveTs(toClone.receiveTs), 
+transmitTs(toClone.transmitTs), 
 probingCost(toClone.probingCost), 
 usingFixedFlowID(toClone.usingFixedFlowID), 
 RR(0), 
@@ -101,6 +113,10 @@ const ProbeRecord &ProbeRecord::operator=(const ProbeRecord &right)
 		this->srcIPidentifier = right.srcIPidentifier;
 		this->rplyIPidentifier = right.rplyIPidentifier;
 		this->payloadTTL = right.payloadTTL;
+		this->payloadLength = right.payloadLength;
+		this->originateTs = right.originateTs;
+		this->receiveTs = right.receiveTs;
+		this->transmitTs = right.transmitTs;
 		this->probingCost = right.probingCost;
 		this->usingFixedFlowID = right.usingFixedFlowID;
 		if(right.RR!=0)

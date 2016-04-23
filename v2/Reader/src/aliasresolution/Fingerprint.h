@@ -4,10 +4,13 @@
  *  Created on: Mar 7, 2016
  *      Author: grailet
  *
- * Gathers together 3 distinct values related to a same IP:
+ * Gathers together 5 distinct values related to a same IP:
  * -the inferred initial "Echo reply" TTL,
+ * -the source IP of the ICMP "Port Unreachable" packet if the host replied to a UDP probe with 
+ *  a high port number (0.0.0.0 if no response),
  * -the type of IP ID counter (echo, random, healthy or "no idea"),
- * -the host name.
+ * -the host name ("yes" if it has one, "no" otherwise),
+ * -the compliance to ICMP timestamp request ("yes" if it replies to it, "no" otherwise).
  * IPs with a similar fingerprint can be associated together easily, especially when the 
  * IP ID-based techniques are difficult to use. The main goal of having a whole class for it is 
  * to be able to sort those fingerprints according to their characteristics and group them 
@@ -37,6 +40,11 @@ public:
         else
             out << "*";
         out << ",";
+        if(f.portUnreachableSrcIP != InetAddress("0.0.0.0"))
+            out << f.portUnreachableSrcIP;
+        else
+            out << "*";
+        out << ",";
         switch(f.IPIDCounterType)
         {
             case IPTableEntry::HEALTHY_COUNTER:
@@ -54,9 +62,15 @@ public:
         }
         out << ",";
         if(!f.hostName.empty())
-            out << "Yes>";
+            out << "Yes";
         else
-            out << "No>";
+            out << "No";
+        out << ",";
+        if(f.replyingToTSRequest)
+            out << "Yes";
+        else
+            out << "No";
+        out << ">";
         return out;
     }
 
@@ -67,8 +81,10 @@ public:
     // Fields are public, for the sake of simplicity
     IPTableEntry *ipEntry;
     unsigned char initialTTL;
+    InetAddress portUnreachableSrcIP;
     unsigned short IPIDCounterType;
     string hostName;
+    bool replyingToTSRequest;
     
     // Comparison method for sorting purposes
     static bool compare(Fingerprint &f1, Fingerprint &f2);

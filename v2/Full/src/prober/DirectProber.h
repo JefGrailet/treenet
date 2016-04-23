@@ -62,6 +62,12 @@ public:
 	static const unsigned char ICMP_TYPE_ECHO_REPLY;
 	static const unsigned char ICMP_TYPE_DESTINATION_UNREACHABLE;
 	static const unsigned char ICMP_TYPE_TIME_EXCEEDED;
+	
+	// Added by J.-F. Grailet
+	static const unsigned char ICMP_TYPE_TS_REQUEST;
+	static const unsigned char ICMP_TYPE_TS_REPLY;
+	static const uint16_t ICMP_TS_FIELDS_LENGTH; // In bytes
+	static const size_t TIMESTAMP_LENGTH_BYTES;
 
 	static const unsigned char ICMP_CODE_NETWORK_UNREACHABLE;
 	static const unsigned char ICMP_CODE_HOST_UNREACHABLE;
@@ -122,40 +128,39 @@ public:
 	bool getVerbose() { return verbose; }
 	void setVerbose(bool verbose) { this->verbose = verbose; }
 
-	ProbeRecord *singleProbe(const InetAddress &src,
-				             const InetAddress &dst,
-				             unsigned char TTL,
-				             bool useFixedFlowID,
-				             bool recordRoute,
-				             InetAddress **looseSourceList) throw(SocketSendException, 
-				                                                  SocketReceiveException)
+	ProbeRecord *singleProbe(const InetAddress &src, 
+				             const InetAddress &dst, 
+				             unsigned char TTL, 
+				             bool useFixedFlowID, 
+				             bool recordRoute, 
+				             InetAddress **looseSourceList) throw (SocketSendException, SocketReceiveException)
 	{
-		return singleProbe(src,
-						   dst,
-						   rand() % DirectProber::MAX_UINT16_T_NUMBER,
-						   TTL,
-						   useFixedFlowID,
-						   getAvailableSrcPortICMPid(useFixedFlowID),
-						   getAvailableDstPortICMPseq(useFixedFlowID),
-						   recordRoute,
+		return singleProbe(src, 
+						   dst, 
+						   rand() % DirectProber::MAX_UINT16_T_NUMBER, 
+						   TTL, 
+						   useFixedFlowID, 
+						   getAvailableSrcPortICMPid(useFixedFlowID), 
+						   getAvailableDstPortICMPseq(useFixedFlowID), 
+						   recordRoute, 
 						   looseSourceList);
 	}
 
-	ProbeRecord *doubleProbe(const InetAddress &src,
-				const InetAddress &dst,
-				unsigned char TTL,
-				bool useFixedFlowID,
-				bool recordRoute,
+	ProbeRecord *doubleProbe(const InetAddress &src, 
+				const InetAddress &dst, 
+				unsigned char TTL, 
+				bool useFixedFlowID, 
+				bool recordRoute, 
 				InetAddress **looseSourceList) throw (SocketSendException, SocketReceiveException)
 	{
 		return doubleProbe(src,
 						   dst,
 						   rand() % DirectProber::MAX_UINT16_T_NUMBER,
-						   TTL,
-						   useFixedFlowID,
-						   getAvailableSrcPortICMPid(useFixedFlowID),
-						   getAvailableDstPortICMPseq(useFixedFlowID),
-						   recordRoute,
+						   TTL, 
+						   useFixedFlowID, 
+						   getAvailableSrcPortICMPid(useFixedFlowID), 
+						   getAvailableDstPortICMPseq(useFixedFlowID), 
+						   recordRoute, 
 						   looseSourceList);
 	}
 
@@ -169,6 +174,13 @@ public:
 	                                             unsigned char middleTTL, 
 	                                             bool useFixedFlowID, 
 	                                             int *numberOfSentPackets);
+	
+	/*
+	 * Addition by J.-F. Grailet: static method to get UTC time since midnight in milliseconds, 
+	 * which is necessary for the proper implementation of ICMP timestamp request.
+	 */
+	
+	static uint32_t getUTTimeSinceMidnight();
 
 protected:
 
@@ -188,14 +200,14 @@ protected:
 	 * if you got n recordeRoute addresses they might not be the first n addresses on the way.
 	 */
 
-	ProbeRecord *singleProbe(const InetAddress &src,
-			const InetAddress &dst,
-			unsigned short IPIdentifier,
-			unsigned char TTL,
-			bool usingFixedFlowID,
-			unsigned short srcPortORICMPid,
-			unsigned short dstPortORICMPseq,
-			bool recordRoute,
+	ProbeRecord *singleProbe(const InetAddress &src, 
+			const InetAddress &dst, 
+			unsigned short IPIdentifier, 
+			unsigned char TTL, 
+			bool usingFixedFlowID, 
+			unsigned short srcPortORICMPid, 
+			unsigned short dstPortORICMPseq, 
+			bool recordRoute, 
 			InetAddress **looseSourceList) throw (SocketSendException, SocketReceiveException)
 	{
 		fillRandomDataBuffer();
@@ -217,21 +229,21 @@ protected:
 		return result;
 	}
 	
-	ProbeRecord *doubleProbe(const InetAddress &src,
-			                 const InetAddress &dst,
-			                 unsigned short IPIdentifier,
-			                 unsigned char TTL,
-			                 bool usingFixedFlowID,
-			                 unsigned short srcPortORICMPid,
-			                 unsigned short dstPortORICMPseq,
-			                 bool recordRoute,
+	ProbeRecord *doubleProbe(const InetAddress &src, 
+			                 const InetAddress &dst, 
+			                 unsigned short IPIdentifier, 
+			                 unsigned char TTL, 
+			                 bool usingFixedFlowID, 
+			                 unsigned short srcPortORICMPid, 
+			                 unsigned short dstPortORICMPseq, 
+			                 bool recordRoute, 
 			                 InetAddress **looseSourceList) throw (SocketSendException, SocketReceiveException)
 	{
 		fillRandomDataBuffer();
 		ProbeRecord *result = basic_probe(src, 
 		                                  dst, 
 		                                  IPIdentifier, 
-		                                  TTL, 
+		                                  TTL,  
 		                                  usingFixedFlowID, 
 		                                  srcPortORICMPid, 
 		                                  dstPortORICMPseq, 
@@ -262,13 +274,13 @@ protected:
 	}
 
 	virtual ProbeRecord *basic_probe(const InetAddress &src,
-			const InetAddress &dst,
-			unsigned short IPIdentifier,
-			unsigned char TTL,
-			bool usingFixedFlowID,
-			unsigned short srcPortORICMPid,
-			unsigned short dstPortORICMPseq,
-			bool recordRoute = false,
+			const InetAddress &dst, 
+			unsigned short IPIdentifier, 
+			unsigned char TTL, 
+			bool usingFixedFlowID, 
+			unsigned short srcPortORICMPid, 
+			unsigned short dstPortORICMPseq, 
+			bool recordRoute = false, 
 			InetAddress **looseSourceList = 0) throw (SocketSendException, SocketReceiveException) = 0;
 
 	void RESET_SELECT_SET();

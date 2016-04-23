@@ -3,8 +3,6 @@
  *
  *  Created on: Jan 11, 2010
  *      Author: root
- *
- * Slightly edited in September 2015 by J.-F. Grailet to improve coding style.
  */
 
 #include "DirectTCPWrappedICMPProber.h"

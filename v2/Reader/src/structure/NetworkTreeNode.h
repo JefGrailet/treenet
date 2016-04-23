@@ -34,6 +34,7 @@ using std::list;
 #include "./Router.h"
 #include "./InvalidSubnetException.h"
 #include "../bipartite/BipartiteRouter.h"
+#include "../aliasresolution/Fingerprint.h"
 
 class NetworkTreeNode
 {
@@ -154,6 +155,10 @@ public:
     
     list<InetAddress> listInterfaces();
     
+    // Methods to handle fingerprint lists
+    inline void storeFingerprints(list<Fingerprint> ls) { this->fingerprints = ls; }
+    inline list<Fingerprint> getFingerprints() { return this->fingerprints; }
+    
     // Method to get the inferred router having a given interface. Returns NULL if no router.
     Router* getRouterHaving(InetAddress interface);
     
@@ -182,14 +187,22 @@ private:
     list<InetAddress> previousLabels;
     
     /*
-     * Exclusive to TreeNET reader: list of routers of this node after L3 inference. Such a list 
+     * Exclusive to TreeNET Reader (since v2.3): the sorted fingerprints of the IPs surrounding 
+     * this node which were candidates for alias resolution. Set when the alias resolution 
+     * actually occurs.
+     */
+    
+    list<Fingerprint> fingerprints;
+    
+    /*
+     * Exclusive to TreeNET Reader: list of routers of this node after L3 inference. Such a list 
      * is later used to build a bipartite graph of the measured (and inferred) topology.
      */
     
     list<Router*> inferredRouters;
     
     /*
-     * Still exclusive to TreeNET reader: a pointer to the bipartite element representing the 
+     * Still exclusive to TreeNET Reader: a pointer to the bipartite element representing the 
      * ingress router, when this router had to be "imagined".
      */
     

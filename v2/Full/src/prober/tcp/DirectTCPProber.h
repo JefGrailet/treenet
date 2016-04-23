@@ -4,9 +4,9 @@
  *  Created on: Dec 13, 2009
  *      Author: root
  *
- * Slightly edited in September 2015 by J.-F. Grailet to improve coding style.
- *
- * March 4, 2016: slightly edited to comply to the (slightly) extended ProbeRecord class.
+ * Modifications brought by J.-F. Grailet since ExploreNET v2.1:
+ * -September 2015: slight edit to improve coding style.
+ * -March 4, 2016: slightly edited to comply to the (slightly) extended ProbeRecord class.
  */
 
 #ifndef DIRECTTCPPROBER_H_
@@ -79,6 +79,7 @@ protected:
                                   unsigned short srcIPidentifier, 
                                   unsigned short rplyIPidentifier,  
                                   unsigned char payloadTTL, 
+                                  unsigned short payloadLength, 
                                   int probingCost, 
                                   bool usingFixedFlowID, 
                                   InetAddress *const RR = 0, 

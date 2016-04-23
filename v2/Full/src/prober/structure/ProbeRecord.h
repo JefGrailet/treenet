@@ -35,6 +35,10 @@ public:
 			<< " rplyICMPcode:" << setiosflags(ios::left) << setw(2) << "***"
 			<< " rplyTTL:" << setiosflags(ios::left) << setw(3) << "***"
 			<< " payloadTTL:" << setiosflags(ios::left) << setw(3) << "***"
+			<< " payloadLength:" << setiosflags(ios::left) << setw(3) << "***"
+			<< " originateTs:" << setiosflags(ios::left) << setw(3) << "***"
+		    << " receiveTs:" << setiosflags(ios::left) << setw(3) << "***"
+		    << " transmitTs:" << setiosflags(ios::left) << setw(3) << "***"
 			<< " probingCost:" << setiosflags(ios::left) << setw(3) << (int) record.probingCost
 			<< " usingFixedFlowID:" << setiosflags(ios::left) << setw(7) << (record.usingFixedFlowID == true ? "true" : "false");
 			if(record.RR == 0)
@@ -65,7 +69,20 @@ public:
 			<< " rplyICMPcode:" << setiosflags(ios::left) << setw(2) << (int) record.rplyICMPcode
 			<< " rplyTTL:" << setiosflags(ios::left) << setw(3) << (int) record.rplyTTL
 			<< " payloadTTL:" << setiosflags(ios::left) << setw(3) << (int) record.payloadTTL
-			<< " probingCost:" << setiosflags(ios::left) << setw(3) << (int) record.probingCost
+			<< " payloadLength:" << setiosflags(ios::left) << setw(3) << (int) record.payloadLength;
+			if(record.rplyICMPtype == (unsigned char) 14)
+			{
+			    out << " originateTs:" << setiosflags(ios::left) << setw(3) << record.originateTs
+			    << " receiveTs:" << setiosflags(ios::left) << setw(3) << record.receiveTs
+			    << " transmitTs:" << setiosflags(ios::left) << setw(3) << record.transmitTs;
+			}
+			else
+			{
+			    out << " originateTs:" << setiosflags(ios::left) << setw(3) << "***"
+			    << " receiveTs:" << setiosflags(ios::left) << setw(3) << "***"
+			    << " transmitTs:" << setiosflags(ios::left) << setw(3) << "***";
+			}
+			out << " probingCost:" << setiosflags(ios::left) << setw(3) << (int) record.probingCost
 			<< " usingFixedFlowID:" << setiosflags(ios::left) << setw(7) << (record.usingFixedFlowID == true ? "true" : "false");
 			if(record.RR == 0)
 			{
@@ -100,6 +117,10 @@ public:
 			    unsigned short srcIPidentifier = 0, 
 			    unsigned short rplyIPidentifier = 0, 
 			    unsigned char payloadTTL = 0, 
+			    unsigned short payloadLength = 0, 
+			    unsigned long originateTs = 0, 
+			    unsigned long receiveTs = 0, 
+			    unsigned long transmitTs = 0, 
 			    int probingCost = 1, 
 			    bool usingFixedFlowID = false, 
 			    InetAddress *RR = 0, 
@@ -125,6 +146,10 @@ public:
 	void setSrcIPidentifier(unsigned short srcIPidentifier) { this->srcIPidentifier = srcIPidentifier; }
 	void setRplyIPidentifier(unsigned short rplyIPidentifier) { this->rplyIPidentifier = rplyIPidentifier; }
 	void setPayloadTTL(unsigned char payloadTTL) { this->payloadTTL = payloadTTL; }
+	void setPayloadLength(unsigned short payloadLength) { this->payloadLength = payloadLength; }
+	void setOriginateTs(unsigned long originateTs) { this->originateTs = originateTs; }
+	void setReceiveTs(unsigned long receiveTs) { this->receiveTs = receiveTs; }
+	void setTransmitTs(unsigned long transmitTs) { this->transmitTs = transmitTs; }
 	void setProbingCost(int probingCost) { this->probingCost = probingCost; }
 	void setRR(InetAddress *RR) { this->RR = RR; }
 	void setRRlength(int RRlength) { this->RRlength = RRlength; }
@@ -142,6 +167,10 @@ public:
 	unsigned short getSrcIPidentifier() const { return srcIPidentifier; }
 	unsigned short getRplyIPidentifier() const { return rplyIPidentifier; }
 	unsigned char getPayloadTTL() const { return payloadTTL; }
+	unsigned short getPayloadLength() const { return payloadLength; }
+	unsigned long getOriginateTs() const { return originateTs; }
+	unsigned long getReceiveTs() const { return receiveTs; }
+	unsigned long getTransmitTs() const { return transmitTs; }
 	int getProbingCost() const { return this->probingCost; }
 	bool getUsingFixedFlowID() const { return this->usingFixedFlowID; }
 	
@@ -172,6 +201,10 @@ protected:
 	unsigned short srcIPidentifier;
 	unsigned short rplyIPidentifier;
 	unsigned char payloadTTL;
+	unsigned short payloadLength;
+	unsigned long originateTs; // Only set and used for TS replies
+	unsigned long receiveTs; // Only set and used for TS replies
+	unsigned long transmitTs; // Only set and used for TS replies
 	int probingCost;
 	bool usingFixedFlowID;
 	InetAddress *RR;

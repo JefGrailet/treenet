@@ -26,6 +26,7 @@ public:
     {
         NOT_ALIASED, 
         FIRST_IP, 
+        UDP_PORT_UNREACHABLE, 
         ALLY, 
         IPID_VELOCITY, 
         REVERSE_DNS,

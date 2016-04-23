@@ -8,6 +8,8 @@ CPP_SRCS += \
 ../src/aliasresolution/IPIDTuple.cpp \
 ../src/aliasresolution/IPIDUnit.cpp \
 ../src/aliasresolution/IPIDCollector.cpp \
+../src/aliasresolution/UDPUnreachablePortUnit.cpp \
+../src/aliasresolution/TimestampCheckUnit.cpp \
 ../src/aliasresolution/ReverseDNSUnit.cpp \
 ../src/aliasresolution/Fingerprint.cpp \
 ../src/aliasresolution/AliasResolver.cpp
@@ -17,6 +19,8 @@ OBJS += \
 ./src/aliasresolution/IPIDTuple.o \
 ./src/aliasresolution/IPIDUnit.o \
 ./src/aliasresolution/IPIDCollector.o \
+./src/aliasresolution/UDPUnreachablePortUnit.o \
+./src/aliasresolution/TimestampCheckUnit.o \
 ./src/aliasresolution/ReverseDNSUnit.o \
 ./src/aliasresolution/Fingerprint.o \
 ./src/aliasresolution/AliasResolver.o
@@ -26,6 +30,8 @@ CPP_DEPS += \
 ./src/aliasresolution/IPIDTuple.d \
 ./src/aliasresolution/IPIDUnit.d \
 ./src/aliasresolution/IPIDCollector.d \
+./src/aliasresolution/UDPUnreachablePortUnit.d \
+./src/aliasresolution/TimestampCheckUnit.d \
 ./src/aliasresolution/ReverseDNSUnit.d \
 ./src/aliasresolution/Fingerprint.d \
 ./src/aliasresolution/AliasResolver.d

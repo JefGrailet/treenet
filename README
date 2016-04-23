@@ -1,4 +1,4 @@
-About TreeNET - By Jean-François Grailet (last update: March 17, 2016)
+About TreeNET - By Jean-François Grailet (last update: April 23, 2016)
 ======================================================================
 
 Overview
@@ -23,10 +23,6 @@ necessarily belongs to the router giving access to that subnet. Listing such
 interfaces from all subnets bordering a same Neighborhood is actually the 
 first step of alias resolution in TreeNET.
 
-A long-term goal of TreeNET is to be able to infer not only routers (Layer-3 
-equipment), but also Layer-2 devices, using its knowledge of routers and 
-subnets bordering a location where Layer-2 devices might exist.
-
 Current versions
 ================
 
@@ -38,7 +34,7 @@ All current versions are exclusively available for Linux.
   with it on PlanetLab and a companion piece of software (TreeNET Reader) 
   which provides tools for analysis/merging of the collected data sets.
 
-* TreeNET v2.2: elaborated in September 2015 and fully implemented as soon as 
+* TreeNET v2.3: elaborated in September 2015 and fully implemented as soon as 
   November 2015 (as v2.0), this second version adds a new algorithmic step 
   called "network pre-scanning" which aims at speeding up the overall 
   execution. The alias resolution part has also been thoroughly improved, 
@@ -58,33 +54,43 @@ All current versions are exclusively available for Linux.
   their fingerprint (as IPs with similar behaviours have a good chance of 
   belonging to a same device) and uses classical IP ID-based methods only when 
   it is possible, otherwise IPs with the same fingerprint are typically 
-  grouped together. This method will be expanded in the future by introducing 
-  new fingerprinting methods.
+  grouped together.
   
-  TreeNET v2.2 is accompanied by two additional pieces of software, ARTest and 
-  ExploreNET++. Both of them were implemented to assess precise steps of 
-  TreeNET: ARTest was made to assess the alias resolution step, while 
+  In April 2016, TreeNET was upgraded again to v2.3, bringing new extensions 
+  to the alias resolution phase and the fingerprinting process.
+
+Related software
+================
+  
+* TreeNET v2.0 was released along two additional pieces of software, ARTest 
+  and ExploreNET++. Both of them were implemented to assess precise steps of 
+  TreeNET v2.0: ARTest was made to assess the alias resolution step, while 
   ExploreNET++ was made to provide an input/output scheme for ExploreNET close 
   to that of TreeNET in order to assess the refinement techniques introduced 
   in TreeNET. Both of these variations were released at the same time as the 
   initial v2.0.
 
-  TreeNET Reader v2.0 has been released in late January 2016, taking account 
-  of all improvements brought to TreeNET v2.0+ and providing a few additionnal 
-  options and an improved bipartite conversion. It was upgraded to v2.1 in 
-  February 2016 to add a "merging mode" which merges datasets collected from 
-  different vantage points (or VPs) into a single dataset where routes to the 
-  different subnets are adapted to be able to build a single, coherent network 
-  tree, using new algorithms which require no additional probing. In March of 
-  the same year, it was also upgraded to v2.2 at the same time as TreeNET 
-  "Full" to align on its lattest alias resolution improvements.
+* TreeNET Reader v2.0 has been released in late January 2016, taking account 
+  of all improvements brought by TreeNET v2.0 and v2.1 and providing a few 
+  additionnal options and an improved bipartite conversion. It was upgraded 
+  to v2.1 in February 2016 to add a "merging mode" which merges datasets 
+  collected from different vantage points (or VPs) into a single dataset where 
+  routes to the different subnets are adapted to be able to build a single, 
+  coherent network tree, using new algorithms which require no additional 
+  probing. This feature, however, has not been validated yet and is currently 
+  not used in measurement campaigns.
+  
+  In March of the same year, it was also upgraded to v2.2 at the same time as 
+  TreeNET "Full" to align on its lattest alias resolution improvements. The 
+  same scenario happened again the next month (April) with the relase of 
+  TreeNET v2.3.
 
 Content of this folder
 ======================
 
 As the names suggest, v1/ contains all files related to TreeNET v1.0, while 
-v2/ provides all sources for TreeNET v2.1 along datasets which were collected 
-with it.
+v2/ provides all sources for TreeNET v2.3 along related software and datasets 
+which were collected with it.
 
 Work in progress
 ================
@@ -93,8 +99,6 @@ Current and future work includes:
 
 * Measurements planning and development and assessment of techniques which 
   improve overall performance and/or allow measurements of large-scale ASes.
-
-* Additionnal techniques for IP fingerprinting during alias resolution.
 
 * Post-processing of the network tree and/or heuristics to mitigate the 
   loss of accuracy brought by traditionnal networking issues which damage 

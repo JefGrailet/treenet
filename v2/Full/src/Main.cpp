@@ -57,6 +57,8 @@ using std::list;
 #include "toolbase/paristraceroute/ParisTracerouteTask.h"
 #include "toolbase/TreeNETEnvironment.h"
 
+#include "toolbase/aliasresolution/TimestampCheckUnit.h" // Temp
+
 // Main function; deals with inputs and launches thread(s)
 
 int main(int argc, char *argv[])
@@ -306,7 +308,7 @@ int main(int argc, char *argv[])
                 debugMode = true;
                 break;
             case 'v':
-                cout << "TreeNET v2.2, written by Jean-Francois Grailet (last updated: March 2016)" << endl;
+                cout << "TreeNET v2.3, written by Jean-Francois Grailet (last updated: April 2016)" << endl;
                 cout << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
                 delete outputHandler;
                 return 0;
@@ -413,7 +415,7 @@ int main(int argc, char *argv[])
         parser->parseInputFile(inputFileContent);
         
         // Some welcome message
-        cout << "Welcome to TreeNET v2.2.\n" << endl;
+        cout << "Welcome to TreeNET v2.3.\n" << endl;
         
         // Announces that it will ignore LAN.
         if(parser->targetsEncompassLAN())
@@ -474,7 +476,7 @@ int main(int argc, char *argv[])
         }
         
         cout << "Prescanning ended.\n" << endl;
-        
+
         delete prescanner;
         
         /*

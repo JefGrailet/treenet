@@ -1,4 +1,4 @@
-About TreeNET Reader v2.2 (treenet_reader) - By J.-F. Grailet, March 17, 2016
+About TreeNET Reader v2.3 (treenet_reader) - By J.-F. Grailet, April 23, 2016
 =============================================================================
 
 Compilation
@@ -159,13 +159,16 @@ The options are:
   the format dd-mm-yyyy hh:mm:ss.
 
 * -r (verbose: --recomputation-mode)
-  Add this flag to the command and type "1" or "2" besides to make TreeNET 
-  Reader v2.0 re-compute data. 1 and 2 correspond to the two available 
-  re-computation modes:
-  -1: only alias resolution hints are re-computed via probing.
-  -2: both the routes and alias resolution hints are re-computed by scheduling 
-      new probing work.
-  By default, TreeNET Reader v2.2 solely relies on the data it parsed in the 
+  Add this flag to the command and type "1", "2" or "3" besides to make 
+  TreeNET Reader re-compute data. Each value corresponds to a distinct 
+  re-computation mode:
+  -1: alias resolution results are re-computed, and only them, without any new 
+      probing work. This can be used to tune alias resolution parameters.
+  -2: alias resolution hints are re-computed via probing, and results are 
+      re-computed as well.
+  -3: both the routes and alias resolution hints are re-computed by scheduling 
+      new probing work. Alias resolution results are re-computed as well.
+  By default, TreeNET Reader v2.3 solely relies on the data it parsed in the 
   input files.
 
 * -s (verbose: --statistics)
@@ -277,8 +280,9 @@ year 2014-2015 in the context of a master thesis at the University of Liège
 (Belgium), using the sources of ExploreNET v2.1 as a basis. It was upgraded 
 to v2.0 in January 2016 to take into account all improvements brought by 
 TreeNET v2.0 and v2.1. It was further upgraded to v2.1 in February 2016 to 
-add dataset merging algorithms, and to v2.2 in March 2016 to add new alias 
-resolution improvements originally designed for TreeNET "Full".
+add dataset merging algorithms, and to v2.2 and v2.3 in March and April 2016 
+(respectively) to add new alias resolution improvements originally designed 
+for TreeNET "Full".
 
 Jean-François is currently a Ph. D. student at the University of Liège, in the 
 Research Unit in Networking (RUN).

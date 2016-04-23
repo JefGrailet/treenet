@@ -4,9 +4,9 @@
  *  Created on: Jul 24, 2008
  *      Author: root
  *
- * Coding style slightly edited by Jean-François Grailet in December 2014.
- *
- * March 4, 2016: slightly edited to comply to the (slightly) extended ProbeRecord class.
+ * Modifications brought by J.-F. Grailet since ExploreNET v2.1:
+ * -December 2014: slight edit to improve coding style.
+ * -March 4, 2016: slightly edited to comply to the (slightly) extended ProbeRecord class.
  */
 
 #ifndef DIRECTICMPPROBER_H_
@@ -50,15 +50,23 @@ public:
                      unsigned short upperBoundICMPseq = DirectICMPProber::DEFAULT_UPPER_ICMP_SEQUENCE,
                      bool verbose = false) throw(SocketException);
 	virtual ~DirectICMPProber();
-	virtual ProbeRecord *basic_probe(const InetAddress &src,
-                                     const InetAddress &dst,
-                                     unsigned short IPIdentifier,
-                                     unsigned char TTL,
-                                     bool usingFixedFlowID,
-                                     unsigned short ICMPidentifier,
-                                     unsigned short ICMPsequence,
-                                     bool recordeRoute = false,
-                                     InetAddress **looseSourceList = 0)throw (SocketSendException, SocketReceiveException);
+	virtual ProbeRecord *basic_probe(const InetAddress &src, 
+                                     const InetAddress &dst, 
+                                     unsigned short IPIdentifier, 
+                                     unsigned char TTL, 
+                                     bool usingFixedFlowID, 
+                                     unsigned short ICMPidentifier, 
+                                     unsigned short ICMPsequence, 
+                                     bool recordeRoute = false, 
+                                     InetAddress **looseSourceList = 0) throw (SocketSendException, SocketReceiveException);
+    
+    // Addition by J.-F. Grailet (up to "private:" part included) to implement Timestamp request
+    inline void useTimestampRequests() { this->usingTimestampRequests = true; }
+    
+private:
+    
+    bool usingTimestampRequests;
+
 protected:
 
 	ProbeRecord *buildProbeRecord(const auto_ptr<TimeVal> &reqTime, 
@@ -71,11 +79,16 @@ protected:
 	                              unsigned short srcIPidentifier, 
 	                              unsigned short rplyIPidentifier, 
 	                              unsigned char payloadTTL, 
+	                              unsigned short payloadLength, 
+	                              unsigned long originateTs, 
+	                              unsigned long receiveTs, 
+	                              unsigned long transmitTs, 
 	                              int probingCost, 
 	                              bool usingFixedFlowID, 
 	                              InetAddress* const RR = 0, 
 	                              int RRlength = 0);
 	uint8_t buffer[DEFAULT_DIRECT_ICMP_PROBER_BUFFER_SIZE];
+	
 };
 
 #endif /* DIRECTICMPPROBER_H_ */

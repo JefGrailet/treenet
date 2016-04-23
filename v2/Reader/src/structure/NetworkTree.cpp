@@ -22,6 +22,7 @@ using namespace std;
 #include "../bipartite/BipartiteSwitch.h"
 #include "../bipartite/BipartiteRouter.h"
 #include "../bipartite/BipartiteSubnet.h"
+#include "../aliasresolution/Fingerprint.h" // See internalsRecursive()
 
 NetworkTree::NetworkTree(unsigned short maxDepth)
 {
@@ -1087,6 +1088,17 @@ void NetworkTree::internalsRecursive(ostream *out, NetworkTree *tree, NetworkTre
         if(appearingLabels == nbLabels)
         {
             (*out) << "All labels belong to subnets appearing in the tree." << endl;
+        }
+        
+        // Displays sorted fingerprints if any
+        list<Fingerprint> fingerprints = cur->getFingerprints();
+        if(fingerprints.size() > 0)
+        {
+            (*out) << "\nFingerprints (sorted):\n";
+            for(list<Fingerprint>::iterator it = fingerprints.begin(); it != fingerprints.end(); ++it)
+            {
+                (*out) << (InetAddress) (*((*it).ipEntry)) << " - " << (*it) << endl;
+            }
         }
         
         // Router inference

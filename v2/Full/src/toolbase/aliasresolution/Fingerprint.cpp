@@ -14,8 +14,10 @@ Fingerprint::Fingerprint(IPTableEntry *ip)
     this->ipEntry = ip;
     
     this->initialTTL = ip->getEchoInitialTTL();
+    this->portUnreachableSrcIP = ip->getPortUnreachableSrcIP();
     this->IPIDCounterType = ip->getIPIDCounterType();
     this->hostName = ip->getHostName();
+    this->replyingToTSRequest = ip->repliesToTSRequest();
 }
 
 Fingerprint::~Fingerprint()
@@ -30,15 +32,31 @@ bool Fingerprint::compare(Fingerprint &f1, Fingerprint &f2)
     }
     else if(f1.initialTTL == f2.initialTTL)
     {
-        if(f1.IPIDCounterType > f2.IPIDCounterType)
+        // Because we want "high" IPs before (put 0.0.0.0's at the bottom of the list)
+        if(f1.portUnreachableSrcIP > f2.portUnreachableSrcIP)
         {
             return true;
         }
-        else if(f1.IPIDCounterType == f2.IPIDCounterType)
+        else if(f1.portUnreachableSrcIP == f2.portUnreachableSrcIP)
         {
-            if(!f1.hostName.empty() && f2.hostName.empty())
+            if(f1.IPIDCounterType > f2.IPIDCounterType)
             {
                 return true;
+            }
+            else if(f1.IPIDCounterType == f2.IPIDCounterType)
+            {
+                if(!f1.hostName.empty() && f2.hostName.empty())
+                {
+                    return true;
+                }
+                else if((f1.hostName.empty() && f2.hostName.empty()) || 
+                        (!f1.hostName.empty() && !f2.hostName.empty()))
+                {
+                    if(!f1.replyingToTSRequest && f2.replyingToTSRequest)
+                    {
+                        return true;
+                    }
+                }
             }
         }
     }
@@ -47,8 +65,13 @@ bool Fingerprint::compare(Fingerprint &f1, Fingerprint &f2)
 
 bool Fingerprint::equals(Fingerprint &f)
 {
-    if(this->initialTTL == f.initialTTL && this->IPIDCounterType == f.IPIDCounterType)
+    if(this->initialTTL == f.initialTTL && 
+       this->portUnreachableSrcIP == f.portUnreachableSrcIP && 
+       this->IPIDCounterType == f.IPIDCounterType && 
+       this->replyingToTSRequest == f.replyingToTSRequest)
+    {
         return true;
+    }
     return false;
 }
 

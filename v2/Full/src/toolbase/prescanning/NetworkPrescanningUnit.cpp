@@ -108,7 +108,7 @@ ProbeRecord *NetworkPrescanningUnit::doubleProbe(const InetAddress &dst)
     InetAddress localIP = env->getLocalIPAddress();
     bool usingFixedFlow = env->usingFixedFlowID();
     unsigned char TTL = VIRTUALLY_INFINITE_TTL;
-
+    
     ProbeRecord *record = NULL;
     try
     {

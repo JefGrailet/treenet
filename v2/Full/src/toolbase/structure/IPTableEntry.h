@@ -73,6 +73,8 @@ public:
 	inline double getVelocityUpperBound() { return this->velocityUpperBound; }
 	inline unsigned short getIPIDCounterType() { return this->IPIDCounterType; }
 	inline unsigned char getEchoInitialTTL() { return this->echoInitialTTL; }
+	inline bool repliesToTSRequest() { return this->replyingToTSRequest; }
+	inline InetAddress getPortUnreachableSrcIP() { return this->portUnreachableSrcIP; }
     
     // Setters for alias resolution data
 	inline void setProbeToken(unsigned short index, unsigned long pt) { this->probeTokens[index] = pt; }
@@ -84,6 +86,8 @@ public:
 	inline void setVelocityUpperBound(double vub) { this->velocityUpperBound = vub; }
 	inline void setCounterType(unsigned short cType) { this->IPIDCounterType = cType; }
 	inline void setEchoInitialTTL(unsigned char iTTL) { this->echoInitialTTL = iTTL; }
+	inline void setReplyingToTSRequest() { this->replyingToTSRequest = true; }
+	inline void setPortUnreachableSrcIP(InetAddress srcIP) { this->portUnreachableSrcIP = srcIP; }
 	
 	// toString() methods (for outputting an entry in a dump file, either plain or fingerprint)
     string toString();
@@ -100,6 +104,8 @@ private:
 	bool *echoMask;
 	unsigned long *delays;
 	string hostName;
+	bool replyingToTSRequest;
+	InetAddress portUnreachableSrcIP;
 	
 	/*
 	 * About echo mask: it records "true" for the corresponding index when the IP ID is the same 

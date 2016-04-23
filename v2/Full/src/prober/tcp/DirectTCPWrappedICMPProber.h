@@ -4,7 +4,9 @@
  *  Created on: Jan 11, 2010
  *      Author: root
  *
- * Slightly edited in September 2015 by J.-F. Grailet to improve coding style.
+ * Modifications brought by J.-F. Grailet since ExploreNET v2.1:
+ * -September 2015: slight edit to improve coding style.
+ * -March 4, 2016: slightly edited to comply to the (slightly) extended ProbeRecord class.
  */
 
 #ifndef DIRECTTCPWRAPPEDICMPPROBER_H_

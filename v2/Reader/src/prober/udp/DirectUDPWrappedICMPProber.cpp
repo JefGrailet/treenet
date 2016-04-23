@@ -3,8 +3,6 @@
  *
  *  Created on: Jan 11, 2010
  *      Author: root
- *
- * Slightly edited in September 2015 by J.-F. Grailet to improve coding style.
  */
 
 #include "DirectUDPWrappedICMPProber.h"
@@ -99,7 +97,7 @@ DirectUDPProber(attentionMessage,
                 upperBoundUDPdstPort, 
                 verbose)
 {
-
+    this->usingHighPortNumber = false;
 }
 
 DirectUDPWrappedICMPProber::~DirectUDPWrappedICMPProber()
@@ -117,22 +115,36 @@ ProbeRecord *DirectUDPWrappedICMPProber::basic_probe(const InetAddress &src,
                                                      bool recordeRoute, 
                                                      InetAddress **looseSourceList) throw(SocketSendException, SocketReceiveException)
 {
+    unsigned short dstPortBis = dstPort;
+    if(this->usingHighPortNumber)
+        dstPortBis = 65535;
+
     ProbeRecord *result = DirectUDPProber::basic_probe(src, 
                                                        dst, 
                                                        IPIdentifier, 
                                                        TTL, 
                                                        usingFixedFlowID, 
                                                        srcPort, 
-                                                       dstPort, 
+                                                       dstPortBis, 
                                                        recordeRoute, 
                                                        looseSourceList);
     
-    if(result->getRplyICMPtype() == DirectProber::ICMP_TYPE_DESTINATION_UNREACHABLE)
+    /*
+     * Addition by J.-F. Grailet: in order to use UDP as an alias resolution tool (i.e., an 
+     * unlikely high port number is used to get a Port Unreachable message, which contains an IP 
+     * of the router who responded), a flag has been added to prevent the usual probe record 
+     * edition, such that the original reply can be analyzed.
+     */
+    
+    if(!this->usingHighPortNumber)
     {
-        if(result->getRplyICMPcode() == DirectProber::ICMP_CODE_PORT_UNREACHABLE)
+        if(result->getRplyICMPtype() == DirectProber::ICMP_TYPE_DESTINATION_UNREACHABLE)
         {
-            result->setRplyICMPtype(DirectProber::ICMP_TYPE_ECHO_REPLY);
-            result->setRplyICMPcode(0);
+            if(result->getRplyICMPcode() == DirectProber::ICMP_CODE_PORT_UNREACHABLE)
+            {
+                result->setRplyICMPtype(DirectProber::ICMP_TYPE_ECHO_REPLY);
+                result->setRplyICMPcode(0);
+            }
         }
     }
     return result;

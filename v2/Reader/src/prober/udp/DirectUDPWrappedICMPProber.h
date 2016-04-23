@@ -4,7 +4,10 @@
  *  Created on: Jan 11, 2010
  *      Author: root
  *
- * Slightly edited in September 2015 by J.-F. Grailet to improve coding style.
+ * Modifications brought by J.-F. Grailet since ExploreNET v2.1:
+ * -September 2015: slight edit to improve coding style.
+ * -15 April 2016: added a method to rise a flag to use an unlikely high destination port number 
+ *  inside the probes.
  */
 
 #ifndef DIRECTUDPWRAPPEDICMPPROBER_H_
@@ -41,6 +44,13 @@ public:
                                      unsigned short dstPort, 
                                      bool recordeRoute = false, 
                                      InetAddress **looseSourceList = 0) throw(SocketSendException, SocketReceiveException);
+   
+    // Next lines are additions by J.-F. Grailet to implement some alias resolution method
+    inline void useHighPortNumber() { this->usingHighPortNumber = true; }
+    
+private:
+    
+    bool usingHighPortNumber;
 };
 
 #endif /* DIRECTUDPWRAPPEDICMPPROBER_H_ */

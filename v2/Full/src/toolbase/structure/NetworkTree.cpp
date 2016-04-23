@@ -776,13 +776,14 @@ void NetworkTree::internalsRecursive(ostream *out,
             (*out) << "All labels belong to subnets appearing in the tree." << endl;
         }
         
+        (*out) << endl;
+        
         // Router inference (+ writing results in the string object aliasLists)
         ar->setCurrentTTL(depth);
         list<Router> routers = ar->resolve(cur);
         unsigned short nbRouters = (unsigned short) routers.size();
         if(nbRouters > 0)
         {
-            (*out) << endl;
             if(nbRouters == 1)
                 (*out) << "Inferred router: " << endl;
             else
@@ -813,6 +814,9 @@ void NetworkTree::internalsRecursive(ostream *out,
                     // Precise alias resolution method (N.B.: not written in .alias file)
                     switch((*j).aliasMethod)
                     {
+                        case RouterInterface::UDP_PORT_UNREACHABLE:
+                            (*out) << " (UDP unreachable port)";
+                            break;
                         case RouterInterface::GROUP_ECHO:
                             (*out) << " (Echo group)";
                             break;

@@ -82,9 +82,10 @@ void OutputHandler::usage(string programName)
     
     (*out) << "\t-r" << "\t" << "--recomputation-mode" << "\t\t" << "modify the mode of re-computation\n";
     (*out) << "\t\t\t\t\t\tUse this option to properly merge separate datasets into a single one.\n";
-    (*out) << "\t\t\t\t\t\tType 1 if you want to re-compute the alias resolution hints.\n";
-    (*out) << "\t\t\t\t\t\tType 2 if you want to re-compute both the traceroutes and the alias resolution hints.\n";
-    (*out) << "\t\t\t\t\t\tBy default, TreeNET Reader solely uses the data you provide." << endl;
+    (*out) << "\t\t\t\t\t\tType 1 if you want to re-compute the alias resolution results (i.e., .alias/.fingerprint files).\n";
+    (*out) << "\t\t\t\t\t\tType 2 if you want to re-compute the alias resolution hints.\n";
+    (*out) << "\t\t\t\t\t\tType 3 if you want to re-compute both the traceroutes and the alias resolution hints.\n";
+    (*out) << "\t\t\t\t\t\tBy default, there is no re-computation of any part of the data you provide." << endl;
     
     (*out) << "\t-s" << "\t" << "--statistics" << "\t\t\t" << "display various statistics about the inferred subnets" << endl;
     
@@ -95,7 +96,7 @@ void OutputHandler::usage(string programName)
     
     (*out) << "\t-v" << "\t" << "--version" << "\t\t\t" << "program version" << endl;
     (*out) << "\t-?" << "\t" << "--help" << "\t\t\t\t" << "help" << endl;
-    (*out) << "TreeNET Reader v2.2 (" << programName << ") was written by J.-F. Grailet (2016)\n";
+    (*out) << "TreeNET Reader v2.3 (" << programName << ") was written by J.-F. Grailet (2016)\n";
     (*out) << "Based on ExploreNET version 2.1 Copyright (c) 2013 Mehmet Engin Tozal" << endl;
 }
 

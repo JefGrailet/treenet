@@ -1,8 +1,6 @@
 /*
  * This file implements the class described in DirectTCPProber.h. Date at which it was implemented 
  * is unknown (though it should be the same as DirectTCPProber.h).
- * 
- * Edited by J.-F. Grailet in September 2015 to improve coding style.
  */
 
 #include <cstdlib>
@@ -120,14 +118,14 @@ DirectTCPProber::~DirectTCPProber()
     // TODO Auto-generated destructor stub
 }
 
-ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
-                                          const InetAddress &dst,
-                                          unsigned short IPIdentifier,
-                                          unsigned char TTL,
-                                          bool usingFixedFlowID,
-                                          unsigned short srcPort,
-                                          unsigned short dstPort,
-                                          bool recordRoute,
+ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src, 
+                                          const InetAddress &dst, 
+                                          unsigned short IPIdentifier, 
+                                          unsigned char TTL, 
+                                          bool usingFixedFlowID, 
+                                          unsigned short srcPort, 
+                                          unsigned short dstPort, 
+                                          bool recordRoute, 
                                           InetAddress **looseSourceList) throw (SocketSendException, SocketReceiveException)
 {
     uint32_t src_32 = (uint32_t) (src.getULongAddress());
@@ -239,10 +237,9 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
 
         memset(optionsField, 0, DirectProber::DEFAULT_MAX_RECORD_ROUTE_ADDRESS_SIZE * (uint32_t) 4);
         optionsField += DirectProber::DEFAULT_MAX_RECORD_ROUTE_ADDRESS_SIZE * (uint32_t) 4;
-
     }
-
-    if(IPPaddingLength>0)
+    
+    if(IPPaddingLength > 0)
     {
         memset(optionsField, 0, IPPaddingLength);
         optionsField += IPPaddingLength;
@@ -466,6 +463,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
 
             uint16_t receivedIPtotalLength = ntohs(ip->ip_len);
             uint16_t receivedIPheaderLength = ((uint16_t) ip->ip_hl) * (uint16_t) 4;
+            unsigned short payloadLength = (unsigned short) (receivedIPtotalLength - receivedIPheaderLength);
 
             if(receivedBytes < receivedIPtotalLength)
             {
@@ -594,6 +592,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
                                                             IPIdentifier, 
                                                             ntohs(ip->ip_id), 
                                                             payloadip->ip_ttl, 
+                                                            payloadLength, 
                                                             1, 
                                                             usingFixedFlowID, 
                                                             RRarray, 
@@ -613,6 +612,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
                             }
 
                         }
+                        
                         return buildProbeRecord(REQTime, 
                                                 dst, 
                                                 rplyAddress, 
@@ -623,6 +623,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
                                                 IPIdentifier, 
                                                 ntohs(ip->ip_id), 
                                                 payloadip->ip_ttl, 
+                                                payloadLength, 
                                                 1, 
                                                 usingFixedFlowID, 
                                                 0, 
@@ -653,6 +654,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
                 {
                     // This is the reply of the packet that we sent
                     InetAddress rplyAddress((unsigned long int) ntohl((ip->ip_src).s_addr));
+                    
                     return buildProbeRecord(REQTime, 
                                             dst, 
                                             rplyAddress, 
@@ -663,6 +665,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
                                             IPIdentifier, 
                                             ntohs(ip->ip_id), 
                                             0, 
+                                            payloadLength, 
                                             1, 
                                             usingFixedFlowID, 
                                             0, 
@@ -685,6 +688,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
                                     255, 
                                     255, 
                                     IPIdentifier, 
+                                    0, 
                                     0, 
                                     0, 
                                     1, 
@@ -723,6 +727,7 @@ ProbeRecord *DirectTCPProber::buildProbeRecord(const auto_ptr<TimeVal> &reqTime,
                                                unsigned short srcIPidentifier, 
                                                unsigned short rplyIPidentifier, 
                                                unsigned char payloadTTL, 
+                                               unsigned short payloadLength, 
                                                int probingCost, 
                                                bool usingFixedFlowID, 
                                                InetAddress *const RR, 
@@ -740,6 +745,7 @@ ProbeRecord *DirectTCPProber::buildProbeRecord(const auto_ptr<TimeVal> &reqTime,
     recordPtr->setSrcIPidentifier(srcIPidentifier);
     recordPtr->setRplyIPidentifier(rplyIPidentifier);
     recordPtr->setPayloadTTL(payloadTTL);
+    recordPtr->setPayloadLength(payloadLength);
     recordPtr->setProbingCost(probingCost);
     recordPtr->setUsingFixedFlowID(usingFixedFlowID);
     recordPtr->setRR(RR);
@@ -755,7 +761,8 @@ ProbeRecord *DirectTCPProber::buildProbeRecord(const auto_ptr<TimeVal> &reqTime,
         << " rplyICMPtype=" << (int) recordPtr->getRplyICMPtype() 
         << " rplyICMPcode=" << (int) recordPtr->getRplyICMPcode() 
         << " rplyTTL=" << (int) recordPtr->getRplyTTL() 
-        << " payloadTTL=" << (int) recordPtr->getPayloadTTL();
+        << " payloadTTL=" << (int) recordPtr->getPayloadTTL()
+        << " payloadLength=" << (int) recordPtr->getPayloadLength();
         if(RR != 0)
             cout << " RR[" << RRlength << "]=";
         for(int i = 0; i < RRlength; i++)

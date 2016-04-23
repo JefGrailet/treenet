@@ -117,6 +117,9 @@ string Router::toString()
         // Precise alias resolution method
         switch((*j)->aliasMethod)
         {
+            case RouterInterface::UDP_PORT_UNREACHABLE:
+                routerStream << " (UDP unreachable port)";
+                break;
             case RouterInterface::ALLY:
                 routerStream << " (Ally)";
                 break;
