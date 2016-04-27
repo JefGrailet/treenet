@@ -1,4 +1,4 @@
-About Measurements/ folder - By Jean-François Grailet, April 23, 2016
+About Measurements/ folder - By Jean-François Grailet, April 27, 2016
 =====================================================================
 
 Overview
@@ -11,17 +11,18 @@ second folder containing Python scripts for data analysis. See the own README
 of these folders for more details.
 
 Each sub-folder is named after an AS and contains measurements for that 
-particular AS, with a sub-folder per data set denoted by the date at which the 
-measurements for this data set were started.
+particular AS, with a sub-folder per dataset denoted by the date at which the 
+measurements for this dataset were started.
 
 At the root of each AS sub-folder, you should find a "[AS number].txt" file, 
 which contains the IP prefixes of this AS which are fed to TreeNET as the 
 target prefixes.
 
-Data sets
-=========
+Composition of the datasets
+===========================
 
-Each data set consists of 3 files:
+Each dataset consists of up to 7 files, with a minimum of 3:
+
 -A subnet dump (.subnet), where subnets are listed with the following syntax:
  
  [CIDR Notation]\n
@@ -56,7 +57,7 @@ Each data set consists of 3 files:
  router which does not provide access to the Neighborhood of the child 
  internal.
 
--(2016 only) A "Bipartite ..." file containing a double bipartite 
+-(From 2016 onwards) A "Bipartite ..." file containing a double bipartite 
  representation of the measured AS (one bipartite being router - subnet, the 
  other being switch (L2) - router), based on its representation as a network 
  tree (not given, but can be obtained using TreeNET Reader). The bipartite 
@@ -66,9 +67,9 @@ Each data set consists of 3 files:
  switch and the last gives the links between routers and subnets, using their 
  respective labels.
 
--(2016 only) A "Statistics" file giving some statistics on the subnets and the 
- Neighborhoods observed in the network tree obtained for this AS. Those can be 
- re-obtained and analyzed in depth using TreeNET Reader.
+-(From 2016 onwards) A "Statistics" file giving some statistics on the subnets 
+ and the Neighborhoods observed in the network tree obtained for this AS. 
+ Those can be re-obtained and analyzed in depth using TreeNET Reader.
 
 -(From 12/03/2016 onwards) an .alias file which contains alias lists (one per 
  line) as inferred by TreeNET v2.2.
@@ -92,8 +93,48 @@ ExploreNET++ for the same AS, obtained for comparison purpose (i.e., assessing
 the refinement techniques added by TreeNET). The syntax is identical to the 
 regular subnet dump, except it does not have the traceroute line.
 
-Terminology
-===========
+History of the major updates*
+=============================
+
+*updates during which new ASes or new types of files were provided in addition 
+to new datasets.
+
+(+) = appears in all datasets provided at the given date and onwards
+(-) = disappears from all datasets provided at the given date and onwards
+(+/-) = appears in some datasets provided at the given date
+
+Date            Added ASes      Provided files
+----            ----------      --------------
+02/12/2015      AS224           (+) .subnet file
+                AS30781         (+) .ip file
+                AS5400          (+) Analysis.txt
+                                (+) xnet++
+                                
+24/02/2016      AS12956         (+) Bipartite analysis
+                AS13789         (+) Statistics
+                AS22652         (-) Analysis.txt
+                AS802           (-) xnet++
+
+17/03/2016      /               (+) .alias file
+                                (+) .fingerprint file
+                                (+/-) VP.txt
+
+23/04/2016      AS10010         (+) VP.txt
+                AS109
+                AS14
+                AS2764
+                AS37
+                AS4711
+                AS50673
+                AS52
+                AS5511
+                AS6453
+                AS703
+                AS8220
+                AS8928
+
+Terminology used in the datasets
+================================
 
 To better understand the datasets and the provided statistics, here are some 
 definitions.
@@ -117,7 +158,7 @@ definitions.
   token;ip-id,delay,token;ip-id,delay...token;ip-id,DNS
   
   The amount of token;ip-id pairs (= N) can be chosen by the user, but it is 
-  typically 4 in most data sets. There are N - 1 delays between each pair, 
+  typically 4 in most datasets. There are N - 1 delays between each pair, 
   separated with a comma. The last comma delimits the last pair from the DNS 
   of this IP, if it exists.
   

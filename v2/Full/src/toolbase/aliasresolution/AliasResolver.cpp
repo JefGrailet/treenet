@@ -152,6 +152,12 @@ unsigned short AliasResolver::Ally(IPTableEntry *ip1, IPTableEntry *ip2, unsigne
 
 void AliasResolver::evaluateIPIDCounter(IPTableEntry *ip)
 {
+    /*
+     * TODO: though this will have little impact, call raiseFlagProcessed() on IP entries for 
+     * which there is no IP ID data but for which we have response to UDP/ICMP timestamp request 
+     * or a DNS. Their fingerprints might be useful.
+     */
+
     // The first condition is just in case; normally calling code checks it first
     if(ip != NULL && ip->hasIPIDData())
     {
@@ -544,6 +550,7 @@ list<Router> AliasResolver::resolve(NetworkTreeNode *internal)
             {
                 cur.portUnreachableSrcIP = InetAddress("0.0.0.0");
                 fingerprints.push_front(cur);
+                fingerprints.sort(Fingerprint::compare);
                 continue;
             }
             else
@@ -585,7 +592,7 @@ list<Router> AliasResolver::resolve(NetworkTreeNode *internal)
              * Case 3: similar fingerprints and "group by default" policy (applied to echo and 
              * random counters): the fingerprints with DNS are double checked to exclude IPs with 
              * similar fingerprints but host names that do not match. The process is repeated as 
-             * long as there excluded IPs.
+             * long as there are excluded IPs.
              *
              * If "cur" or the next fingerprint have no host name, then the whole group can be 
              * assumed to have not enough host names to perform reverse DNS (due to sorting).
@@ -740,24 +747,101 @@ list<Router> AliasResolver::resolve(NetworkTreeNode *internal)
                 else
                     excluded.push_back(subCur);
                 
+                // When we are done with toProcess...
                 if(toProcess.size() == 0)
                 {
-                    // Creates a router with ref and IPs in grouped
-                    Router curRouter;
-                    curRouter.addInterface(InetAddress((InetAddress) (*ref.ipEntry)), 
-                                           RouterInterface::FIRST_IP);
+                    /*
+                     * Checks for another router obtained through the address-based method with 
+                     * "healthy" IPs, because we might miss an alias with some IPs which were 
+                     * previously aliased through UDP unreachable port method.
+                     */
                     
-                    while(grouped.size() > 0)
+                    Router *aliasedRouter = NULL;
+                    unsigned short fusionAliasMethod = 0;
+                    for(list<Router>::iterator it = result.begin(); it != result.end(); ++it)
                     {
-                        Fingerprint head = grouped.front();
-                        unsigned short aliasMethod = groupMethod.front();
-                        grouped.pop_front();
-                        groupMethod.pop_front();
+                        Router listed = *it;
+                        list<RouterInterface> *listedInterfaces = listed.getInterfacesList();
                         
-                        curRouter.addInterface(InetAddress((InetAddress) (*head.ipEntry)), 
-                                               aliasMethod);
+                        bool withUDP = false;
+                        IPTableEntry *healthyIP = NULL;
+                        for(list<RouterInterface>::iterator it2 = listedInterfaces->begin(); 
+                            it2 != listedInterfaces->end(); ++it2)
+                        {
+                            RouterInterface it2Interface = (*it2);
+                            IPTableEntry *listedEntry = table->lookUp(it2Interface.ip);
+                            
+                            if(it2Interface.aliasMethod == RouterInterface::UDP_PORT_UNREACHABLE)
+                                withUDP = true;
+                        
+                            if(listedEntry != NULL && listedEntry->getIPIDCounterType() == IPTableEntry::HEALTHY_COUNTER)
+                                healthyIP = listedEntry;
+                        }
+                        
+                        // Tries to alias with ref
+                        if(withUDP && healthyIP != NULL)
+                        {
+                            unsigned short AllyResult = this->Ally(ref.ipEntry, 
+                                                                   healthyIP, 
+                                                                   MAX_IP_ID_DIFFERENCE);
+                    
+                            // Ally method acknowledges the association
+                            if(AllyResult == ALLY_ACCEPTED)
+                            {
+                                aliasedRouter = &listed;
+                                fusionAliasMethod = RouterInterface::ALLY;
+                                break;
+                            }
+                            // Tries velocity overlap only if Ally did NOT reject the association
+                            else if(AllyResult == ALLY_NO_SEQUENCE)
+                            {
+                                if(this->velocityOverlap(ref.ipEntry, healthyIP))
+                                {
+                                    aliasedRouter = &listed;
+                                    fusionAliasMethod = RouterInterface::IPID_VELOCITY;
+                                    break;
+                                }
+                            }
+                        }
                     }
-                    result.push_back(curRouter);
+                    
+                    
+                    // If a matching router exists, alias ref and IPs from grouped with it
+                    if(aliasedRouter != NULL)
+                    {
+                        aliasedRouter->addInterface(InetAddress((InetAddress) (*ref.ipEntry)), 
+                                                    fusionAliasMethod);
+                        
+                        while(grouped.size() > 0)
+                        {
+                            Fingerprint h = grouped.front();
+                            unsigned short aliasMethod = groupMethod.front();
+                            grouped.pop_front();
+                            groupMethod.pop_front();
+                            
+                            aliasedRouter->addInterface(InetAddress((InetAddress) (*h.ipEntry)), 
+                                                        aliasMethod);
+                        }
+                    }
+                    // Otherwise, creates a router with ref and IPs in grouped
+                    else
+                    {
+                        Router curRouter;
+                        curRouter.addInterface(InetAddress((InetAddress) (*ref.ipEntry)), 
+                                               RouterInterface::FIRST_IP);
+                        
+                        while(grouped.size() > 0)
+                        {
+                            Fingerprint head = grouped.front();
+                            unsigned short aliasMethod = groupMethod.front();
+                            grouped.pop_front();
+                            groupMethod.pop_front();
+                            
+                            curRouter.addInterface(InetAddress((InetAddress) (*head.ipEntry)), 
+                                                   aliasMethod);
+                        }
+                        result.push_back(curRouter);
+                    }
                     
                     // Takes care of excluded IPs
                     if(excluded.size() > 0)

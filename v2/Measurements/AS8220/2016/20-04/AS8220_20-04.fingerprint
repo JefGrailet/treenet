@@ -54,8 +54,6 @@
 5.11.107.23 - <64,*,Healthy,No,No>
 5.11.107.46 - <64,*,Healthy,No,Yes>
 5.11.107.96 - <64,*,Healthy,No,No>
-5.11.107.105 - <64,*,Healthy,No,No>
-5.11.107.109 - <64,*,Healthy,No,Yes>
 5.11.107.122 - <64,*,Healthy,No,Yes>
 5.11.107.126 - <64,*,Healthy,No,No>
 5.11.107.130 - <64,*,Healthy,No,No>
@@ -165,8 +163,6 @@
 5.77.75.32 - <64,*,Healthy,No,Yes>
 5.77.75.37 - <64,*,Healthy,No,No>
 5.77.75.96 - <64,*,Healthy,No,Yes>
-5.77.75.97 - <64,*,Healthy,No,No>
-5.77.75.98 - <64,*,Healthy,No,No>
 5.77.76.32 - <64,*,Healthy,No,No>
 5.77.76.34 - <64,*,Healthy,No,Yes>
 5.77.76.39 - <64,*,Healthy,No,No>
@@ -254,7 +250,6 @@
 5.77.88.53 - <64,*,Healthy,No,No>
 5.77.88.54 - <64,*,Healthy,No,No>
 5.77.89.228 - <64,*,Healthy,No,Yes>
-5.77.89.237 - <64,*,Healthy,No,No>
 5.77.90.16 - <64,*,Healthy,No,Yes>
 5.77.90.19 - <64,*,Healthy,No,No>
 5.77.90.44 - <64,*,Healthy,No,Yes>
@@ -498,12 +493,9 @@
 5.179.143.173 - <64,*,Healthy,No,No>
 5.179.143.174 - <64,*,Healthy,No,Yes>
 5.179.143.216 - <64,*,Healthy,No,Yes>
-5.179.143.218 - <64,*,Healthy,No,No>
 5.179.143.228 - <64,*,Healthy,No,No>
 5.179.143.231 - <64,*,Healthy,No,Yes>
 5.179.143.232 - <64,*,Healthy,No,Yes>
-5.179.143.237 - <64,*,Healthy,No,No>
-5.179.143.238 - <64,*,Healthy,No,No>
 5.179.144.6 - <64,*,Healthy,No,No>
 5.179.144.9 - <64,*,Healthy,No,No>
 5.179.144.10 - <64,*,Healthy,No,No>
@@ -555,12 +547,7 @@
 5.179.148.151 - <64,*,Healthy,No,Yes>
 5.179.148.204 - <255,*,Healthy,No,Yes>
 5.179.148.217 - <64,*,Healthy,No,Yes>
-5.179.149.0 - <64,*,Healthy,No,No>
-5.179.149.1 - <64,*,Healthy,No,Yes>
 5.179.149.2 - <64,*,Healthy,No,No>
-5.179.149.8 - <64,*,Healthy,No,No>
-5.179.149.14 - <64,*,Healthy,No,No>
-5.179.149.15 - <64,*,Healthy,No,No>
 5.179.149.57 - <64,*,Healthy,No,Yes>
 5.179.149.112 - <64,*,Healthy,No,Yes>
 5.179.149.113 - <64,*,Healthy,No,No>
@@ -13110,7 +13097,7 @@
 91.220.8.2 - <255,*,Echo,No,Yes>
 91.220.8.3 - <255,91.220.8.3,Echo,No,Yes>
 93.191.137.28 - <255,93.191.137.28,Echo,No,Yes>
-95.131.40.120 - <64,*,Healthy,No,No>
+95.131.40.120 - <64,*,Random,No,No>
 95.131.40.122 - <64,*,Healthy,No,Yes>
 95.131.41.0 - <64,*,Healthy,No,Yes>
 95.131.41.6 - <64,*,Healthy,No,No>
@@ -13134,9 +13121,6 @@
 95.131.43.114 - <64,*,Healthy,No,No>
 95.131.43.116 - <64,*,Healthy,No,Yes>
 95.131.43.192 - <64,*,Healthy,No,Yes>
-95.131.43.200 - <64,*,Healthy,No,No>
-95.131.43.202 - <64,*,Healthy,No,No>
-95.131.43.207 - <64,*,Healthy,No,No>
 95.131.43.243 - <64,*,Healthy,No,Yes>
 95.131.44.12 - <64,*,Healthy,No,Yes>
 95.131.44.15 - <64,*,Healthy,No,No>
@@ -21341,7 +21325,6 @@
 213.86.2.66 - <255,212.74.90.136,Echo,No,Yes>
 213.86.2.67 - <255,213.86.2.67,Echo,No,Yes>
 213.86.2.68 - <64,*,Healthy,No,No>
-213.86.2.69 - <64,*,Healthy,No,No>
 213.86.2.146 - <255,*,Echo,No,Yes>
 213.86.2.154 - <255,*,Echo,No,Yes>
 213.86.2.162 - <255,*,Echo,No,Yes>

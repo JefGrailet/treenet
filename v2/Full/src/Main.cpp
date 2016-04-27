@@ -57,8 +57,6 @@ using std::list;
 #include "toolbase/paristraceroute/ParisTracerouteTask.h"
 #include "toolbase/TreeNETEnvironment.h"
 
-#include "toolbase/aliasresolution/TimestampCheckUnit.h" // Temp
-
 // Main function; deals with inputs and launches thread(s)
 
 int main(int argc, char *argv[])
@@ -1039,7 +1037,7 @@ int main(int argc, char *argv[])
         env->getIPTable()->outputFingerprints(newFileNameFingerprints);
         cout << "IP dictionnary with fingerprints has been saved in an output file ";
         cout << newFileNameFingerprints << "." << endl;
-        
+
         delete ar;
         delete tree;
     }

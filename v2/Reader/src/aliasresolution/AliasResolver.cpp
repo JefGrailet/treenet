@@ -536,6 +536,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
             {
                 cur.portUnreachableSrcIP = InetAddress("0.0.0.0");
                 fingerprints.push_front(cur);
+                fingerprints.sort(Fingerprint::compare);
                 continue;
             }
             else
@@ -732,24 +733,102 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                 else
                     excluded.push_back(subCur);
                 
+                // When we are done with toProcess...
                 if(toProcess.size() == 0)
                 {
-                    // Creates a router with ref and IPs in grouped
-                    Router *curRouter = new Router();
-                    curRouter->addInterface(InetAddress((InetAddress) (*ref.ipEntry)), 
-                                            RouterInterface::FIRST_IP);
+                    /*
+                     * Checks for another router obtained through the address-based method with 
+                     * "healthy" IPs, because we might miss an alias with some IPs which were 
+                     * previously aliased through UDP unreachable port method.
+                     */
                     
-                    while(grouped.size() > 0)
+                    Router *aliasedRouter = NULL;
+                    unsigned short fusionAliasMethod = 0;
+                    for(list<Router*>::iterator it = result->begin(); it != result->end(); ++it)
                     {
-                        Fingerprint head = grouped.front();
-                        unsigned short aliasMethod = groupMethod.front();
-                        grouped.pop_front();
-                        groupMethod.pop_front();
+                        Router *listed = (*it);
+                        list<RouterInterface*> *listedInterfaces = listed->getInterfacesList();
                         
-                        curRouter->addInterface(InetAddress((InetAddress) (*head.ipEntry)), 
-                                                aliasMethod);
+                        bool withUDP = false;
+                        IPTableEntry *healthyIP = NULL;
+                        for(list<RouterInterface*>::iterator it2 = listedInterfaces->begin(); 
+                            it2 != listedInterfaces->end(); ++it2)
+                        {
+                            RouterInterface *it2Interface = (*it2);
+                            IPTableEntry *listedEntry = table->lookUp(it2Interface->ip);
+                            
+                            if(it2Interface->aliasMethod == RouterInterface::UDP_PORT_UNREACHABLE)
+                                withUDP = true;
+                        
+                            if(listedEntry != NULL && listedEntry->getIPIDCounterType() == IPTableEntry::HEALTHY_COUNTER)
+                                healthyIP = listedEntry;
+                        }
+                        
+                        // Tries to alias with ref
+                        if(withUDP && healthyIP != NULL)
+                        {
+                            unsigned short AllyResult = this->Ally(ref.ipEntry, 
+                                                                   healthyIP, 
+                                                                   MAX_IP_ID_DIFFERENCE);
+                    
+                            // Ally method acknowledges the association
+                            if(AllyResult == ALLY_ACCEPTED)
+                            {
+                                aliasedRouter = listed;
+                                fusionAliasMethod = RouterInterface::ALLY;
+                                break;
+                            }
+                            // Tries velocity overlap only if Ally did NOT reject the association
+                            else if(AllyResult == ALLY_NO_SEQUENCE)
+                            {
+                                if(this->velocityOverlap(ref.ipEntry, healthyIP))
+                                {
+                                    aliasedRouter = listed;
+                                    fusionAliasMethod = RouterInterface::IPID_VELOCITY;
+                                    break;
+                                }
+                            }
+                        }
                     }
-                    result->push_back(curRouter);
+                    
+                    
+                    // If a matching router exists, alias ref and IPs from grouped with it
+                    if(aliasedRouter != NULL)
+                    {
+                        aliasedRouter->addInterface(InetAddress((InetAddress) (*ref.ipEntry)), 
+                                                    fusionAliasMethod);
+                        
+                        while(grouped.size() > 0)
+                        {
+                            Fingerprint h = grouped.front();
+                            unsigned short aliasMethod = groupMethod.front();
+                            grouped.pop_front();
+                            groupMethod.pop_front();
+                            
+                            aliasedRouter->addInterface(InetAddress((InetAddress) (*h.ipEntry)), 
+                                                        aliasMethod);
+                        }
+                    }
+                    // Otherwise, creates a router with ref and IPs in grouped
+                    else
+                    {
+                        // Creates a router with ref and IPs in grouped
+                        Router *curRouter = new Router();
+                        curRouter->addInterface(InetAddress((InetAddress) (*ref.ipEntry)), 
+                                                RouterInterface::FIRST_IP);
+                        
+                        while(grouped.size() > 0)
+                        {
+                            Fingerprint head = grouped.front();
+                            unsigned short aliasMethod = groupMethod.front();
+                            grouped.pop_front();
+                            groupMethod.pop_front();
+                            
+                            curRouter->addInterface(InetAddress((InetAddress) (*head.ipEntry)), 
+                                                    aliasMethod);
+                        }
+                        result->push_back(curRouter);
+                    }
                     
                     // Takes care of excluded IPs
                     if(excluded.size() > 0)
