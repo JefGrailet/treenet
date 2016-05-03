@@ -307,6 +307,13 @@ void NetworkTree::internals(ostream *out)
     internalsRecursive(out, this, root);
 }
 
+unsigned int NetworkTree::largestFingerprintList()
+{
+    unsigned int largestSize = 0;
+    largestListRecursive(root, &largestSize);
+    return largestSize;
+}
+
 void NetworkTree::outputSubnets(string filename)
 {
     string output = "";
@@ -897,6 +904,26 @@ void NetworkTree::inferRoutersRecursive(NetworkTree *tree,
     {
         if((*i) != NULL && (*i)->isInternal())
             inferRoutersRecursive(tree, (*i), ar, depth + 1);
+    }
+}
+
+void NetworkTree::largestListRecursive(NetworkTreeNode *cur, unsigned int *largest)
+{
+    // Checks the size
+    unsigned int curSize = (unsigned int) cur->getFingerprints().size();
+    if(curSize > (*largest))
+    {
+        (*largest) = curSize;
+    }
+    
+    // Goes deeper in the tree (avoids exploring leaves)
+    list<NetworkTreeNode*> *children = cur->getChildren();
+    for(list<NetworkTreeNode*>::iterator i = children->begin(); i != children->end(); ++i)
+    {
+        if((*i)->isInternal())
+        {
+            largestListRecursive((*i), largest);
+        }
     }
 }
 

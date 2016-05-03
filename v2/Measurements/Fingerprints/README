@@ -1,0 +1,84 @@
+About Fingerprints/ folder - By Jean-François Grailet, May 2, 2016
+==================================================================
+
+Overview
+========
+
+This folder contains a bunch of figures used for the analysis of the list of 
+fingerprints collected for alias resolution on several ASes involved in our 
+measurements with TreeNET. Figures are classed by dates, and each figure 
+highlights a different aspect of the fingerprints for the 20 ASes which are 
+involved in them.
+
+ASes
+====
+
+For convenience, the ASes are denoted by an index in the figures. The assigned 
+indexes are given below.
+
+Index   AS          AS name
+-----   --          -------
+1       AS109       Cisco Systems
+2       AS10010     TOKAI Communications
+3       AS224       UNINETT
+4       AS2764      AAPT Limited
+5       AS5400      British Telecom
+6       AS5511      Orange S.A.
+7       AS6453      TATA Communications
+8       AS703       Verizon Business
+9       AS8220      COLT Technology
+10      AS8928      Interoute Communications
+11      AS12956     Telefonica International
+12      AS13789     Internap Network
+13      AS14        University of Columbia
+14      AS22652     Fibrenoire, Inc.
+15      AS30781     Jaguar Network
+16      AS37        University of Maryland
+17      AS4711      INET Inc.
+18      AS50673     Serverius Holding
+19      AS52        University of California
+20      AS802       University of York
+
+Figures
+=======
+
+For each date, we provide 4 different figures illustrating the observed 
+properties of fingerprints collected on the 20 ASes listed above.
+
+* IPIDClass_[year]_[date].pdf: shows stacked bar charts to show the proportion 
+  each IP-ID counter "class" among the fingerprints. There are 3 different 
+  classes:
+  -Echo: the fingerprinted IP just echoes the IP-ID found in the probe packet 
+   in its reply, 
+  -Healthy: the fingerprinted IP provided a different IP-ID than the one which 
+   was in the probe packet, and the sequence of IDs collected for that IP 
+   could be used to evaluate a speed at which IDs increase, 
+  -Random: same as Healthy, except a speed could not be obtained because the 
+   sequence is not sound.
+  There is also a 4th class represented in the graph: "Others", denoting the 
+  fingerprints for which no class could be derived.
+
+* ITTL_[year]_[date].pdf: shows stacked bar charts, just like above, but this 
+  time illustrates the inferred initial TTL of the echo reply from the probed 
+  IP, if responsive. There are 3 typical values: 64, 128 and 255.
+
+* TSRequest_[year]_[date].pdf: shows the proportion of fingerprinted IPs which
+  replied (or not) to ICMP timestamp requests.
+
+* SSR_[year]_[date].pdf: shows the proportion of fingerprinted IPs versus the 
+  total of responsive IPs detected by TreeNET. A blue curve also shows the 
+  size of the largest list of fingerprints (~= largest Neighborhood) with 
+  respect to the total amount of responsive IPs. The purpose of this figure is 
+  to show the benefits of the space search reduction produced by TreeNET, 
+  which is a consequence of the subnet inference and network tree structure.
+
+Scripts/ sub-folder
+===================
+
+All figures were obtained through Python scripts. Interested readers can view 
+these scripts in this folder. Note that the scripts should be edited to take 
+account of user's filesystem, and that they all need some input file to have 
+a list of the concerned ASes. Examples of such files are provided.
+
+Also note that the output files of the scripts are not exactly identical to 
+the names of the provided figures.

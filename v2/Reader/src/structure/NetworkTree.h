@@ -85,6 +85,9 @@ public:
     
     // Computes the router list for each node when possible
     void inferRouters(AliasResolver *ar);
+   
+    // Gets the size of the largest fingerprint list (to call AFTER inferRouters()).
+    unsigned int largestFingerprintList();
     
     // Prints the interesting internal nodes (i.e. more than one child that is not an internal)
     void internals(ostream *out);
@@ -93,7 +96,7 @@ public:
     void outputSubnets(string filename);
     void outputAliases(string filename);
     
-    // All methods below this point are exclusive to TreeNET Reader.
+    // All methods below this point are unique to TreeNET Reader.
     
     /*
      * Methods to evaluate the size of the main trunk (i.e., successions of nodes starting from 
@@ -161,6 +164,7 @@ private:
                                       unsigned short depth);
     static void listSubnetsRecursive(list<SubnetSite*> *subnetsList, NetworkTreeNode *cur);
     static void outputAliasesRecursive(NetworkTreeNode *cur, string *aliasesStr);
+    static void largestListRecursive(NetworkTreeNode *cur, unsigned int *largest);
     static void inferRoutersRecursive(NetworkTree *tree, 
                                       NetworkTreeNode *cur,  
                                       AliasResolver *ar, 

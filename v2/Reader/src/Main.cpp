@@ -893,6 +893,11 @@ int main(int argc, char *argv[])
         tree->inferRouters(ar);
         delete ar;
         
+        // Largest Neighborhood
+        cout << "Largest amount of fingerprints in a Neighborhood: ";
+        cout << tree->largestFingerprintList();
+        cout << "\n" << endl;
+        
         // Outputs new .alias and .fingerprint files if necessary
         if(recomputationMode == RECOMPUTE_AR_RESULTS || 
            recomputationMode == RECOMPUTE_AR_HINTS || 
