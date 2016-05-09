@@ -84,7 +84,7 @@ if __name__ == "__main__":
     
     # Font for labels and ticks
     hfont = {'fontname':'serif',
-             'fontsize':19}
+             'fontsize':21}
     
     hfont2 = {'fontname':'serif',
              'fontsize':12}
@@ -102,9 +102,9 @@ if __name__ == "__main__":
     plt.xticks(ind + center, range(1,21,1), **hfont)
     plt.yticks(np.arange(0, 101, 10), **hfont)
     
-    plt.rc('font', family='serif', size=11)
+    plt.rc('font', family='serif', size=16)
     plt.legend((p1[0], p2[0]), 
-               ('Ignores Timestamp Request', 'Replies to Timestamp Request'), 
+               ('Ignored', 'Replied'), 
                bbox_to_anchor=(0.05, 1.02, 0.90, .102), 
                loc=3,
                ncol=4, 

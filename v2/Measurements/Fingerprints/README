@@ -1,4 +1,4 @@
-About Fingerprints/ folder - By Jean-François Grailet, May 2, 2016
+About Fingerprints/ folder - By Jean-François Grailet, May 9, 2016
 ==================================================================
 
 Overview
@@ -71,6 +71,15 @@ properties of fingerprints collected on the 20 ASes listed above.
   respect to the total amount of responsive IPs. The purpose of this figure is 
   to show the benefits of the space search reduction produced by TreeNET, 
   which is a consequence of the subnet inference and network tree structure.
+
+We also provide a 5th figure "AliasProportions_[year]_[date].pdf" which shows 
+for each date and for all 20 ASes the proportion of fingerprinted IPs which 
+were aliased vs. the proportion of IPs which were not aliased to any other IP 
+at all. The goal of this figure is to show that we successfully obtain a large 
+amount of aliases in most cases, despite a few pathological cases where this 
+proportion is rather low. This can be explained by the supposed lack of 
+precision of the subnet inference or the classical issues of traceroute which 
+affect TreeNET's space search reduction.
 
 Scripts/ sub-folder
 ===================

@@ -88,7 +88,7 @@ if __name__ == "__main__":
     
     # Font for labels and ticks
     hfont = {'fontname':'serif',
-             'fontsize':19}
+             'fontsize':21}
 
     plt.figure(figsize=(11,7))
 
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     plt.xticks(ind + center, range(1,21,1), **hfont)
     plt.yticks(np.arange(0, 101, 10), **hfont)
     
-    plt.rc('font', family='serif', size=13)
+    plt.rc('font', family='serif', size=15)
     plt.legend((p1[0], p2[0]), 
                ('Fingerprinted IPs', 'Size of largest fingerprint list'), 
                bbox_to_anchor=(0.05, 1.02, 0.90, .102), 

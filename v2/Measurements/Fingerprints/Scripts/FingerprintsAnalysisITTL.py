@@ -7,7 +7,7 @@
 # the ASes that should be considered at this date.
 #
 # This particular script shows the spread of each typical initial TTL value of ICMP ECHO replies 
-# of each fingerprinted IPs. Typical values are: 64, 128 and 255. They are inferred during the 
+# of each fingerprinted IPs. Typical values are: 32, 64, 128 and 255. They are inferred during the 
 # measurements.
 
 import numpy as np
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     
     # Font for labels and ticks
     hfont = {'fontname':'serif',
-             'fontsize':19}
+             'fontsize':21}
     
     hfont2 = {'fontname':'serif',
              'fontsize':12}
@@ -121,9 +121,9 @@ if __name__ == "__main__":
     plt.xticks(ind + center, range(1,21,1), **hfont)
     plt.yticks(np.arange(0, 101, 10), **hfont)
     
-    plt.rc('font', family='serif', size=13)
+    plt.rc('font', family='serif', size=15)
     plt.legend((p1[0], p2[0], p3[0], p4[0]), 
-               ('64', '128', '255', 'Other'), 
+               ('64', '128', '255', '32'), 
                bbox_to_anchor=(0.05, 1.02, 0.90, .102), 
                loc=3,
                ncol=4, 
