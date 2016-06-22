@@ -15,7 +15,8 @@
 using std::list;
 
 #include "../../common/inet/InetAddress.h"
-#include "RouterInterface.h"
+#include "./IPLookUpTable.h"
+#include "./RouterInterface.h"
 
 class Router
 {
@@ -32,6 +33,19 @@ public:
     
     // Method to get the amount of interfaces of this router.
     unsigned short getNbInterfaces();
+    
+    /*
+     * Method to get an interface fitting this criteria:
+     * -aliased with the UDP-based method.
+     * -it is listed as a "healthy" IP in the IP dictionnary.
+     * Such an interface is a "merging pivot", i.e., the interface that will be used to merge an 
+     * existing router solely obtained via UDP with interfaces aliased through the Ally method.
+     * The corresponding entry in the dictionnary is returned. The said dictionnary must be 
+     * provided as a parameter (because having a pointer to the environment variable in Router 
+     * does not make a lot of sense).
+     */
+    
+    IPTableEntry *getMergingPivot(IPLookUpTable *table);
     
 private:
 

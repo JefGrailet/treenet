@@ -756,75 +756,68 @@ list<Router> AliasResolver::resolve(NetworkTreeNode *internal)
                      * previously aliased through UDP unreachable port method.
                      */
                     
-                    Router *aliasedRouter = NULL;
-                    unsigned short fusionAliasMethod = 0;
+                    bool fusionOccurred = false;
                     for(list<Router>::iterator it = result.begin(); it != result.end(); ++it)
                     {
-                        Router listed = *it;
-                        list<RouterInterface> *listedInterfaces = listed.getInterfacesList();
-                        
-                        bool withUDP = false;
-                        IPTableEntry *healthyIP = NULL;
-                        for(list<RouterInterface>::iterator it2 = listedInterfaces->begin(); 
-                            it2 != listedInterfaces->end(); ++it2)
-                        {
-                            RouterInterface it2Interface = (*it2);
-                            IPTableEntry *listedEntry = table->lookUp(it2Interface.ip);
-                            
-                            if(it2Interface.aliasMethod == RouterInterface::UDP_PORT_UNREACHABLE)
-                                withUDP = true;
-                        
-                            if(listedEntry != NULL && listedEntry->getIPIDCounterType() == IPTableEntry::HEALTHY_COUNTER)
-                                healthyIP = listedEntry;
-                        }
-                        
-                        // Tries to alias with ref
-                        if(withUDP && healthyIP != NULL)
+                        Router listed = (*it);
+
+                        // Tries to alias with ref and a "merging pivot" (see Router.h)
+                        IPTableEntry *mergingPivot = listed.getMergingPivot(table);
+                        unsigned short fusionAliasMethod = 0;
+                        if(mergingPivot != NULL)
                         {
                             unsigned short AllyResult = this->Ally(ref.ipEntry, 
-                                                                   healthyIP, 
+                                                                   mergingPivot, 
                                                                    MAX_IP_ID_DIFFERENCE);
-                    
+                            
                             // Ally method acknowledges the association
                             if(AllyResult == ALLY_ACCEPTED)
                             {
-                                aliasedRouter = &listed;
                                 fusionAliasMethod = RouterInterface::ALLY;
-                                break;
+                                fusionOccurred = true;
                             }
                             // Tries velocity overlap only if Ally did NOT reject the association
                             else if(AllyResult == ALLY_NO_SEQUENCE)
                             {
-                                if(this->velocityOverlap(ref.ipEntry, healthyIP))
+                                if(this->velocityOverlap(ref.ipEntry, mergingPivot))
                                 {
-                                    aliasedRouter = &listed;
                                     fusionAliasMethod = RouterInterface::IPID_VELOCITY;
-                                    break;
+                                    fusionOccurred = true;
                                 }
                             }
                         }
-                    }
-                    
-                    
-                    // If a matching router exists, alias ref and IPs from grouped with it
-                    if(aliasedRouter != NULL)
-                    {
-                        aliasedRouter->addInterface(InetAddress((InetAddress) (*ref.ipEntry)), 
-                                                    fusionAliasMethod);
                         
-                        while(grouped.size() > 0)
+                        /*
+                         * Fusion occurs here, because some weird stuff occurs if done outside the 
+                         * loop: the "listed" variable disappears (because it is technically a 
+                         * local variable), even if one use a pointer to it (with & operator), 
+                         * causing the whole program to crash. We also have to delete "it" in the 
+                         * result list and push the modified "listed" afterwars (yup, it's 
+                         * twisted, but this is the limit of local variables in C++).
+                         */
+                        
+                        if(fusionOccurred)
                         {
-                            Fingerprint h = grouped.front();
-                            unsigned short aliasMethod = groupMethod.front();
-                            grouped.pop_front();
-                            groupMethod.pop_front();
+                            result.erase(it--);
+                            listed.addInterface(InetAddress((InetAddress) (*ref.ipEntry)), fusionAliasMethod);
                             
-                            aliasedRouter->addInterface(InetAddress((InetAddress) (*h.ipEntry)), 
-                                                        aliasMethod);
+                            while(grouped.size() > 0)
+                            {
+                                Fingerprint h = grouped.front();
+                                unsigned short aliasMethod = groupMethod.front();
+                                grouped.pop_front();
+                                groupMethod.pop_front();
+                                
+                                listed.addInterface(InetAddress((InetAddress) (*h.ipEntry)), aliasMethod);
+                            }
+                            
+                            result.push_back(listed);
+                            break;
                         }
                     }
-                    // Otherwise, creates a router with ref and IPs in grouped
-                    else
+                    
+                    // If no fusion occurred, creates a router with ref and IPs in grouped
+                    if(!fusionOccurred)
                     {
                         Router curRouter;
                         curRouter.addInterface(InetAddress((InetAddress) (*ref.ipEntry)), 

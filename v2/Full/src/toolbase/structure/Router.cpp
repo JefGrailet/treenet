@@ -31,3 +31,18 @@ unsigned short Router::getNbInterfaces()
 {
     return (unsigned short) interfaces.size();
 }
+
+IPTableEntry* Router::getMergingPivot(IPLookUpTable *table)
+{
+    for(list<RouterInterface>::iterator it = interfaces.begin(); it != interfaces.end(); ++it)
+    {
+        RouterInterface interface = (*it);
+        if(interface.aliasMethod == RouterInterface::UDP_PORT_UNREACHABLE)
+        {
+            IPTableEntry *entry = table->lookUp(interface.ip);
+            if(entry != NULL && entry->getIPIDCounterType() == IPTableEntry::HEALTHY_COUNTER)
+                return entry;
+        }
+    }
+    return NULL;
+}
