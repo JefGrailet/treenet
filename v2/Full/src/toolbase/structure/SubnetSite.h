@@ -149,6 +149,16 @@ public:
     // Method to know if the subnet has a route, and if yes, if it is complete (i.e. no 0.0.0.0)
     bool hasCompleteRoute();
     
+    /*
+     * Method to test if the subnet is an "artifact", i.e., a subnet which was inferred as a /32 
+     * and still is after refining. While there are rare occurrences of actual /32 "in the wild", 
+     * their presence in the subsequent steps of TreeNET (tree construction, alias resolution) can 
+     * be a problem for both interpretation of the data and behavior of the program (it can crash 
+     * when one or several /32 subnet(s) remain(s)).
+     */
+    
+    bool isAnArtifact();
+    
     // toString() method, only available for refined subnets, null otherwise 
     string refinedToString();
     

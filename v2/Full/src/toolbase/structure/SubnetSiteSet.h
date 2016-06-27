@@ -106,6 +106,14 @@ public:
     
     SubnetSite *getValidSubnet(bool completeRoute = true);
     
+    /*
+     * removeArtifacts() filters the list of subnets in order to remove any "artifact", i.e., 
+     * subnets which the prefix is still 32 after subnet refinement. Indeed, such artifacts can 
+     * cause malfunctioning of the program afterwards.
+     */
+    
+    void removeArtifacts();
+    
     // Method to write the complete set in an output file of a given name.
     void outputAsFile(string filename);
     

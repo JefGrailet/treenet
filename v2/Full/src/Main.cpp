@@ -975,6 +975,7 @@ int main(int argc, char *argv[])
         cout << "\nBuilding network tree..." << endl;
          
         unsigned short treeMaxDepth = subnetSet->getLongestRoute();
+        subnetSet->removeArtifacts();
         subnetSet->sortByRoute();
         
         NetworkTree *tree = new NetworkTree(treeMaxDepth);

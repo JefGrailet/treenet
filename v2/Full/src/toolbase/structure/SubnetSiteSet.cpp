@@ -510,6 +510,20 @@ SubnetSite *SubnetSiteSet::getValidSubnet(bool completeRoute)
     return NULL;
 }
 
+void SubnetSiteSet::removeArtifacts()
+{
+    for(list<SubnetSite*>::iterator i = siteList.begin(); i != siteList.end(); ++i)
+    {
+        SubnetSite *ss = (*i);
+        
+        if(ss->isAnArtifact())
+        {
+            siteList.erase(i--);
+            delete ss;
+        }
+    }
+}
+
 void SubnetSiteSet::outputAsFile(string filename)
 {
     string output = "";

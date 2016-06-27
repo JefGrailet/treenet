@@ -758,6 +758,13 @@ bool SubnetSite::hasCompleteRoute()
     return true;
 }
 
+bool SubnetSite::isAnArtifact()
+{
+    if(this->inferredSubnetPrefix >= (unsigned char) 32)
+        return true;
+    return false;
+}
+
 string SubnetSite::refinedToString()
 {
     stringstream ss;
