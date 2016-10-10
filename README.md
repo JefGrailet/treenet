@@ -50,7 +50,8 @@ http://nsrg.louisiana.edu/project/ntmaps/output/explorenet.html
 
 ## Contact
 
-**E-mail address:** Jean-Francois.Grailet@ulg.ac.be\
+**E-mail address:** Jean-Francois.Grailet@ulg.ac.be
+
 **Personal website:** http://www.run.montefiore.ulg.ac.be/~grailet/
 
 Feel free to send me an e-mail if your encounter problems while compiling or running `TreeNET`. I am also inclined to answer questions regarding the algorithms used in `TreeNET` and to discuss its application in other research projects.
