@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Computes the ratio of fingerprinted IPs which were actually aliased to other IPs and presents 
-# the results in the same fashion as "FingerprintsAnalysis[...].py" scripts. The required command 
+# the results in the same fashion as "FingerprintsAnalysis[...].py" files. The required command 
 # line is also similar; however here only the .alias file is checked.
 
 import numpy as np
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     ratioAliased = []
     ratioNonAliased = []
     
-    dataPath = "/home/jefgrailet/PhD/Campaigns" #TODO: edit this
+    dataPath = "/home/jefgrailet/PhD/Campaigns" # TODO: edit this
     for i in range(0, len(ASes)):
         dataFilePath = dataPath + "/" + ASes[i] + "/" + yearOfMeasurements + "/"
         dataFilePath += dateOfMeasurements + "/" + ASes[i] + "_" + dateOfMeasurements
@@ -79,10 +79,11 @@ if __name__ == "__main__":
     
     # Font for labels and ticks
     hfont = {'fontname':'serif',
+             'fontweight':'bold',
              'fontsize':21}
     
     hfont2 = {'fontname':'serif',
-             'fontsize':12}
+             'fontsize':21}
 
     plt.figure(figsize=(11,7))
 
@@ -93,9 +94,8 @@ if __name__ == "__main__":
     plt.xlabel('AS index', **hfont)
     plt.ylim([0,100])
     plt.xlim([0,20])
-    #plt.xticks(ind + center, correctlyParsedASes, rotation=25, **hfont2)
-    plt.xticks(ind + center, range(1,21,1), **hfont)
-    plt.yticks(np.arange(0, 101, 10), **hfont)
+    plt.xticks(ind + center, range(1,21,1), **hfont2)
+    plt.yticks(np.arange(0, 101, 10), **hfont2)
     
     plt.rc('font', family='serif', size=16)
     plt.legend((p1[0], p2[0]), 

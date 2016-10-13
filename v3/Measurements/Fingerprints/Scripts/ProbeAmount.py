@@ -42,7 +42,7 @@ if __name__ == "__main__":
     predictionsMIDAR = []
     predictionsTreeNET = []
     
-    dataPath = "/home/jefgrailet/PhD/Campaigns" #TODO: edit this
+    dataPath = "/home/jefgrailet/PhD/Campaigns" # TODO: edit this
     for i in range(0, len(ASes)):
         dataFilePath = dataPath + "/" + ASes[i] + "/" + yearOfMeasurements + "/"
         dataFilePath += dateOfMeasurements + "/" + ASes[i] + "_" + dateOfMeasurements
@@ -76,6 +76,10 @@ if __name__ == "__main__":
     
     # Font for labels and ticks
     hfont = {'fontname':'serif',
+             'fontweight':'bold',
+             'fontsize':21}
+    
+    hfont2 = {'fontname':'serif',
              'fontsize':21}
 
     plt.figure(figsize=(11,7))
@@ -86,7 +90,7 @@ if __name__ == "__main__":
     
     plt.xlabel('AS index', **hfont)
     plt.xlim([0,20])
-    plt.xticks(ind + center, range(1,21,1), **hfont)
+    plt.xticks(ind + center, range(1,21,1), **hfont2)
     plt.ylabel('Amount of probes', **hfont)
     plt.yscale('log', nonposy='clip')
     
