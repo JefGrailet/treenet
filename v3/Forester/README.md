@@ -44,7 +44,7 @@ If you intent to use `TreeNET` "*Forester*" from the PlanetLab testbed, here is 
 * If you want to obtain all the details about probing work and/or analysis of the tree, it is recommended to redirect the standard output to a file:
   
   ```sh
-  sudo ./treenet_forester Some_input_file -l Test > Some_output_file.txt
+  sudo ./treenet_forester Some_input_file -l Test -m 3 > Some_output_file.txt
   ```
   
   Note that the file might get quite big for large datasets (several Megaoctets to dozens of Megaoctets). Keep the default verbosity (see usage with -h flag) to minimize the size of such file.

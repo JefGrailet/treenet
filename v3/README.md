@@ -53,4 +53,4 @@ http://nsrg.louisiana.edu/project/ntmaps/output/explorenet.html
 
 **Personal website:** http://www.run.montefiore.ulg.ac.be/~grailet/
 
-Feel free to send me an e-mail if your encounter problems while compiling or running `TreeNET`. I am also inclined to answer questions regarding the algorithms used in `TreeNET` and to discuss its application in other research projects.
+Feel free to send me an e-mail if your encounter problems while compiling or running `TreeNET` (any version). I am also inclined to answer questions regarding the algorithms used in `TreeNET` and to discuss its application in other research projects.
