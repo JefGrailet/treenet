@@ -688,7 +688,7 @@ void SubnetSite::recomputeRefinementStatus()
     }
 }
 
-bool SubnetSite::containsAddress(InetAddress i)
+bool SubnetSite::contains(InetAddress i)
 {
     NetworkAddress na = this->getInferredNetworkAddress();
     InetAddress lowerBorder = na.getLowerBorderAddress();
@@ -709,7 +709,7 @@ bool SubnetSite::hasLiveInterface(InetAddress li)
     return false;
 }
 
-InetAddress SubnetSite::getRefinementPivot()
+InetAddress SubnetSite::getPivot()
 {
     // Not refined yet or undefined: aborts
     if(this->refinementStatus == SubnetSite::NOT_PREPARED_YET ||
@@ -758,7 +758,7 @@ bool SubnetSite::isAnArtifact()
     return false;
 }
 
-string SubnetSite::refinedToString()
+string SubnetSite::toString()
 {
     stringstream ss;
     unsigned short status = this->refinementStatus;

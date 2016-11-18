@@ -2,7 +2,7 @@
  * ParisTracerouteTask.h
  *
  *  Created on: Mar 16, 2015
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * This class, inheriting Runnable, gets a subnet and is responsible for computing a route to it 
  * (i.e. a list of interfaces, each of them assumed to be an interface of the router at a given 
@@ -66,6 +66,9 @@ private:
     // Probing stuff
     DirectProber *prober;
     ProbeRecord *probe(const InetAddress &dst, unsigned char TTL);
+    
+    // "Stop" method (when resources are lacking)
+    void stop();
     
     // Verbosity/debug stuff
     bool displayFinalRoute, debugMode;

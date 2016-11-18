@@ -2,7 +2,7 @@
  * SubnetSiteSet.cpp
  *
  *  Created on: Oct 9, 2014
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * Implements the class defined in SubnetSiteSet.h (see this file to learn further about the 
  * goals of such class).
@@ -67,7 +67,7 @@ SubnetSite *SubnetSiteSet::getSubnetContainingWithTTL(InetAddress ip, unsigned c
         NetworkAddress na = ss->getInferredNetworkAddress();
         InetAddress lowerBorder = na.getLowerBorderAddress();
         InetAddress upperBorder = na.getUpperBorderAddress();
-        unsigned char ssTTL = ss->getRefinementShortestTTL();
+        unsigned char ssTTL = ss->getShortestTTL();
     
         if(ssTTL == TTL)
         {
@@ -89,7 +89,7 @@ SubnetSite *SubnetSiteSet::isSubnetEncompassed(SubnetSite *ss)
     
     InetAddress ssLowerBorder, ssUpperBorder;
     unsigned char ssPrefixLength = ss->getInferredSubnetPrefixLength();
-    unsigned char ssTTL = ss->getRefinementShortestTTL();
+    unsigned char ssTTL = ss->getShortestTTL();
     if(ssPrefixLength <= 31)
     {
         NetworkAddress na = ss->getInferredNetworkAddress();
@@ -109,7 +109,7 @@ SubnetSite *SubnetSiteSet::isSubnetEncompassed(SubnetSite *ss)
         InetAddress ss2LowerBorder = na.getLowerBorderAddress();
         InetAddress ss2UpperBorder = na.getUpperBorderAddress();
        
-        unsigned char ss2TTL = ss2->getRefinementShortestTTL();
+        unsigned char ss2TTL = ss2->getShortestTTL();
         if(ss2TTL == ssTTL)
         {
             if(ssLowerBorder >= ss2LowerBorder && ssLowerBorder <= ss2UpperBorder)
@@ -163,8 +163,8 @@ bool SubnetSiteSet::isCompatible(InetAddress lowerBorder,
             // upperBorder2 < upperBorder but lowerBorder == lowerBorder2: hypothetical subnet contains ss2
             else if(lowerBorder2 == lowerBorder)
             {
-                unsigned short ss2s = ss2->getRefinementStatus();
-                unsigned char ss2TTL = ss2->getRefinementGreatestTTL();
+                unsigned short ss2s = ss2->getStatus();
+                unsigned char ss2TTL = ss2->getGreatestTTL();
             
                 /*
                  * If a shadow subnet is being expanded and encompasses an ACCURATE/ODD subnet, 
@@ -215,8 +215,8 @@ bool SubnetSiteSet::isCompatible(InetAddress lowerBorder,
             if(upperBorder >= upperBorder2)
             {
                 // Same verifications as above
-                unsigned short ss2s = ss2->getRefinementStatus();
-                unsigned char ss2TTL = ss2->getRefinementGreatestTTL();
+                unsigned short ss2s = ss2->getStatus();
+                unsigned char ss2TTL = ss2->getGreatestTTL();
                 
                 if(shadowExpansion && (ss2s == SubnetSite::ACCURATE_SUBNET || ss2s == SubnetSite::ODD_SUBNET))
                 {
@@ -445,7 +445,7 @@ unsigned short SubnetSiteSet::getMaximumDistance()
     unsigned short longest = 0;
     for(list<SubnetSite*>::iterator i = siteList.begin(); i != siteList.end(); ++i)
     {
-        unsigned short curDistance = (*i)->getRefinementShortestTTL() + 1;
+        unsigned short curDistance = (*i)->getShortestTTL() + 1;
         if(curDistance > longest)
         {
             longest = curDistance;
@@ -465,7 +465,7 @@ SubnetSite *SubnetSiteSet::getIncompleteSubnet()
     {
         SubnetSite *ss = (*i);
         
-        if(ss->getRefinementStatus() == SubnetSite::INCOMPLETE_SUBNET)
+        if(ss->getStatus() == SubnetSite::INCOMPLETE_SUBNET)
         {
             siteList.erase(i--);
             return ss;
@@ -480,7 +480,7 @@ SubnetSite *SubnetSiteSet::getShadowSubnet()
     {
         SubnetSite *ss = (*i);
         
-        if(ss->getRefinementStatus() == SubnetSite::SHADOW_SUBNET)
+        if(ss->getStatus() == SubnetSite::SHADOW_SUBNET)
         {
             siteList.erase(i--);
             return ss;
@@ -495,9 +495,9 @@ SubnetSite *SubnetSiteSet::getValidSubnet(bool completeRoute)
     {
         SubnetSite *ss = (*i);
         
-        if(ss->getRefinementStatus() == SubnetSite::ACCURATE_SUBNET || 
-           ss->getRefinementStatus() == SubnetSite::ODD_SUBNET ||
-           ss->getRefinementStatus() == SubnetSite::SHADOW_SUBNET)
+        if(ss->getStatus() == SubnetSite::ACCURATE_SUBNET || 
+           ss->getStatus() == SubnetSite::ODD_SUBNET ||
+           ss->getStatus() == SubnetSite::SHADOW_SUBNET)
         {
             if(!completeRoute || ss->hasCompleteRoute())
             {
@@ -529,7 +529,7 @@ void SubnetSiteSet::outputAsFile(string filename)
     for(list<SubnetSite*>::iterator i = siteList.begin(); i != siteList.end(); ++i)
     {
         SubnetSite *ss = (*i);
-        string cur = ss->refinedToString();
+        string cur = ss->toString();
         
         if(!cur.empty())
             output += cur + "\n";

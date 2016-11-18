@@ -2,7 +2,7 @@
  * IPLookUpTable.cpp
  *
  *  Created on: Sep 29, 2015
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * Implements the class defined in IPLookUpTable.h (see this file to learn further about the goals 
  * of such class).
@@ -34,6 +34,17 @@ IPLookUpTable::~IPLookUpTable()
         haystack[i].clear();
     }
     delete[] haystack;
+}
+
+bool IPLookUpTable::isEmpty()
+{
+    for(unsigned long i = 0; i < SIZE_TABLE; i++)
+    {
+        list<IPTableEntry*> IPList = this->haystack[i];
+        if(IPList.size() > 0)
+            return true;
+    }
+    return false;
 }
 
 IPTableEntry *IPLookUpTable::create(InetAddress needle)

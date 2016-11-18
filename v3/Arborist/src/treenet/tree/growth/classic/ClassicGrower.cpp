@@ -2,7 +2,7 @@
  * ClassicGrower.cpp
  *
  *  Created on: Sept 9, 2016
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * Implements the class defined in ClassicGrower.h (see this file to learn further about the goals 
  * of such class).
@@ -52,89 +52,130 @@ void ClassicGrower::prepare()
     unsigned short displayMode = env->getDisplayMode();
     
     list<SubnetSite*> *list = subnets->getSubnetSiteList();
+
+    (*out) << "Computing route to each subnet...\n" << endl;
     
-    if(list->size() > 0)
+    // Lists subnets for which we would like a route
+    std::list<SubnetSite*> toSchedule;
+    for(std::list<SubnetSite*>::iterator it = list->begin(); it != list->end(); ++it)
     {
-        (*out) << "Computing route to each subnet...\n" << endl;
-        
-        // Lists subnets for which we would like a route
-        std::list<SubnetSite*> toSchedule;
-        for(std::list<SubnetSite*>::iterator it = list->begin(); it != list->end(); ++it)
+        unsigned short status = (*it)->getStatus();
+        if(status == SubnetSite::ACCURATE_SUBNET || 
+           status == SubnetSite::SHADOW_SUBNET || 
+           status == SubnetSite::ODD_SUBNET)
         {
-            unsigned short status = (*it)->getRefinementStatus();
-            if(status == SubnetSite::ACCURATE_SUBNET || 
-               status == SubnetSite::SHADOW_SUBNET || 
-               status == SubnetSite::ODD_SUBNET)
-            {
-                toSchedule.push_back((*it));
-            }
+            toSchedule.push_back((*it));
         }
-        
-        // Size of the thread array
-        unsigned short sizeParisArray = 0;
-        if((unsigned long) toSchedule.size() > (unsigned long) nbThreads)
-            sizeParisArray = nbThreads;
-        else
-            sizeParisArray = (unsigned short) toSchedule.size();
-        
-        // Creates thread(s)
-        Thread **parisTh = new Thread*[sizeParisArray];
-        for(unsigned short i = 0; i < sizeParisArray; i++)
-            parisTh[i] = NULL;
-        
-        while(toSchedule.size() > 0)
-        {
-            unsigned short range = DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID;
-            range -= DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID;
-            range /= sizeParisArray;
-            
-            for(unsigned short i = 0; i < sizeParisArray && toSchedule.size() > 0; i++)
-            {
-                SubnetSite *curSubnet = toSchedule.front();
-                toSchedule.pop_front();
-                
-                unsigned short lowBound = (i * range);
-                unsigned short upBound = lowBound + range - 1;
-
-                parisTh[i] = new Thread(new ParisTracerouteTask(env, 
-                                                                curSubnet, 
-                                                                DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + lowBound, 
-                                                                DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + upBound, 
-                                                                DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ, 
-                                                                DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ));
-            }
-
-            // Launches thread(s) then waits for completion
-            for(unsigned short i = 0; i < sizeParisArray; i++)
-            {
-                if(parisTh[i] != NULL)
-                {
-                    parisTh[i]->start();
-                    Thread::invokeSleep(env->getProbeThreadDelay());
-                }
-            }
-            
-            for(unsigned short i = 0; i < sizeParisArray; i++)
-            {
-                if(parisTh[i] != NULL)
-                {
-                    parisTh[i]->join();
-                    delete parisTh[i];
-                    parisTh[i] = NULL;
-                }
-            }
-        }
-        
-        delete[] parisTh;
     }
+    
+    // Size of the thread array
+    unsigned short sizeParisArray = 0;
+    if((unsigned long) toSchedule.size() > (unsigned long) nbThreads)
+        sizeParisArray = nbThreads;
+    else
+        sizeParisArray = (unsigned short) toSchedule.size();
+    
+    // Creates thread(s)
+    Thread **th = new Thread*[sizeParisArray];
+    for(unsigned short i = 0; i < sizeParisArray; i++)
+        th[i] = NULL;
+    
+    while(toSchedule.size() > 0)
+    {
+        unsigned short range = DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID;
+        range -= DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID;
+        range /= sizeParisArray;
+        
+        for(unsigned short i = 0; i < sizeParisArray && toSchedule.size() > 0; i++)
+        {
+            SubnetSite *curSubnet = toSchedule.front();
+            toSchedule.pop_front();
+            
+            unsigned short lowBound = (i * range);
+            unsigned short upBound = lowBound + range - 1;
+            
+            Runnable *task = NULL;
+            try
+            {
+                task = new ParisTracerouteTask(env, 
+                                               curSubnet, 
+                                               DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + lowBound, 
+                                               DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + upBound, 
+                                               DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ, 
+                                               DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ);
+
+                th[i] = new Thread(task);
+            }
+            catch(SocketException &se)
+            {
+                // Cleaning remaining threads (if any is set)
+                for(unsigned short j = 0; j < sizeParisArray; j++)
+                {
+                    delete th[j];
+                    th[j] = NULL;
+                }
+                
+                delete[] th;
+                
+                throw StopException();
+            }
+            catch(ThreadException &te)
+            {
+                (*out) << "Unable to create more threads." << endl;
+            
+                delete task;
+            
+                // Cleaning remaining threads (if any is set)
+                for(unsigned short j = 0; j < sizeParisArray; j++)
+                {
+                    delete th[j];
+                    th[j] = NULL;
+                }
+                
+                delete[] th;
+                
+                throw StopException();
+            }
+        }
+
+        // Launches thread(s) then waits for completion
+        for(unsigned short i = 0; i < sizeParisArray; i++)
+        {
+            if(th[i] != NULL)
+            {
+                th[i]->start();
+                Thread::invokeSleep(env->getProbeThreadDelay());
+            }
+        }
+        
+        for(unsigned short i = 0; i < sizeParisArray; i++)
+        {
+            if(th[i] != NULL)
+            {
+                th[i]->join();
+                delete th[i];
+                th[i] = NULL;
+            }
+        }
+        
+        if(env->isStopping())
+            break;
+    }
+    
+    delete[] th;
     
     /*
      * If we are in laconic display mode, we add a line break before the next message to keep 
-     * the display pretty to read, just like at the end of a Bypass round.
+     * the display airy enough.
      */
     
     if(displayMode == TreeNETEnvironment::DISPLAY_MODE_LACONIC)
         (*out) << "\n";
+    
+    if(env->isStopping())
+    {
+        throw StopException();
+    }
     
     (*out) << "Finished computing routes.\n" << endl;
 }

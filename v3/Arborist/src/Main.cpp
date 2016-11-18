@@ -45,13 +45,13 @@ using std::list;
 #include "treenet/TreeNETEnvironment.h"
 #include "treenet/utils/TargetParser.h"
 #include "treenet/prescanning/NetworkPrescanner.h"
-#include "treenet/explorenet/ExploreNETRunnable.h"
-#include "treenet/subnetrefinement/SubnetRefiner.h"
+#include "treenet/scanning/NetworkScanner.h"
 #include "treenet/tree/NetworkTree.h"
 #include "treenet/tree/growth/classic/ClassicGrower.h"
 #include "treenet/tree/climbers/Robin.h"
 #include "treenet/tree/climbers/Cuckoo.h"
 #include "treenet/tree/climbers/Crow.h"
+#include "treenet/tree/climbers/Cat.h"
 
 // Simple function to display usage.
 
@@ -409,7 +409,7 @@ void printVersion()
     cout << "Version and credits\n";
     cout << "===================\n";
     cout << "\n";
-    cout << "TreeNET v3.0 \"Arborist\", written by Jean-François Grailet (08 - 09/2016).\n";
+    cout << "TreeNET v3.0.1 \"Arborist\", written by Jean-François Grailet (08 - 09/2016).\n";
     cout << "Based on ExploreNET version 2.1, copyright (c) 2013 Mehmet Engin Tozal.\n";
     cout << "\n";
     
@@ -544,261 +544,271 @@ int main(int argc, char *argv[])
     unsigned long sec;
     unsigned long microSec;
     double valDouble;
-    while((opt = getopt_long(totalArgs, argv, shortOpts, longOpts, &longIndex)) != -1)
+    
+    try
     {
-        /*
-         * Beware: use the line optargSTR = string(optarg); ONLY for flags WITH arguments !! 
-         * Otherwise, it prevents the code from recognizing flags like -v, -h or -g (because they 
-         * require no argument) and make it throw an exception... To avoid this, a second switch 
-         * is used.
-         *
-         * (this is noteworthy, as this error is still present in ExploreNET v2.1)
-         */
-        
-        switch(opt)
+        while((opt = getopt_long(totalArgs, argv, shortOpts, longOpts, &longIndex)) != -1)
         {
-            case 'c':
-            case 'f':
-            case 'g':
-            case 'h':
-            case 'i':
-            case 'j':
-            case 'n':
-            case 'o':
-            case 's':
-            case 'u':
-                break;
-            default:
-                optargSTR = string(optarg);
-                
-                /*
-                 * For future readers: optarg is of type extern char*, and is defined in getopt.h.
-                 * Therefore, you will not find the declaration of this variable in this file.
-                 */
-                
-                break;
-        }
-        
-        // Now we can actually treat the options.
-        int gotNb = 0;
-        switch(opt)
-        {
-            case 'e':
-                try
-                {
-                    localIPAddress = InetAddress::getLocalAddressByInterfaceName(optargSTR);
-                }
-                catch (InetAddressException &e)
-                {
-                    cout << "Error for -e option: cannot obtain any IP address ";
-                    cout << "assigned to the interface \"" + optargSTR + "\". ";
-                    cout << "Please fix the argument for this option before ";
-                    cout << "restarting TreeNET.\n" << endl;
-                    return 1;
-                }
-                break;
-            case 'f':
-                useFixedFlowID = false;
-                break;
-            case 'm':
-                inputStartTTL = StringUtils::string2Uchar(optargSTR);
-                break;
-            case 'g':
-                exploreLANExplicitly = true;
-                break;
-            case 'p':
-                probeAttentionMessage = optargSTR;
-                break;
-            case 'n':
-                useLowerBorderAsWell = false;
-                break;
-            case 'b':
-                std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
-                if(optargSTR == string("UDP"))
-                    probingProtocol = TreeNETEnvironment::PROBING_PROTOCOL_UDP;
-                else if(optargSTR == string("TCP"))
-                    probingProtocol = TreeNETEnvironment::PROBING_PROTOCOL_TCP;
-                else if(optargSTR != string("ICMP"))
-                {
-                    cout << "Warning for option -b: unrecognized protocol " << optargSTR;
-                    cout << ". Please select a protocol between the following three: ";
-                    cout << "ICMP, UDP and TCP. Note that ICMP is the default base ";
-                    cout << "protocol.\n" << endl;
-                }
-                break;
-            case 'r':
-                val = 1000 * StringUtils::string2Ulong(optargSTR);
-                if(val > 0)
-                {
-                    sec = val / TimeVal::MICRO_SECONDS_LIMIT;
-                    microSec = val % TimeVal::MICRO_SECONDS_LIMIT;
-                    probeRegulatingPeriod.setTime(sec, microSec);
-                }
-                else
-                {
-                    cout << "Warning for -r option: a negative value (or 0) was parsed. ";
-                    cout << "TreeNET will use the default value for the probe regulating ";
-                    cout << "period (= 50ms).\n" << endl;
-                }
-                break;
-            case 's':
-                doubleProbe = true;
-                break;
-            case 't':
-                val = 1000 * StringUtils::string2Ulong(optargSTR);
-                if(val > 0)
-                {
-                    sec = val / TimeVal::MICRO_SECONDS_LIMIT;
-                    microSec = val % TimeVal::MICRO_SECONDS_LIMIT;
-                    timeoutPeriod.setTime(sec, microSec);
-                }
-                else
-                {
-                    cout << "Warning for -r option: a negative value (or 0) was parsed. ";
-                    cout << "TreeNET will use the default value for the timeout period ";
-                    cout << "(= 2,5s).\n" << endl;
-                }
-                break;
-            case 'a':
-                gotNb = std::atoi(optargSTR.c_str());
-                if (gotNb > 0 && gotNb < 32767)
-                {
-                    nbThreads = (unsigned short) gotNb;
-                }
-                else
-                {
-                    cout << "Warning for -a option: a value smaller than 1 or greater ";
-                    cout << "than 32766 was parsed. TreeNET will use the default amount ";
-                    cout << "of threads (= 256).\n" << endl;
+            /*
+             * Beware: use the line optargSTR = string(optarg); ONLY for flags WITH arguments !! 
+             * Otherwise, it prevents the code from recognizing flags like -v, -h or -g (because 
+             * they require no argument) and make it throw an exception... To avoid this, a second 
+             * switch is used.
+             *
+             * (this error is still present in ExploreNET v2.1)
+             */
+            
+            switch(opt)
+            {
+                case 'c':
+                case 'f':
+                case 'g':
+                case 'h':
+                case 'i':
+                case 'j':
+                case 'n':
+                case 'o':
+                case 's':
+                case 'u':
                     break;
-                }
-                
-                if (gotNb < (nbIPIDs + 1))
-                {
-                    nbThreads = 256;
+                default:
+                    optargSTR = string(optarg);
                     
-                    cout << "Warning for -a option: a value that is positive but smaller than ";
-                    cout << "the amount of IP IDs being collected per IP plus one was parsed. ";
-                    cout << "Such a configuration is forbidden because of the scheduling ";
-                    cout << "strategies used in the alias resolution step for IP ID collection. ";
-                    cout << "TreeNET will use the default amount of threads (= 256).\n" << endl;
-                }
-                
-                break;
-            case 'd':
-                val = 1000 * StringUtils::string2Ulong(optargSTR);
-                if(val > 0)
-                {
-                    sec = val / TimeVal::MICRO_SECONDS_LIMIT;
-                    microSec = val % TimeVal::MICRO_SECONDS_LIMIT;
-                    probeThreadDelay.setTime(sec, microSec);
-                }
-                else
-                {
-                    cout << "Warning for -d option: a negative value (or 0) was parsed. ";
-                    cout << "TreeNET will use the default value for the delay between the ";
-                    cout << "launch of two consecutive threads (= 250ms).\n" << endl;
-                }
-                break;
-            case 'u':
-                prescanExpand = true;
-                break;
-            case 'o':
-                thirdOpinionPrescan = true;
-                break;
-            case 'w':
-                gotNb = std::atoi(optargSTR.c_str());
-                if (gotNb > 2 && gotNb <= 20)
-                {
-                    nbIPIDs = (unsigned short) gotNb;
-                }
-                else
-                {
-                    cout << "Warning for -w option: a value outside the suggested range (i.e., ";
-                    cout << "[3,20]) was provided. TreeNET will use the default value for this ";
-                    cout << "option (= 4).\n" << endl;
+                    /*
+                     * For future readers: optarg is of type extern char*, and is defined in getopt.h.
+                     * Therefore, you will not find the declaration of this variable in this file.
+                     */
+                    
                     break;
-                }
-                
-                if ((gotNb + 1) > nbThreads)
-                {
-                    nbIPIDs = nbThreads - 1;
+            }
+            
+            // Now we can actually treat the options.
+            int gotNb = 0;
+            switch(opt)
+            {
+                case 'e':
+                    try
+                    {
+                        localIPAddress = InetAddress::getLocalAddressByInterfaceName(optargSTR);
+                    }
+                    catch (InetAddressException &e)
+                    {
+                        cout << "Error for -e option: cannot obtain any IP address ";
+                        cout << "assigned to the interface \"" + optargSTR + "\". ";
+                        cout << "Please fix the argument for this option before ";
+                        cout << "restarting TreeNET.\n" << endl;
+                        return 1;
+                    }
+                    break;
+                case 'f':
+                    useFixedFlowID = false;
+                    break;
+                case 'm':
+                    inputStartTTL = StringUtils::string2Uchar(optargSTR);
+                    break;
+                case 'g':
+                    exploreLANExplicitly = true;
+                    break;
+                case 'p':
+                    probeAttentionMessage = optargSTR;
+                    break;
+                case 'n':
+                    useLowerBorderAsWell = false;
+                    break;
+                case 'b':
+                    std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
+                    if(optargSTR == string("UDP"))
+                        probingProtocol = TreeNETEnvironment::PROBING_PROTOCOL_UDP;
+                    else if(optargSTR == string("TCP"))
+                        probingProtocol = TreeNETEnvironment::PROBING_PROTOCOL_TCP;
+                    else if(optargSTR != string("ICMP"))
+                    {
+                        cout << "Warning for option -b: unrecognized protocol " << optargSTR;
+                        cout << ". Please select a protocol between the following three: ";
+                        cout << "ICMP, UDP and TCP. Note that ICMP is the default base ";
+                        cout << "protocol.\n" << endl;
+                    }
+                    break;
+                case 'r':
+                    val = 1000 * StringUtils::string2Ulong(optargSTR);
+                    if(val > 0)
+                    {
+                        sec = val / TimeVal::MICRO_SECONDS_LIMIT;
+                        microSec = val % TimeVal::MICRO_SECONDS_LIMIT;
+                        probeRegulatingPeriod.setTime(sec, microSec);
+                    }
+                    else
+                    {
+                        cout << "Warning for -r option: a negative value (or 0) was parsed. ";
+                        cout << "TreeNET will use the default value for the probe regulating ";
+                        cout << "period (= 50ms).\n" << endl;
+                    }
+                    break;
+                case 's':
+                    doubleProbe = true;
+                    break;
+                case 't':
+                    val = 1000 * StringUtils::string2Ulong(optargSTR);
+                    if(val > 0)
+                    {
+                        sec = val / TimeVal::MICRO_SECONDS_LIMIT;
+                        microSec = val % TimeVal::MICRO_SECONDS_LIMIT;
+                        timeoutPeriod.setTime(sec, microSec);
+                    }
+                    else
+                    {
+                        cout << "Warning for -r option: a negative value (or 0) was parsed. ";
+                        cout << "TreeNET will use the default value for the timeout period ";
+                        cout << "(= 2,5s).\n" << endl;
+                    }
+                    break;
+                case 'a':
+                    gotNb = std::atoi(optargSTR.c_str());
+                    if (gotNb > 0 && gotNb < 32767)
+                    {
+                        nbThreads = (unsigned short) gotNb;
+                    }
+                    else
+                    {
+                        cout << "Warning for -a option: a value smaller than 1 or greater ";
+                        cout << "than 32766 was parsed. TreeNET will use the default amount ";
+                        cout << "of threads (= 256).\n" << endl;
+                        break;
+                    }
                     
-                    cout << "Warning for -w option: a value that is positive but greater than ";
-                    cout << "the amount of concurrent threads was parsed. Such a configuration ";
-                    cout << "is forbidden because of the scheduling strategies used in the alias ";
-                    cout << "resolution step for IP ID collection. TreeNET will use the current ";
-                    cout << "amount of threads minus one for the amount of collected IP IDs per ";
-                    cout << "IP.\n" << endl;
-                }
-                
-                break;
-            case 'x':
-                gotNb = std::atoi(optargSTR.c_str());
-                if (gotNb > 0 && gotNb <= 256)
-                {
-                    maxRollovers = (unsigned short) gotNb;
-                }
-                else
-                {
-                    cout << "Warning for -x option: a value outside the suggested range (i.e., ";
-                    cout << "[1,256]) was provided. TreeNET will use the default value for this ";
-                    cout << "option (= 10).\n" << endl;
-                }
-                break;
-            case 'y':
-                valDouble = StringUtils::string2double(optargSTR);
-                if(valDouble >= 0.0)
-                {
-                    baseTolerance = valDouble;
-                }
-                else
-                {
-                    cout << "Warning for -y option: a negative value was provided. TreeNET will ";
-                    cout << "use the default value for this option (= 0.2).\n" << endl;
-                }
-                break;
-            case 'z':
-                valDouble = StringUtils::string2double(optargSTR);
-                if(valDouble >= 0.0 && valDouble < 0.5)
-                {
-                    maxError = valDouble;
-                }
-                else
-                {
-                    cout << "Warning for -x option: a value outside the suggested range (i.e., ";
-                    cout << "[0,0.5[) was provided. TreeNET will use the default value for this ";
-                    cout << "option (= 0.35).\n" << endl;
-                }
-                break;
-            case 'l':
-                outputFileName = optargSTR;
-                break;
-            case 'j':
-                saveExploreNETRecords = true;
-            case 'v':
-                gotNb = std::atoi(optargSTR.c_str());
-                if(gotNb >= 0 && gotNb <= 3)
-                    displayMode = (unsigned short) gotNb;
-                else
-                {
-                    cout << "Warning for -v option: an unrecognized mode (i.e., value ";
-                    cout << "out of [0,3]) was provided. TreeNET will use the laconic ";
-                    cout << "mode (default mode).\n" << endl;
-                }
-                break;
-            case 'c':
-                displayVersion = true;
-                break;
-            case 'h':
-                displayUsage = true;
-                break;
-            case 'i':
-                displayInfo = true;
-                break;
-            default:
-                break;
+                    if (gotNb < (nbIPIDs + 1))
+                    {
+                        nbThreads = 256;
+                        
+                        cout << "Warning for -a option: a value that is positive but smaller ";
+                        cout << "than the amount of IP IDs being collected per IP plus one was ";
+                        cout << "parsed. Such a configuration is forbidden because of the ";
+                        cout << "scheduling strategies used in the alias resolution step for ";
+                        cout << "IP ID collection. TreeNET will use the default amount of ";
+                        cout << "threads (= 256).\n" << endl;
+                    }
+                    
+                    break;
+                case 'd':
+                    val = 1000 * StringUtils::string2Ulong(optargSTR);
+                    if(val > 0)
+                    {
+                        sec = val / TimeVal::MICRO_SECONDS_LIMIT;
+                        microSec = val % TimeVal::MICRO_SECONDS_LIMIT;
+                        probeThreadDelay.setTime(sec, microSec);
+                    }
+                    else
+                    {
+                        cout << "Warning for -d option: a negative value (or 0) was parsed. ";
+                        cout << "TreeNET will use the default value for the delay between the ";
+                        cout << "launch of two consecutive threads (= 250ms).\n" << endl;
+                    }
+                    break;
+                case 'u':
+                    prescanExpand = true;
+                    break;
+                case 'o':
+                    thirdOpinionPrescan = true;
+                    break;
+                case 'w':
+                    gotNb = std::atoi(optargSTR.c_str());
+                    if (gotNb > 2 && gotNb <= 20)
+                    {
+                        nbIPIDs = (unsigned short) gotNb;
+                    }
+                    else
+                    {
+                        cout << "Warning for -w option: a value outside the suggested range (i.e., ";
+                        cout << "[3,20]) was provided. TreeNET will use the default value for this ";
+                        cout << "option (= 4).\n" << endl;
+                        break;
+                    }
+                    
+                    if ((gotNb + 1) > nbThreads)
+                    {
+                        nbIPIDs = nbThreads - 1;
+                        
+                        cout << "Warning for -w option: a value that is positive but greater ";
+                        cout << "than configuration the amount of concurrent threads was parsed. ";
+                        cout << "Such a is forbidden because of the scheduling strategies used ";
+                        cout << "in the alias resolution step for IP ID collection. TreeNET will ";
+                        cout << "use the current amount of threads minus one for the amount of ";
+                        cout << "collected IP IDs per IP.\n" << endl;
+                    }
+                    
+                    break;
+                case 'x':
+                    gotNb = std::atoi(optargSTR.c_str());
+                    if (gotNb > 0 && gotNb <= 256)
+                    {
+                        maxRollovers = (unsigned short) gotNb;
+                    }
+                    else
+                    {
+                        cout << "Warning for -x option: a value outside the suggested range ";
+                        cout << "(i.e., [1,256]) was provided. TreeNET will use the default ";
+                        cout << "value for this option (= 10).\n" << endl;
+                    }
+                    break;
+                case 'y':
+                    valDouble = StringUtils::string2double(optargSTR);
+                    if(valDouble >= 0.0)
+                    {
+                        baseTolerance = valDouble;
+                    }
+                    else
+                    {
+                        cout << "Warning for -y option: a negative value was provided. TreeNET ";
+                        cout << "will use the default value for this option (= 0.2).\n" << endl;
+                    }
+                    break;
+                case 'z':
+                    valDouble = StringUtils::string2double(optargSTR);
+                    if(valDouble >= 0.0 && valDouble < 0.5)
+                    {
+                        maxError = valDouble;
+                    }
+                    else
+                    {
+                        cout << "Warning for -x option: a value outside the suggested range ";
+                        cout << "(i.e., [0,0.5[) was provided. TreeNET will use the default ";
+                        cout << "value for this option (= 0.35).\n" << endl;
+                    }
+                    break;
+                case 'l':
+                    outputFileName = optargSTR;
+                    break;
+                case 'j':
+                    saveExploreNETRecords = true;
+                case 'v':
+                    gotNb = std::atoi(optargSTR.c_str());
+                    if(gotNb >= 0 && gotNb <= 3)
+                        displayMode = (unsigned short) gotNb;
+                    else
+                    {
+                        cout << "Warning for -v option: an unrecognized mode (i.e., value ";
+                        cout << "out of [0,3]) was provided. TreeNET will use the laconic ";
+                        cout << "mode (default mode).\n" << endl;
+                    }
+                    break;
+                case 'c':
+                    displayVersion = true;
+                    break;
+                case 'h':
+                    displayUsage = true;
+                    break;
+                case 'i':
+                    displayInfo = true;
+                    break;
+                default:
+                    break;
+            }
         }
+    }
+    catch(std::logic_error &le)
+    {
+        cout << "Use -h or --help to get more details on how to use TreeNET." << endl;
+        return 1;
     }
     
     if(displayInfo || displayUsage || displayVersion)
@@ -838,7 +848,8 @@ int main(int argc, char *argv[])
         }
         catch(InetAddressException &e)
         {
-            cout << "Cannot obtain a valid local IP address for probing" << endl;
+            cout << "Cannot obtain a valid local IP address for probing. ";
+            cout << "Please check your connectivity." << endl;
             return 1;
         }
     }
@@ -851,12 +862,66 @@ int main(int argc, char *argv[])
         }
         catch(InetAddressException &e)
         {
-            cout << "Cannot obtain subnet mask of the local area network (LAN)" << endl;
+            cout << "Cannot obtain subnet mask of the local area network (LAN) .";
+            cout << "Please check your connectivity." << endl;
             return 1;
         }
     }
 
     NetworkAddress LAN(localIPAddress, LANSubnetMask);
+    
+    /*
+     * We determine now the label of the output files. Here, it is either provided by the user 
+     * (via -l flag), either it is set to the current date (dd-mm-yyyy hh:mm:ss).
+     */
+    
+    string newFileName = "";
+    if(outputFileName.length() > 0)
+    {
+        newFileName = outputFileName;
+    }
+    else
+    {
+        // Get the current time for the name of output file
+        time_t rawTime;
+        struct tm *timeInfo;
+        char buffer[80];
+
+        time(&rawTime);
+        timeInfo = localtime(&rawTime);
+
+        strftime(buffer, 80, "%d-%m-%Y %T", timeInfo);
+        string timeStr(buffer);
+        
+        newFileName = timeStr;
+    }
+    
+    /*
+     * The code now checks if it can open a socket at all to properly advertise the user should 
+     * use "sudo" or "su". Not putting this step would result in TreeNET scheduling probing work 
+     * and immediately trigger emergency stop (which should only occur when, after doing some 
+     * probing work, software resources start lacking), which is not very elegant.
+     */
+    
+    try
+    {
+        DirectProber *test = new DirectICMPProber(probeAttentionMessage, 
+                                                  timeoutPeriod, 
+                                                  probeRegulatingPeriod, 
+                                                  DirectICMPProber::DEFAULT_LOWER_ICMP_IDENTIFIER, 
+                                                  DirectICMPProber::DEFAULT_UPPER_ICMP_IDENTIFIER, 
+                                                  DirectICMPProber::DEFAULT_LOWER_ICMP_SEQUENCE, 
+                                                  DirectICMPProber::DEFAULT_UPPER_ICMP_SEQUENCE, 
+                                                  false);
+        
+        delete test;
+    }
+    catch(SocketException &e)
+    {
+        cout << "Unable to create sockets. Try running TreeNET as a privileged user (for ";
+        cout << "example, try with sudo)." << endl;
+        return 1;
+    }
     
     // Initialization of the environment
     TreeNETEnvironment *env = new TreeNETEnvironment(&cout, 
@@ -883,21 +948,22 @@ int main(int argc, char *argv[])
     
     // Gets direct access to the subnet set
     SubnetSiteSet *subnetSet = env->getSubnetSet();
-    SubnetSiteSet *zonesToAvoid = env->getIPBlocksToAvoid();
 
     // Various variables/structures which should be considered when catching some exception
-    unsigned short sizeArray = 0;
-    Thread **th = NULL;
-    SubnetRefiner *sr = NULL;
+    TargetParser *parser = NULL;
+    NetworkPrescanner *prescanner = NULL;
+    NetworkScanner *scanner = NULL;
+    Grower *g = NULL;
+    Soil *result = NULL;
+    Climber *cuckoo = NULL;
     
     try
     {
         // Parses inputs and gets target lists
-        TargetParser *parser = new TargetParser(env);
-        
+        parser = new TargetParser(env);
         parser->parseCommandLine(targetsStr);
         
-        cout << "TreeNET v3.0 \"Arborist\"\n" << endl;
+        cout << "TreeNET \"Arborist\" v3.0.1\n" << endl;
         
         // Announces that it will ignore LAN.
         if(parser->targetsEncompassLAN())
@@ -907,14 +973,18 @@ int main(int argc, char *argv[])
                  << "). IPs belonging to the LAN will be ignored.\n" << endl;
         }
 
-        std::list<InetAddress> targetsPrescanning = parser->getTargetsPrescanning();
+        list<InetAddress> targetsPrescanning = parser->getTargetsPrescanning();
 
         // Stops if no target at all
         if(targetsPrescanning.size() == 0)
         {
             cout << "No target to probe." << endl;
             delete parser;
-            throw InvalidParameterException();
+            parser = NULL;
+            
+            cout << "Use \"--help\" or \"-h\" parameter to reach help" << endl;
+            delete env;
+            return 1;
         }
         
         /*
@@ -924,7 +994,7 @@ int main(int argc, char *argv[])
          * they are live IPs.
          */
         
-        NetworkPrescanner *prescanner = new NetworkPrescanner(env);
+        prescanner = new NetworkPrescanner(env);
         prescanner->setTimeoutPeriod(env->getTimeoutPeriod());
         
         cout << "Prescanning with initial timeout..." << endl;
@@ -960,21 +1030,18 @@ int main(int argc, char *argv[])
         cout << "Prescanning ended.\n" << endl;
 
         delete prescanner;
+        prescanner = NULL;
         
-        /*
-         * STEP II: NETWORK SCANNING
-         *
-         * Given the set of (responsive) target addresses, TreeNET starts scanning the network 
-         * by launching subnet discovery threads on each target. The inferred subnets are 
-         * later merged together (when it is possible) to obtain a clean set of subnets where 
-         * no subnet possibly contain another entry in the set.
-         */
+        // Gets targets for scanning
+        list<InetAddress> targets = parser->getTargetsScanning();
         
-        // Gets the (responsive) target addresses
-        std::list<InetAddress> targets = parser->getTargetsScanning();
+        // Parser is no longer needed
         delete parser;
-        
+        parser = NULL;
+
         /*
+         * TIMEOUT ADAPTATION
+         *
          * Adapts the timeout value if the targets are close (as unsigned long int). When the 
          * gap between addresses is small, it is preferrable to increase the timeout period 
          * during the subnet inference/refinement in case it generated too much traffic at a 
@@ -982,8 +1049,8 @@ int main(int argc, char *argv[])
          */
         
         unsigned long smallestGap = 0;
-        InetAddress previous("0.0.0.0");
-        for(std::list<InetAddress>::iterator it = targets.begin(); it != targets.end(); ++it)
+        InetAddress previous(0);
+        for(list<InetAddress>::iterator it = targets.begin(); it != targets.end(); ++it)
         {
             InetAddress cur = (*it);
             
@@ -1014,199 +1081,17 @@ int main(int argc, char *argv[])
             cout << "\n" << endl;
         }
         
-        // Size of threads vector
-        unsigned long nbTargets = (unsigned int) targets.size();
-        if(nbTargets > (unsigned long) nbThreads)
-            sizeArray = nbThreads;
-        else
-            sizeArray = (unsigned short) nbTargets;
-        
-        // Creates thread(s)
-        th = new Thread*[sizeArray];
-        for(unsigned short i = 0; i < sizeArray; i++)
-            th[i] = NULL;
-
-        // Prepares subnet refiner (used during bypass)
-        sr = new SubnetRefiner(env);
-        
-        cout << "Starting network scanning..." << endl;
-        if(!(displayMode == TreeNETEnvironment::DISPLAY_MODE_DEBUG || displayMode == TreeNETEnvironment::DISPLAY_MODE_VERBOSE))
-            cout << endl;
-        
-        while(nbTargets > 0)
-        {
-            unsigned short range = DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID;
-            range -= DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID;
-            range /= sizeArray;
-            
-            for(unsigned short i = 0; i < sizeArray; i++)
-            {
-                InetAddress curTarget(targets.front());
-                targets.pop_front();
-                
-                unsigned short lowerBound = (i * range);
-                unsigned short upperBound = lowerBound + range - 1;
-                
-                th[i] = new Thread(new ExploreNETRunnable(env, 
-                                                          curTarget, 
-                                                          DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + lowerBound, 
-                                                          DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + upperBound, 
-                                                          DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ, 
-                                                          DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ));
-            }
-
-            // Launches thread(s) then waits for completion
-            for(unsigned short i = 0; i < sizeArray; i++)
-            {
-                if(th[i] != NULL)
-                {
-                    th[i]->start();
-                    Thread::invokeSleep(env->getProbeThreadDelay());
-                }
-            }
-            
-            for(unsigned short i = 0; i < sizeArray; i++)
-            {
-                if(th[i] != NULL)
-                {
-                    th[i]->join();
-                    delete th[i];
-                    th[i] = NULL;
-                }
-            }
-            
-            cout << endl;
-            
-            /*
-             * BYPASS
-             *
-             * After probing a certain amount of target addresses, TreeNET periodically 
-             * stops the scanning in order to perform a first form of refinement: expansion.
-             * Indeed, ExploreNET tends to partition subnets when they do not feature a 
-             * certain amount of responsive interfaces. Expansion aims at correcting this 
-             * issue by relying on the Contra-Pivot notion (see SubnetRefiner.cpp/.h for more 
-             * details about this).
-             *
-             * Because expansion overgrowths subnet, performing this refinement may avoid 
-             * probing several addresses that are already inside the boundaries of the 
-             * refined subnets. Therefore, this should speed up the scanning which is the 
-             * slowest operation of TreeNET.
-             */
-            
-            // We first check which subnet should be refined
-            std::list<SubnetSite*> *list = subnetSet->getSubnetSiteList();
-            bool needsRefinement = false;
-            string newSubnets = "";
-            for(std::list<SubnetSite*>::iterator it = list->begin(); it != list->end(); ++it)
-            {
-                if((*it)->getRefinementStatus() != SubnetSite::NOT_PREPARED_YET)
-                    continue;
-                
-                (*it)->prepareForRefinement();
-                string networkAddressStr = (*it)->getInferredNetworkAddressString();
-                switch((*it)->getRefinementStatus())
-                {
-                    case SubnetSite::INCOMPLETE_SUBNET:
-                        needsRefinement = true;
-                        newSubnets += networkAddressStr + ": incomplete subnet\n";
-                        break;
-                    case SubnetSite::ACCURATE_SUBNET:
-                        newSubnets += networkAddressStr + ": accurate subnet\n";
-                        break;
-                    case SubnetSite::ODD_SUBNET:
-                        newSubnets += networkAddressStr + ": odd subnet\n";
-                        break;
-                    default:
-                        newSubnets += networkAddressStr + ": undefined subnet\n";
-                        break;
-                }
-            }
-            
-            if(!newSubnets.empty())
-            {
-                cout << "New subnets found by the previous " << sizeArray << " threads:\n";
-                cout << newSubnets << endl;
-            }
-            else
-            {
-                cout << "Previous " << sizeArray << " threads found no new subnet\n" << endl;
-            }
-            
-            // Performs refinement
-            if(needsRefinement)
-            {
-                cout << "Refining incomplete subnets...\n" << endl;
-                
-                SubnetSite *candidateForRefinement = subnetSet->getIncompleteSubnet();
-                while(candidateForRefinement != NULL)
-                {
-                    /*
-                     * Checks if expansion should be conducted, i.e. the subnet should not be 
-                     * encompassed by an UNDEFINED subnet found in the "IPBlocksToAvoid" set from 
-                     * TreeNETEnvironment. Otherwise, expansion is a waste of time: the presence 
-                     * of an UNDEFINED subnet means we already looked for Contra-Pivot interfaces 
-                     * in this zone without success. There should not be any issue regarding TTL 
-                     * values, because expansion should have stopped before reaching the UNDEFINED 
-                     * state in this case. When refinement by expansion is not done, the subnet is 
-                     * directly labelled as SHADOW and reinserted in subnetSet.
-                     */
-                    
-                    SubnetSite *ss2 = zonesToAvoid->isSubnetEncompassed(candidateForRefinement);
-                    if(ss2 != NULL)
-                    {
-                        string ssStr = candidateForRefinement->getInferredNetworkAddressString();
-                        string ss2Str = ss2->getInferredNetworkAddressString();
-                        cout << "No refinement for " << ssStr << ": it is encompassed in the ";
-                        cout << ss2Str << " IPv4 address block.\nThis block features Pivot ";
-                        cout << "interfaces with the same TTL as expected for " << ssStr << ".\n";
-                        cout << "It has already been checked to find Contra-Pivot interfaces, ";
-                        cout << "without success.\n";
-                        cout << ssStr << " marked as SHADOW subnet.\n" << endl;
-                    
-                        candidateForRefinement->setRefinementStatus(SubnetSite::SHADOW_SUBNET);
-                        
-                        // No check of return value because subnet did not change
-                        subnetSet->addSite(candidateForRefinement); 
-                        
-                        candidateForRefinement = subnetSet->getIncompleteSubnet();
-                        continue;
-                    }
-                
-                    sr->expand(candidateForRefinement);
-                    unsigned short res = subnetSet->addSite(candidateForRefinement);
-                    
-                    if(res == SubnetSiteSet::SMALLER_SUBNET || res == SubnetSiteSet::KNOWN_SUBNET)
-                    {
-                        delete candidateForRefinement;
-                        candidateForRefinement = NULL;
-                    }
-                
-                    candidateForRefinement = subnetSet->getIncompleteSubnet();
-                }
-                
-                /*
-                 * If we are in laconic display mode, we add a line break before the next message 
-                 * to keep the display pretty to read.
-                 */
-                
-                if(displayMode == TreeNETEnvironment::DISPLAY_MODE_LACONIC)
-                    cout << "\n";
-                
-                cout << "Back to scanning...\n" << endl;
-            }
-            
-            // Updates number of targets for next salve of threads
-            if(nbTargets > (unsigned long) sizeArray)
-            {
-                nbTargets -= (unsigned long) sizeArray;
-                if(nbTargets < (unsigned long) sizeArray)
-                    sizeArray = (unsigned short) nbTargets;
-            }
-            else
-                nbTargets = 0;
-        }
-        
-        delete[] th;
+        /*
+         * STEP II: NETWORK SCANNING
+         *
+         * Given the set of (responsive) target addresses, TreeNET starts scanning the network 
+         * by launching subnet discovery threads on each target. The inferred subnets are 
+         * later merged together (when it is possible) to obtain a clean set of subnets where 
+         * no subnet possibly contain another entry in the set.
+         */
+       
+        scanner = new NetworkScanner(env);
+        scanner->scan(targets);
         
         // Restores regular timeout
         if(editedTimeout)
@@ -1214,165 +1099,38 @@ int main(int argc, char *argv[])
             env->setTimeoutPeriod(timeoutPeriod);
         }
         
-        cout << "Scanning completed.\n" << endl;
-        
         /*
-         * A first output file can be written at this point. The names used for all output files 
-         * are already defined in the following lines.
+         * STEP III: END OF SUBNET REFINEMENT
+         *
+         * After the scanning (with), subnets may still not contain all live interfaces in their 
+         * list: a filling method helps to fix this issue by adding unlisted responsive interfaces 
+         * that are within the boundaries of the subnet.
+         *
+         * Shadow subnets, if any, are also expanded so that their size (determined by their 
+         * prefix) is the maximum size for these subnets to not collide with other inferred 
+         * subnets that are incompatible for merging. In other words, TreeNET computes a lower 
+         * bound on the prefix length, therefore an upper bound on the size of the subnet.
+         *
+         * Note that this step, unlike scanning, is entirely passive.
          */
         
-        string newFileNameXnet = "";
-        string newFileNameSubnet = "";
-        string newFileNameIP = "";
-        string newFileNameAlias = "";
-        string newFileNameFingerprints = "";
-        if(outputFileName.length() > 0)
-        {
-            newFileNameXnet = outputFileName + ".xnet";
-            newFileNameSubnet = outputFileName + ".subnet";
-            newFileNameIP = outputFileName + ".ip";
-            newFileNameAlias = outputFileName + ".alias";
-            newFileNameFingerprints = outputFileName + ".fingerprint";
-        }
-        else
-        {
-            // Get the current time for the name of output file
-            time_t rawTime;
-            struct tm *timeInfo;
-            char buffer[80];
-
-            time(&rawTime);
-            timeInfo = localtime(&rawTime);
-
-            strftime(buffer, 80, "%d-%m-%Y %T", timeInfo);
-            string timeStr(buffer);
-            
-            newFileNameXnet = timeStr + ".xnet";
-            newFileNameSubnet = timeStr + ".subnet";
-            newFileNameIP = timeStr + ".ip";
-            newFileNameAlias = timeStr + ".alias";
-            newFileNameFingerprints = timeStr + ".fingerprint";
-        }
+        scanner->finalize();
         
-        /*
-         * STEP III: SUBNET REFINEMENT (END)
-         *
-         * After the scanning (with bypass), subnets may still not contain all live 
-         * interfaces in their list: a filling method helps to fix this issue by adding 
-         * unlisted responsive interfaces that are within the boundaries of the subnet.
-         *
-         * Regarding shadow subnets, if any, we also expand them so that their size 
-         * (determined by their prefix) is the maximum size for these subnets to not collide 
-         * with other inferred subnets. In other words, the code computes a lower bound on 
-         * the prefix length, therefore an upper bound on the size of the subnet. This is the 
-         * best we can predict for such cases.
-         *
-         * The code first lists the subnets to fill and checks if there are shadow subnets.
-         * Then, the code proceeds to fill the subnets, using SubnetRefiner. There is no 
-         * parallelization of the filling of several subnets, as there is already 
-         * parallelization within the filling (with ProbesDispatcher, see subnetrefinement/). 
-         * The very last step consists in expanding shadow subnets to their upper bound.
-         */
-        
-        int nbShadows = 0;
-        std::list<SubnetSite*> *list = subnetSet->getSubnetSiteList();
-        std::list<SubnetSite*> toFill;
-        for(std::list<SubnetSite*>::iterator it = list->begin(); it != list->end(); ++it)
-        {
-            // Security for PlanetLab version (though this occurs rarely)
-            if((*it) == NULL)
-                continue;
-        
-            unsigned short status = (*it)->getRefinementStatus();
-            if(status == SubnetSite::ACCURATE_SUBNET || status == SubnetSite::ODD_SUBNET)
-                toFill.push_back((*it));
-            else if((*it)->getRefinementStatus() == SubnetSite::SHADOW_SUBNET)
-                nbShadows++;
-        }
-        
-        // Filling
-        if(toFill.size() > 0)
-        {
-            cout << "Refinement by filling (passive method)...\n" << endl;
-            
-            for(std::list<SubnetSite*>::iterator it = toFill.begin(); it != toFill.end(); ++it)
-            {
-                // Security for PlanetLab version (though this should not occur)
-                if((*it) == NULL)
-                    continue;
-                
-                unsigned short status = (*it)->getRefinementStatus();
-                
-                sr->fill(*it);
-                // (*it) != NULL: same reason as above (though, once again, unlikely)
-                if((*it) != NULL && status == SubnetSite::ACCURATE_SUBNET)
-                    (*it)->recomputeRefinementStatus();
-            }
-            
-            /*
-             * Like at the end of Bypass round, we have to take into account the display mode 
-             * before adding a new line break to space harmoniously the different steps.
-             */
-            
-            if(displayMode != TreeNETEnvironment::DISPLAY_MODE_LACONIC)
-                cout << endl;
-        }
-        
-        // Shadow expansion (no parallelization here, because this operation is instantaneous)
-        if(nbShadows > 0)
-        {
-            cout << "Expanding shadow subnets to the maximum...\n" << endl;
-            for(std::list<SubnetSite*>::iterator it = list->begin(); it != list->end(); ++it)
-            {
-                if((*it)->getRefinementStatus() == SubnetSite::SHADOW_SUBNET)
-                {
-                    sr->shadowExpand(*it);
-                }
-            }
-            
-            /*
-             * Removes all shadow subnets, then puts them back. The motivation is to merge the 
-             * subnets that have the same prefix length after shadow expansion, because it is 
-             * rather frequent that several incomplete subnets lead to the same shadow subnet.
-             *
-             * It can also occur that a shadow subnet actually contains one or several outliers 
-             * from another subnet. In that case, it should be merged with the larger subnet.
-             */
-            
-            SubnetSite *shadow = subnetSet->getShadowSubnet();
-            std::list<SubnetSite*> listShadows;
-            while(shadow != NULL)
-            {
-                listShadows.push_back(shadow);
-                shadow = subnetSet->getShadowSubnet();
-            }
-            
-            std::list<SubnetSite*>::iterator listBegin = listShadows.begin();
-            std::list<SubnetSite*>::iterator listEnd = listShadows.end();
-            for(std::list<SubnetSite*>::iterator it = listBegin; it != listEnd; ++it)
-            {
-                unsigned short res = subnetSet->addSite((*it));
-                if(res == SubnetSiteSet::SMALLER_SUBNET || res == SubnetSiteSet::KNOWN_SUBNET)
-                {
-                    delete (*it);
-                }
-            }
-        }
-        
-        delete sr; // SubnetRefiner no longer needed
+        delete scanner;
+        scanner = NULL;
         
         // Saves subnet inference details if user asked them.
         if(saveExploreNETRecords)
         {
-            env->outputExploreNETRecords(newFileNameXnet);
+            env->outputExploreNETRecords(newFileName + ".xnet");
             cout << "Details about subnet inference as carried out by ExploreNET have been ";
-            cout << "written in a new file " << newFileNameXnet << ".\n" << endl;
+            cout << "written in a new file " << newFileName << ".xnet.\n" << endl;
         }
         
         // 1st save of the inferred subnets (no route)
-        subnetSet->outputAsFile(newFileNameSubnet);
+        subnetSet->outputAsFile(newFileName + ".subnet");
         cout << "Inferred subnets have been saved in an output file ";
-        cout << newFileNameSubnet << ".\n" << endl;
+        cout << newFileName << ".subnet.\n" << endl;
         
         // Outputting results with the set (simple display).
         cout << left << setw(25) << "Subnet";
@@ -1380,11 +1138,12 @@ int main(int argc, char *argv[])
         cout << left << setw(25) << "------";
         cout << left << setw(15) << "-----" << endl;
         
-        for(std::list<SubnetSite*>::iterator it = list->begin(); it != list->end(); ++it)
+        list<SubnetSite*> *ssList = subnetSet->getSubnetSiteList();
+        for(list<SubnetSite*>::iterator it = ssList->begin(); it != ssList->end(); ++it)
         {
             cout << left << setw(25) << (*it)->getInferredNetworkAddressString();
             cout << left << setw(15);
-            switch((*it)->getRefinementStatus())
+            switch((*it)->getStatus())
             {
                 case SubnetSite::ACCURATE_SUBNET:
                     cout << "Accurate";
@@ -1403,20 +1162,22 @@ int main(int argc, char *argv[])
         }
         
         /*
-         * STEP V: SUBNET NEIGHBORHOOD INFERENCE
+         * STEP IV: SUBNET NEIGHBORHOOD INFERENCE
          *
          * Before inferring L2/L3 devices, we locate subnets regarding each other with a tree. 
          * The process of constructing the tree, as of September 2016, occurs in two steps: first 
          * step is the preparation, which is a preliminary probing task to collect additionnal 
-         * details on the subnets and their location (for example, running Paris traceroute). 
-         * Then the construction (or tree growth) actually starts, using these preliminary pieces 
-         * of info. The construction itself can be enterily passive (i.e., no probing) or involve 
-         * additionnal probing work.
+         * details on the subnets and their location (currently, running Paris traceroute to each 
+         * subnet). Then, the construction (or tree growth) actually starts, using these 
+         * preliminary pieces of data.
+         *
+         * The current construction method is enterily passive (i.e., no probing) but new methods 
+         * of tree growth could be added later and involve additionnal probing work.
          */
          
         cout << "\nPreparing the tree growth...\n" << endl;
         
-        Grower *g = new ClassicGrower(env);
+        g = new ClassicGrower(env);
         g->prepare();
         
         cout << "Preparation complete.\n\nGrowing network tree..." << endl;
@@ -1426,13 +1187,13 @@ int main(int argc, char *argv[])
         // End of tree growth
         cout << "Growth complete.\n" << endl;
         
-        Soil *result = g->getResult();
+        result = g->getResult();
         delete g;
         
         // Final save of the subnets, overriding previous save.
-        result->outputSubnets(newFileNameSubnet);
+        result->outputSubnets(newFileName + ".subnet");
         cout << "Inferred subnets have been saved a second time (with routing details) in ";
-        cout << newFileNameSubnet << ".\n" << endl;
+        cout << newFileName << ".subnet.\n" << endl;
         
         if(displayMode != TreeNETEnvironment::DISPLAY_MODE_LACONIC)
         {
@@ -1442,63 +1203,84 @@ int main(int argc, char *argv[])
         }
         
         /*
-         * STEP VI: ALIAS RESOLUTION
+         * STEP V: ALIAS RESOLUTION
          *
-         * Interfaces bordering a neighborhood are probed once more to attempt to gather 
-         * interfaces as routers.
+         * Interfaces bordering a neighborhood are probed again several times (but with a fixed 
+         * amount of probes) to gather "alias resolution hints", i.e., pieces of data which will 
+         * be used to profile the behavior of that IP via a fingerpriting process. Then, IPs 
+         * of a same neighborhood showing a similar profile are gathered together in an offline 
+         * post-processing of the tree to conduct actual alias resolution via the best suited 
+         * method. The hints are sometimes involved in this (for instance, IP-IDs), though some 
+         * profiles might not be compatible with any technique implemented in TreeNET.
          */
         
         cout << "Alias resolution...\n" << endl;
         
         // Collects alias resolution hints.
-        Climber *cuckoo = new Cuckoo(env);
+        cuckoo = new Cuckoo(env);
         cuckoo->climb(result);
         cout << endl;
         delete cuckoo;
+        cuckoo = NULL;
         
         // Internal node exploration and actual alias resolution are only done now.
-        Crow *c = new Crow(env);
-        c->climb(result);
-        c->outputAliases(newFileNameAlias);
-        delete c;
+        Crow *crow = new Crow(env);
+        crow->climb(result);
+        crow->outputAliases(newFileName + ".alias");
+        delete crow;
+        
+        Cat *cat = new Cat(env);
+        cat->climb(result);
+        delete cat;
         
         cout << "Inferred alias lists have been saved in an output file ";
-        cout << newFileNameAlias << ".\n";
+        cout << newFileName << ".alias.\n";
         
-        env->getIPTable()->outputDictionnary(newFileNameIP);
+        env->getIPTable()->outputDictionnary(newFileName + ".ip");
         cout << "IP dictionnary with alias resolution hints has been saved in an output file ";
-        cout << newFileNameIP << ".\n";
+        cout << newFileName << ".ip.\n";
         
-        env->getIPTable()->outputFingerprints(newFileNameFingerprints);
+        env->getIPTable()->outputFingerprints(newFileName + ".fingerprint");
         cout << "IP dictionnary with fingerprints has been saved in an output file ";
-        cout << newFileNameFingerprints << "." << endl;
+        cout << newFileName << ".fingerprint." << endl;
 
         delete result;
+        result = NULL;
     }
-    catch(SocketException &e)
+    catch(StopException e)
     {
-        cout << "Unable to create sockets. Try running TreeNET as a privileged user (for ";
-        cout << "example, try with sudo)." << endl;
-        
-        if(th != NULL)
+        cout << "TreeNET is halting now." << endl;
+    
+        IPLookUpTable *dict = env->getIPTable();
+        if(subnetSet->getSubnetSiteList()->size() > 0 || result != NULL || !dict->isEmpty())
+            cout << endl;
+    
+        // Emergency save of subnets
+        if(subnetSet->getSubnetSiteList()->size() > 0)
         {
-            for(unsigned int i = 0; i < sizeArray; i++)
-            {
-                if(th[i] != NULL)
-                    delete th[i];
-            }
-            delete[] th;
+            subnetSet->outputAsFile("[Stopped] " + newFileName + ".subnet");
+            cout << "Inferred subnets have been saved in a file \"[Stopped] "+ newFileName + ".subnet\"." << endl;
+        }
+        else if(result != NULL)
+        {
+            cout << "Because of the advancement, a save of subnets should be available under the ";
+            cout << "name \"" + newFileName +".subnet\"." << endl;
         }
         
-        if(sr != NULL)
-            delete sr;
+        // Emergency save of the IP dictionnary
+        if(!dict->isEmpty())
+        {
+            dict->outputDictionnary("[Stopped] " + newFileName + ".ip");
+            cout << "IP dictionnary has been saved in a file \"[Stopped] "+ newFileName + ".ip\"." << endl;
+        }
         
-        delete env;
-        return 1;
-    }
-    catch(InvalidParameterException &e)
-    {
-        cout << "Use \"--help\" or \"-h\" parameter to reach help" << endl;
+        // Because pointers are set to NULL after deletion, next lines should not cause any issue.
+        delete parser;
+        delete prescanner;
+        delete scanner;
+        delete g;
+        delete cuckoo;
+        delete result;
         delete env;
         return 1;
     }

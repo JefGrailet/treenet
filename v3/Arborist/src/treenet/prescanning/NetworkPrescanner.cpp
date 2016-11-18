@@ -2,7 +2,7 @@
  * NetworkPrescanner.cpp
  *
  *  Created on: Oct 8, 2015
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * Implements the class defined in NetworkPrescanner.h (see this file to learn further about the 
  * goals of such class).
@@ -139,13 +139,50 @@ void NetworkPrescanner::probe()
             targets.pop_front();
         }
 
-        th[i] = new Thread(new NetworkPrescanningUnit(env, 
-                                                      this, 
-                                                      targetsSubset, 
-                                                      DirectICMPProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (i * range), 
-                                                      DirectICMPProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (i * range) + range - 1, 
-                                                      DirectICMPProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ, 
-                                                      DirectICMPProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ));
+        Runnable *task = NULL;
+        try
+        {
+            task = new NetworkPrescanningUnit(env, 
+                                              this, 
+                                              targetsSubset, 
+                                              DirectICMPProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (i * range), 
+                                              DirectICMPProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (i * range) + range - 1, 
+                                              DirectICMPProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ, 
+                                              DirectICMPProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ);
+
+            th[i] = new Thread(task);
+        }
+        catch(SocketException &se)
+        {
+            // Cleaning remaining threads (if any is set)
+            for(unsigned short k = 0; k < nbThreads; k++)
+            {
+                delete th[k];
+                th[k] = NULL;
+            }
+            
+            delete[] th;
+            
+            throw StopException();
+        }
+        catch(ThreadException &te)
+        {
+            ostream *out = env->getOutputStream();
+            (*out) << "Unable to create more threads." << endl;
+                
+            delete task;
+        
+            // Cleaning remaining threads (if any is set)
+            for(unsigned short k = 0; k < nbThreads; k++)
+            {
+                delete th[k];
+                th[k] = NULL;
+            }
+            
+            delete[] th;
+            
+            throw StopException();
+        }
     }
 
     // Launches thread(s) then waits for completion
@@ -162,4 +199,10 @@ void NetworkPrescanner::probe()
     }
     
     delete[] th;
+    
+    // Might happen because of SocketSendException thrown within a unit
+    if(env->isStopping())
+    {
+        throw StopException();
+    }
 }

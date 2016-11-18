@@ -2,7 +2,7 @@
  * TreeNETEnvironment.cpp
  *
  *  Created on: Sep 30, 2015
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * This file implements the class defined in TreeNETEnvironment.h. See this file for more details 
  * on the goals of such class.
@@ -18,6 +18,7 @@ using std::setw;
 #include "TreeNETEnvironment.h"
 
 Mutex TreeNETEnvironment::consoleMessagesMutex(Mutex::ERROR_CHECKING_MUTEX);
+Mutex TreeNETEnvironment::emergencyStopMutex(Mutex::ERROR_CHECKING_MUTEX);
 
 TreeNETEnvironment::TreeNETEnvironment(ostream *o, 
                                        unsigned char sTTL, 
@@ -60,7 +61,8 @@ maxRollovers(mRollovers),
 baseTolerance(bTol), 
 maxError(mError), 
 displayMode(dMode), 
-maxThreads(mT)
+maxThreads(mT), 
+flagEmergencyStop(false)
 {
     this->IPTable = new IPLookUpTable(nIDs);
     this->subnetSet = new SubnetSiteSet();
@@ -111,4 +113,28 @@ void TreeNETEnvironment::outputExploreNETRecords(string filename)
     // File must be accessible to all
     string path = "./" + filename;
     chmod(path.c_str(), 0766);
+}
+
+bool TreeNETEnvironment::triggerStop()
+{
+    /*
+     * In case of loss of connectivity, it is possible several threads calls this method. To avoid 
+     * multiple contexts launching the emergency stop, there is the following condition (in 
+     * addition to a Mutex object).
+     */
+    
+    if(flagEmergencyStop)
+    {
+        return false;
+    }
+
+    flagEmergencyStop = true;
+    
+    consoleMessagesMutex.lock();
+    (*out) << "\nWARNING: emergency stop has been triggered because of connectivity issues.\n";
+    (*out) << "TreeNET will wait for all remaining threads to complete before exiting without ";
+    (*out) << "carrying out remaining probing tasks.\n" << endl;
+    consoleMessagesMutex.unlock();
+    
+    return true;
 }

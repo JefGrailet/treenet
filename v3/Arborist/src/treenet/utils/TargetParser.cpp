@@ -2,7 +2,7 @@
  * TargetParser.cpp
  *
  *  Created on: Oct 2, 2015
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * Implements the class defined in TargetParser.h.
  */

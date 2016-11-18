@@ -69,7 +69,7 @@ public:
     inline unsigned int getSubnetInferenceCost() { return this->siCost; }
     inline int getMergeAmount() { return this->mergeAmount; }
     inline InetAddress &getTargetAddress() { return this->targetIPaddress; }
-    inline InetAddress &getPivotAddress() { return this->pivotIPaddress; }
+    inline InetAddress &getPivotAddress() { return this->pivotIPaddress; } // ! Pivot during ExploreNET inference
     inline InetAddress &getIngressInterfaceAddress() { return this->prevSiteIPaddress; }
     inline int getSubnetHopDistance() { return this->prevSiteIPaddressDistance; }
     inline unsigned char getInferredSubnetPrefixLength() { return this->inferredSubnetPrefix; }
@@ -102,16 +102,16 @@ public:
     void prepareForRefinement();
     
     // Accessers to refinement data
-    inline unsigned short getRefinementStatus() { return this->refinementStatus; }
-    inline InetAddress &getRefinementContrapivot() { return this->refinementContrapivot; }
-    inline unsigned char getRefinementShortestTTL() { return this->refinementTTL1; }
-    inline unsigned char getRefinementGreatestTTL() { return this->refinementTTL2; }
+    inline unsigned short getStatus() { return this->refinementStatus; }
+    inline InetAddress &getContrapivot() { return this->refinementContrapivot; }
+    inline unsigned char getShortestTTL() { return this->refinementTTL1; }
+    inline unsigned char getGreatestTTL() { return this->refinementTTL2; }
     
     // Setters for refinement data and pivot/prefix edition
-    inline void setRefinementStatus(unsigned short rs) { this->refinementStatus = rs; }
-    inline void setRefinementContrapivot(InetAddress &rc) { this->refinementContrapivot = rc; }
-    inline void setRefinementShortestTTL(unsigned char rst) { this->refinementTTL1 = rst; }
-    inline void setRefinementGreatestTTL(unsigned char rgt) { this->refinementTTL2 = rgt; }
+    inline void setStatus(unsigned short rs) { this->refinementStatus = rs; }
+    inline void setContrapivot(InetAddress &rc) { this->refinementContrapivot = rc; }
+    inline void setShortestTTL(unsigned char rst) { this->refinementTTL1 = rst; }
+    inline void setGreatestTTL(unsigned char rgt) { this->refinementTTL2 = rgt; }
     inline void setPivotAddress(InetAddress &pivot) { this->pivotIPaddress = pivot; }
     inline void setInferredSubnetPrefixLength(unsigned char ispl) { this->inferredSubnetPrefix = ispl; }
 
@@ -119,13 +119,13 @@ public:
     void recomputeRefinementStatus();
         
     // Method to know if a given InetAddress is within this subnet boundaries
-    bool containsAddress(InetAddress i);
+    bool contains(InetAddress i);
     
     // Method to know if a given InetAddress appears in the live interfaces of this subnet
     bool hasLiveInterface(InetAddress li);
     
     // Method to obtain a pivot address of this subnet after refinement
-    InetAddress getRefinementPivot();
+    InetAddress getPivot();
     
     /*
      * Methods related to route manipulation.
@@ -147,8 +147,8 @@ public:
     
     bool isAnArtifact();
     
-    // toString() method, only available for refined subnets, null otherwise 
-    string refinedToString();
+    // toString() method, only available for refined subnets, otherwise it returns an empty string 
+    string toString();
     
     /*
      * Special method to evaluate the credibility of the subnet. Indeed, for several reasons,

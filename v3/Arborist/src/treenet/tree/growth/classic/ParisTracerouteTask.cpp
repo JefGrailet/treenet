@@ -2,7 +2,7 @@
  * ParisTracerouteTask.cpp
  *
  *  Created on: Mar 16, 2015
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * Implements the class defined in ParisTracerouteTask.h (see this file to learn further about the 
  * goals of such class).
@@ -68,27 +68,24 @@ subnet(ss)
                                           env->debugMode());
         }
     }
-    catch(SocketException e)
+    catch(SocketException &se)
     {
-        throw e;
+        ostream *out = env->getOutputStream();
+        TreeNETEnvironment::consoleMessagesMutex.lock();
+        (*out) << "Caught an exception because no new socket could be opened." << endl;
+        TreeNETEnvironment::consoleMessagesMutex.unlock();
+        this->stop();
+        throw;
     }
     
     // Verbosity/debug stuff
     displayFinalRoute = false; // Default
     debugMode = false; // Default
-    switch(env->getDisplayMode())
-    {
-        case TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE:
-        case TreeNETEnvironment::DISPLAY_MODE_VERBOSE:
-            displayFinalRoute = true;
-            break;
-        case TreeNETEnvironment::DISPLAY_MODE_DEBUG:
-            displayFinalRoute = true;
-            debugMode = true;
-            break;
-        default:
-            break;
-    }
+    unsigned short displayMode = env->getDisplayMode();
+    if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+        displayFinalRoute = true;
+    if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_DEBUG)
+        debugMode = true;
     
     // Start of the new log with first probing details (debug mode only)
     if(debugMode)
@@ -108,10 +105,17 @@ ProbeRecord *ParisTracerouteTask::probe(const InetAddress &dst, unsigned char TT
     InetAddress localIP = env->getLocalIPAddress();
     ProbeRecord *record = NULL;
     
-    if(env->usingDoubleProbe())
-        record = prober->doubleProbe(localIP, dst, TTL, true);
-    else
-        record = prober->singleProbe(localIP, dst, TTL, true);
+    try
+    {
+        if(env->usingDoubleProbe())
+            record = prober->doubleProbe(localIP, dst, TTL, true);
+        else
+            record = prober->singleProbe(localIP, dst, TTL, true);
+    }
+    catch(SocketException &se)
+    {
+        throw;
+    }
     
     // Debug log
     if(debugMode)
@@ -127,10 +131,17 @@ ProbeRecord *ParisTracerouteTask::probe(const InetAddress &dst, unsigned char TT
     return record;
 }
 
+void ParisTracerouteTask::stop()
+{
+    TreeNETEnvironment::emergencyStopMutex.lock();
+    env->triggerStop();
+    TreeNETEnvironment::emergencyStopMutex.unlock();
+}
+
 void ParisTracerouteTask::run()
 {
-    InetAddress probeDst(subnet->getRefinementPivot());
-    unsigned char probeTTL = subnet->getRefinementShortestTTL(); // TTL pivot - 1
+    InetAddress probeDst(subnet->getPivot());
+    unsigned char probeTTL = subnet->getShortestTTL(); // TTL pivot - 1
 
     // probeTTL or probeDst could not be properly found: quits
     if(probeTTL == 0 || probeDst == InetAddress(0))
@@ -162,11 +173,46 @@ void ParisTracerouteTask::run()
     
     while(probeTTL > 0)
     {
+        ProbeRecord *record = NULL;
         try
         {
-            ProbeRecord *record = this->probe(probeDst, probeTTL);
+            record = this->probe(probeDst, probeTTL);
+        }
+        catch(SocketException &se)
+        {
+            delete[] route;
+            this->stop();
+            return;
+        }
+        
+        InetAddress rplyAddress = record->getRplyAddress();
+        if(rplyAddress == InetAddress("0.0.0.0"))
+        {
+            delete record;
             
-            InetAddress rplyAddress = record->getRplyAddress();
+            // Debug message
+            if(debugMode)
+            {
+                this->log += "Retrying at this TTL with twice the initial timeout...\n";
+            }
+            
+            // New probe with twice the timeout period
+            prober->setTimeout(usedTimeout * 2);
+            
+            try
+            {
+                record = this->probe(probeDst, probeTTL);
+            }
+            catch(SocketException &se)
+            {
+                delete[] route;
+                this->stop();
+                return;
+            }
+            
+            rplyAddress = record->getRplyAddress();
+            
+            // If still nothing different than 0.0.0.0, last try with 4 times the timeout
             if(rplyAddress == InetAddress("0.0.0.0"))
             {
                 delete record;
@@ -174,46 +220,33 @@ void ParisTracerouteTask::run()
                 // Debug message
                 if(debugMode)
                 {
-                    this->log += "Retrying at this TTL with twice the initial timeout...\n";
+                    this->log += "Retrying at this TTL with 4 times the initial timeout...\n";
                 }
                 
-                // New probe with twice the timeout period
-                prober->setTimeout(usedTimeout * 2);
-                record = this->probe(probeDst, probeTTL);
-                rplyAddress = record->getRplyAddress();
+                prober->setTimeout(usedTimeout * 4);
                 
-                // If still nothing different than 0.0.0.0, last try with 4 times the timeout
-                if(rplyAddress == InetAddress("0.0.0.0"))
+                try
                 {
-                    delete record;
-                    
-                    // Debug message
-                    if(debugMode)
-                    {
-                        this->log += "Retrying at this TTL with 4 times the initial timeout...\n";
-                    }
-                    
-                    prober->setTimeout(usedTimeout * 4);
                     record = this->probe(probeDst, probeTTL);
-                    rplyAddress = record->getRplyAddress();
+                }
+                catch(SocketException &se)
+                {
+                    delete[] route;
+                    this->stop();
+                    return;
                 }
                 
-                // Restores default timeout
-                prober->setTimeout(usedTimeout);
+                rplyAddress = record->getRplyAddress();
             }
             
-            route[probeTTL - 1].update(rplyAddress);
-            
-            delete record;
+            // Restores default timeout
+            prober->setTimeout(usedTimeout);
         }
-        catch(SocketSendException e)
-        {
-            probeTTL++;
-        }
-        catch(SocketReceiveException e)
-        {
-            probeTTL++;
-        }
+        
+        route[probeTTL - 1].update(rplyAddress);
+        
+        delete record;
+
         probeTTL--;
     }
     
@@ -241,7 +274,7 @@ void ParisTracerouteTask::run()
         for(unsigned short i = 0; i < sizeRoute; i++)
         {
             if(route[i].state == RouteInterface::MISSING)
-                routeLog << "Missing" << "\n";
+                routeLog << "Missing\n";
             else
                 routeLog << route[i].ip << "\n";
         }

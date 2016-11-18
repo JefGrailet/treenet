@@ -2,7 +2,7 @@
  * NetworkPrescanningUnit.h
  *
  *  Created on: Oct 8, 2015
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * This class, inheriting Runnable, probes successively each IP it is given (via a list), with a 
  * very large TTL (at this point, all we want is to known if the IP is responsive). It is the 
@@ -64,6 +64,9 @@ private:
     // Prober object and probing methods (no TTL asked, since it is here virtually infinite)
     DirectProber *prober;
     ProbeRecord *probe(const InetAddress &dst);
+    
+    // "Stop" method (when resources are lacking)
+    void stop();
 
 };
 

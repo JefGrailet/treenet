@@ -2,7 +2,7 @@
  * NetworkPrescanner.h
  *
  *  Created on: Oct 8, 2015
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * NetworkPrescanner is a class designed to send a probe to a given list of IP addresses and save 
  * the responsive ones in the IP Dictionnary (IPLookUpTable) of TreeNET. Unresponsive IPs are 

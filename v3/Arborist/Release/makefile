@@ -22,8 +22,9 @@ RM := rm -rf
 -include src/prober/subdir.mk
 -include src/treenet/structure/subdir.mk
 -include src/treenet/prescanning/subdir.mk
--include src/treenet/explorenet/subdir.mk
--include src/treenet/subnetrefinement/subdir.mk
+-include src/treenet/scanning/explorenet/subdir.mk
+-include src/treenet/scanning/refinement/subdir.mk
+-include src/treenet/scanning/subdir.mk
 -include src/treenet/aliasresolution/subdir.mk
 -include src/treenet/tree/subdir.mk
 -include src/treenet/tree/growth/subdir.mk

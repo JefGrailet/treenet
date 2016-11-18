@@ -1,6 +1,6 @@
 # TreeNET, a subnet-based topology discovery tool
 
-*By Jean-François Grailet (last update: October 10, 2016)*
+*By Jean-François Grailet (last update: November 18, 2016)*
 
 ## Overview
 
@@ -23,6 +23,8 @@ All `TreeNET` versions are exclusively available for Linux and for the IPv4 prot
   In April 2016, `TreeNET` was upgraded again to v2.3, bringing new extensions to the alias resolution phase and the fingerprinting process, such as the classical address-based approach (used in `iffinder`).
 
 * **`TreeNET` v3.0:** elaborated in Augustus 2016, this third version of `TreeNET` will soon consist in a full suite of software with three major components. The first component, nicknamed *Arborist*, is already available and is in practice the regular and improved `TreeNET`. It is essentially a major refactoring of the code and the options. Among others, it now provides several degrees of verbosity and the possibility to get the subnets as inferred by `ExploreNET` in an additionnal output file (optional).
+
+The second component, *Forester*, is available since November 18, 2016. It is a re-factored version of `TreeNET Reader`, minus the dataset transformation ad analysis features, which will be implemented by a third component (coming soon). *Forester*, in its current state, is dedicated to second opinion measurements (alias resolution and Paris `traceroute`) and dataset merging with a *grafting* algorithm (implemented, but not yet validated).
 
 ## Related software
   

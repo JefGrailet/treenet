@@ -2,7 +2,7 @@
  * RouteInterface.h
  *
  *  Created on: Sept 8, 2016
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * A simple class to represent a single interface in a route (not to mix up with RouterInterface, 
  * which represents an interface on a router obtained through alias resolution). Initially, routes 
@@ -36,6 +36,9 @@ public:
     
     void update(InetAddress ip); // For when the interface is initially "NOT_MEASURED"
     void repair(InetAddress ip); // Always sets state to "REPAIRED"
+    
+    // Overriden equality operator
+    RouteInterface &operator=(const RouteInterface &other);
     
     InetAddress ip;
     unsigned short state;

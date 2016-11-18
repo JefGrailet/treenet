@@ -2,7 +2,7 @@
  * TreeNETEnvironment.h
  *
  *  Created on: Sep 30, 2015
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * TreeNETEnvironment is a class which sole purpose is to provide access to structures or 
  * constants (for the current execution, e.g. timeout delay chosen by the user upon starting 
@@ -19,7 +19,8 @@ using std::ostream;
 #include "../common/thread/Mutex.h"
 #include "../common/date/TimeVal.h"
 #include "../common/inet/InetAddress.h"
-#include "explorenet/ExploreNETRecord.h"
+#include "scanning/explorenet/ExploreNETRecord.h"
+#include "utils/StopException.h" // Not used directly here, but provided to all classes that need it this way
 #include "structure/IPLookUpTable.h"
 #include "structure/SubnetSiteSet.h"
 
@@ -38,8 +39,9 @@ public:
     const static unsigned short DISPLAY_MODE_VERBOSE = 2;
     const static unsigned short DISPLAY_MODE_DEBUG = 3;
 
-    // Mutex object used when printing out additionnal messages (slightly verbose to debug)
+    // Mutex objects used when printing out additionnal messages (slightly verbose to debug) and triggering emergency stop
     static Mutex consoleMessagesMutex;
+    static Mutex emergencyStopMutex;
 
     // Constructor/destructor
     TreeNETEnvironment(ostream *out, 
@@ -107,6 +109,19 @@ public:
     inline bool savingExploreNETResults() { return this->saveExploreNETRecords; }
     inline void pushExploreNETRecord(ExploreNETRecord *r) { this->xnetRecords.push_back(r); }
     void outputExploreNETRecords(string filename);
+    
+    /*
+     * Method to trigger the (emergency) stop. It is a special method of TreeNETEnvironment which 
+     * is meant to force the program to quit when it cannot fully benefit from the host's 
+     * resources to conduct measurements/probing. It has a return result (though not used yet), a 
+     * boolean one, which is true if the current context successfully triggered the stop 
+     * procedure. It will return false it was already triggered by another thread.
+     */
+    
+    bool triggerStop();
+    
+    // Method to check if the flag for emergency stop is raised.
+    inline bool isStopping() { return this->flagEmergencyStop; }
 
 private:
 
@@ -145,6 +160,9 @@ private:
     
     // Bool value and list for registering the ExploreNET records (optional feature; Aug 29, 2016).
     list<ExploreNETRecord*> xnetRecords;
+    
+    // Flag for emergency exit
+    bool flagEmergencyStop;
 
 };
 

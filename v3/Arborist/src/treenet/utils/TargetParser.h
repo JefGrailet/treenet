@@ -2,7 +2,7 @@
  * TargetParser.h
  *
  *  Created on: Oct 2, 2015
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * This class is dedicated to parsing the target IPs and IP blocks which are fed to TreeNET at 
  * launch. Initially, the whole code was found in Main.cpp, but its size and the need to handle 

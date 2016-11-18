@@ -1,13 +1,13 @@
 # About TreeNET v3.0
 
-*Last edited by Jean-François Grailet, Oct 10, 2016*
+*Last edited by Jean-François Grailet, November 18, 2016*
 ## Overview of the changes
 
 ### A full suite of software (Work In Progress)
 
 Originally denoting a single piece of software, `TreeNET` will now denote three pieces of software. The first member of the trio, nicknamed *Arborist*, is the updated regular `TreeNET` used to measure a target network and output a router -- subnet topology from it.
 
-The two other versions of `TreeNET` will be dedicated to second opinion measurement, dataset merging and dataset transformation for modeling purposes. These versions are still work in progress for now.
+The second component, nicknamed *Forester*, is more or less a re-factoring of `TreeNET Reader` as it is also able to parse a dataset obtained with *Arborist* in other to re-do some probing work (like alias resolution) or merge several datasets together via a *grafting* process (which is already implemented but not yet thoroughly validated). It does not, however, re-implement the transformation features of `TreeNET Reader` such as bipartite conversion. Such a feature will be re-implemented in the third and last component of the suite (which is currently work in progress).
 
 ---
 
@@ -27,23 +27,23 @@ Previous directly inherited from `ExploreNET` v2.1, the debug mode of `TreeNET` 
 
 ### Re-factored code
 
-In addition to re-factoring some features which were neglected before, `TreeNET` v3.0 also comes with a re-organized source code which is specifically designed to add new ways of building and interpreting a *network tree* (i.e., the data structure used by `TreeNET` to model a target network after its subnets). These new algorithms will be added and made available during the course of the academic year 2016 -- 2017.
+In addition to re-factoring some features which were neglected before, `TreeNET` v3.0 also comes with a re-organized source code which is specifically designed to add new ways of building and interpreting a *network tree* (i.e., the data structure used by `TreeNET` to model a target network after its subnets). These new algorithms will be released along updated versions of `TreeNET` when available.
+
+On a side note, the source code was also adapted to be able to make a emergency save of the data when a resource issue arises while probing.
 
 ---
 
 ## Content of this folder
 
-Currently, only `TreeNET` *Arborist* is publicly available, as other versions are still in the making. Its source code can be found in the *Arborist/* sub-folder.
+Currently, this repository grants access to the source files of `TreeNET` *Arborist* and `TreeNET` *Forester* (dedicated to second opinion probing for existing datasets and dataset merging), respectively found in *Arborist/* and *Forester/* sub-folder. A third declination of `TreeNET` dedicated to dataset transformation, nicknamed *Architect*, is also currently being implemented.
 
-A second sub-folder, *Measurements/*, provides datasets obtained by measuring ASes of varying sizes and roles from the PlanetLab testbed. There is a sub-folder for each target AS. Each of these folders provides a different sub-folder for each collected data set, denoted by the date at which the measurement started.
+A third sub-folder, *Measurements/*, provides datasets obtained by measuring ASes of varying sizes and roles from the PlanetLab testbed. There is a sub-folder for each target AS. Each of these folders provides a different sub-folder for each collected data set, denoted by the date at which the measurement started.
 
 ## Disclaimer
 
 `TreeNET` v3.0 was written by Jean-François Grailet, currently Ph. D. student at the University of Liège (Belgium) in the Research Unit in Networking (RUN). Previous versions of `TreeNET` were written using the sources of `ExploreNET` v2.1 as a basis.
 
-`ExploreNET` v2.1 has been elaborated and written by Dr. Mehmet Engin Tozal, 
-currently assistant teacher at the University of Louisiana at Lafayette (USA).
-The sources of this program can be downloaded at the following address:
+`ExploreNET` v2.1 has been elaborated and written by Dr. Mehmet Engin Tozal, currently assistant teacher at the University of Louisiana at Lafayette (USA). The sources of this program can be downloaded at the following address:
 
 http://nsrg.louisiana.edu/project/ntmaps/output/explorenet.html
 

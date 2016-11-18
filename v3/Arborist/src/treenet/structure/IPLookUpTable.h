@@ -2,7 +2,7 @@
  * IPLookUpTable.h
  *
  *  Created on: Sep 29, 2015
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * IPLookUpTable is a particular structure built to quickly look up for an IP address and see 
  * which protocol should be used to probe it (other usages could be added in the future, like 
@@ -38,6 +38,9 @@ public:
     // Constructor, destructor
     IPLookUpTable(unsigned short nbIPIDs);
     ~IPLookUpTable();
+    
+    // Method to check if the dictionnary is empty or not
+    bool isEmpty();
     
     // Creation and look-up methods
     IPTableEntry *create(InetAddress needle); // NULL if already existed

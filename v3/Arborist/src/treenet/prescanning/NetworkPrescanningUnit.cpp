@@ -2,7 +2,7 @@
  * NetworkPrescanningUnit.cpp
  *
  *  Created on: Oct 8, 2015
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * Implements the class defined in NetworkPrescanningUnit.h (see this file to learn further about 
  * the goals of such class).
@@ -71,9 +71,14 @@ IPsToProbe(IPs)
                                           env->debugMode());
         }
     }
-    catch(SocketException e)
+    catch(SocketException &se)
     {
-        throw e;
+        ostream *out = env->getOutputStream();
+        TreeNETEnvironment::consoleMessagesMutex.lock();
+        (*out) << "Caught an exception because no new socket could be opened." << endl;
+        TreeNETEnvironment::consoleMessagesMutex.unlock();
+        this->stop();
+        throw;
     }
     
     if(env->debugMode())
@@ -102,10 +107,9 @@ ProbeRecord *NetworkPrescanningUnit::probe(const InetAddress &dst)
     {
         record = prober->singleProbe(localIP, dst, TTL, usingFixedFlow);
     }
-    // Just in case
-    catch(SocketSendException e)
+    catch(SocketException &se)
     {
-        record = NULL;
+        throw;
     }
     
     // Debug log
@@ -120,19 +124,38 @@ ProbeRecord *NetworkPrescanningUnit::probe(const InetAddress &dst)
     return record;
 }
 
+void NetworkPrescanningUnit::stop()
+{
+    TreeNETEnvironment::emergencyStopMutex.lock();
+    env->triggerStop();
+    TreeNETEnvironment::emergencyStopMutex.unlock();
+}
+
 void NetworkPrescanningUnit::run()
 {
     for(std::list<InetAddress>::iterator it = IPsToProbe.begin(); it != IPsToProbe.end(); ++it)
     {
         InetAddress curIP = *it;
         
-        ProbeRecord *probeRecord = probe(curIP);
+        ProbeRecord *probeRecord = NULL;
+        
+        try
+        {
+            probeRecord = probe(curIP);
+        }
+        catch(SocketException &se)
+        {
+            this->stop();
+            return;
+        }
         
         if(probeRecord == NULL)
             continue;
         
         bool responsive = false;
-        if(!probeRecord->isAnonymousRecord() && probeRecord->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY)
+        InetAddress replyingIP = probeRecord->getRplyAddress();
+        unsigned char replyType = probeRecord->getRplyICMPtype();
+        if(!probeRecord->isAnonymousRecord() && replyType == DirectProber::ICMP_TYPE_ECHO_REPLY && replyingIP == curIP)
         {
             responsive = true;
         }
@@ -142,5 +165,8 @@ void NetworkPrescanningUnit::run()
         prescannerMutex.unlock();
         
         delete probeRecord;
+        
+        if(env->isStopping())
+            return;
     }
 }

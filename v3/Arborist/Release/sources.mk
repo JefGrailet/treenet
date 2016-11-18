@@ -37,8 +37,9 @@ src/prober/exception \
 src/prober \
 src/treenet/structure \
 src/treenet/prescanning \
-src/treenet/explorenet \
-src/treenet/subnetrefinement \
+src/treenet/scanning/explorenet \
+src/treenet/scanning/refinement \
+src/treenet/scanning \
 src/treenet/aliasresolution \
 src/treenet/tree \
 src/treenet/tree/growth/ \

@@ -2,7 +2,7 @@
  * SubnetSiteSet.h
  *
  *  Created on: Oct 9, 2014
- *      Author: grailet
+ *      Author: jefgrailet
  *
  * A simple class to gather several subnet sites and organize them before further discovery
  * steps. Sites registered in the set are sorted according to their CIDR notation (small IPs 

@@ -5,14 +5,17 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../src/treenet/utils/ProbeRecordCache.cpp \
+../src/treenet/utils/StopException.cpp \
 ../src/treenet/utils/TargetParser.cpp
 
 OBJS += \
 ./src/treenet/utils/ProbeRecordCache.o \
+./src/treenet/utils/StopException.o \
 ./src/treenet/utils/TargetParser.o
 
 CPP_DEPS += \
 ./src/treenet/utils/ProbeRecordCache.d \
+./src/treenet/utils/StopException.d \
 ./src/treenet/utils/TargetParser.d
 
 
