@@ -34,4 +34,4 @@ protected:
     void climbRecursive(NetworkTreeNode *cur, unsigned short depth);
 };
 
-#endif /* CLASSICGROWER_H_ */
+#endif /* ROBIN_H_ */

@@ -181,7 +181,7 @@ void printInfo()
     cout << "neighborhood is described and analyzed in details, is optional in Forester and\n";
     cout << "can be requested via an optional flag (see usage). This is because the typical\n";
     cout << "usage of Forester consists in fixing or completing existing data, rather than\n";
-    cout << "analyzing it (which is the responsibility of Lumbrjack). This option is\n";
+    cout << "analyzing it (which is the responsibility of Architect). This option is\n";
     cout << "nevertheless still relevant in some situations.\n";
     cout << "\n";
     
@@ -486,6 +486,7 @@ int main(int argc, char *argv[])
                 case 'h':
                 case 'i':
                 case 'n':
+                case 'o':
                 case 's':
                     break;
                 default:
@@ -838,12 +839,12 @@ int main(int argc, char *argv[])
     /*
      * SETTING THE ENVIRONMENT
      *
-     * Before listing target IPs, the initialization of Forester is completed by getting the local 
-     * IP (if needed) and creating a TreeNETEnvironment object, a singleton which will be passed 
-     * by pointer to other classes of the program to be able to get all the current settings, 
-     * which are either default values either values parsed in the parameters provided by the 
-     * user. The singleton also provides access to data structures other classes should be able to 
-     * access.
+     * Before parsing input files, the initialization of Forester is completed by getting the 
+     * local IP (if needed) and creating a TreeNETEnvironment object, a singleton which will be 
+     * passed by pointer to other classes of the program to be able to get all the current 
+     * settings, which are either default values either values parsed in the parameters provided 
+     * by the user. The singleton also provides access to data structures other classes should be 
+     * able to access.
      */
 
     if(localIPAddress.isUnset() && redoMode != REDO_MODE_NOTHING)
@@ -997,7 +998,8 @@ int main(int argc, char *argv[])
         {
             cout << "Please input existing TreeNET dump files (minus .subnet or .ip ";
             cout << "extension) to continue.\n" << endl;
-            throw InvalidParameterException();
+            delete env;
+            return 1;
         }
     }
     
@@ -1127,6 +1129,8 @@ int main(int argc, char *argv[])
         }
         catch(BadInputException &bie)
         {
+            cout << "TreeNET cannot go on with grafting if less than 2 files provide accurately ";
+            cout << "formatted subnets. Please check your input files before re-trying." << endl;
             delete env;
             return 1;
         }
