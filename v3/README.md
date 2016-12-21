@@ -3,7 +3,7 @@
 *Last edited by Jean-François Grailet, December 21, 2016*
 ## Overview of the changes
 
-### A full suite of software (Work In Progress)
+### A full suite of software
 
 Originally denoting a single piece of software, `TreeNET` will now denote three pieces of software. The first member of the trio, nicknamed *Arborist*, is the updated regular `TreeNET` used to measure a target network and output a router -- subnet topology from it.
 
