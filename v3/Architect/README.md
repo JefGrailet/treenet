@@ -22,7 +22,7 @@ make
 `TreeNET` v3.0 "*Architect*" will describe in details its options, flags and how you can use it by running the line:
 
 ```sh
-./treenet_forester -h
+./treenet_architect -h
 ```
 
 ## Remarks
