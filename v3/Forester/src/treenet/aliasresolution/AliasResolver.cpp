@@ -457,6 +457,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
     for(list<InetAddress>::iterator i = interfaces.begin(); i != interfaces.end(); ++i)
     {
         InetAddress current = (*i);
+
         if(current == previous)
             interfaces.erase(i--);
         
@@ -907,8 +908,9 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                         curRouter->addInterface(InetAddress((InetAddress) (*subCur.ipEntry)), 
                                                 RouterInterface::FIRST_IP);
                         result->push_back(curRouter);
+                        
+                        similar.erase(it--);
                     }
-                    similar.erase(it--);
                 }
             }
             

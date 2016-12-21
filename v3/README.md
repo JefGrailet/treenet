@@ -1,13 +1,15 @@
 # About TreeNET v3.0
 
-*Last edited by Jean-François Grailet, November 18, 2016*
+*Last edited by Jean-François Grailet, December 21, 2016*
 ## Overview of the changes
 
 ### A full suite of software (Work In Progress)
 
 Originally denoting a single piece of software, `TreeNET` will now denote three pieces of software. The first member of the trio, nicknamed *Arborist*, is the updated regular `TreeNET` used to measure a target network and output a router -- subnet topology from it.
 
-The second component, nicknamed *Forester*, is more or less a re-factoring of `TreeNET Reader` as it is also able to parse a dataset obtained with *Arborist* in other to re-do some probing work (like alias resolution) or merge several datasets together via a *grafting* process (which is already implemented but not yet thoroughly validated). It does not, however, re-implement the transformation features of `TreeNET Reader` such as bipartite conversion. Such a feature will be re-implemented in the third and last component of the suite (which is currently work in progress).
+The second component, nicknamed *Forester*, is more or less a re-factoring of `TreeNET Reader` as it is also able to parse a dataset obtained with *Arborist* in other to re-do some probing work (like alias resolution) or merge several datasets together via a *grafting* process (which is already implemented but not yet thoroughly validated).
+
+The third and last component, *Architect*, completely re-factors and extends the graph transformation feature provided by `TreeNET Reader`. In addition to a re-factored translation of datasets into double bipartite graphs, *Architect* also allows the conversion of a dataset (first built as a tree) into a Neighborhood - Subnet bipartite graph (a simpler form of graph) and can project each kind of graph onto a particular type of vertice to obtain simple graphs where vertices only consist of subnets, routers or neighborhoods. The edges found in these new graphs reflect the proximity between each vertice (e.g., an edge between two subnets in a subnet graph shows there is only one hop between them).
 
 ---
 
@@ -35,9 +37,9 @@ On a side note, the source code was also adapted to be able to make a emergency 
 
 ## Content of this folder
 
-Currently, this repository grants access to the source files of `TreeNET` *Arborist* and `TreeNET` *Forester* (dedicated to second opinion probing for existing datasets and dataset merging), respectively found in *Arborist/* and *Forester/* sub-folder. A third declination of `TreeNET` dedicated to dataset transformation, nicknamed *Architect*, is also currently being implemented.
+Currently, this repository grants access to the source files of `TreeNET` *Arborist*, `TreeNET` *Architect* (dedicated to dataset transformation and analysis) and `TreeNET` *Forester* (dedicated to second opinion probing for existing datasets and dataset merging), respectively found in *Arborist/*, *Architect/* and *Forester/* sub-folders.
 
-A third sub-folder, *Measurements/*, provides datasets obtained by measuring ASes of varying sizes and roles from the PlanetLab testbed. There is a sub-folder for each target AS. Each of these folders provides a different sub-folder for each collected data set, denoted by the date at which the measurement started.
+A fourth sub-folder, *Measurements/*, provides datasets obtained by measuring ASes of varying sizes and roles from the PlanetLab testbed. There is a sub-folder for each target AS. Each of these folders provides a different sub-folder for each collected data set, denoted by the date at which the measurement started.
 
 ## Disclaimer
 

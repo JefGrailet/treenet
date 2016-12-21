@@ -53,6 +53,9 @@ public:
     // Converts the Router object to an alias in string format
     string toString();
     
+    // Similar method, but with more aliasing details (i.e. with which method an IP was aliased)
+    string toStringVerbose();
+    
 private:
 
     // Interfaces are stored with a list

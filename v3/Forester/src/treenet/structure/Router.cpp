@@ -80,3 +80,52 @@ string Router::toString()
     }
     return result.str();
 }
+
+string Router::toStringVerbose()
+{
+    stringstream result;
+    bool first = true;
+    for(list<RouterInterface*>::iterator it = interfaces.begin(); it != interfaces.end(); ++it)
+    {
+        if(first)
+            first = false;
+        else
+            result << ", ";
+        result << (*it)->ip;
+        if((*it)->aliasMethod != RouterInterface::FIRST_IP)
+        {
+            result << " (";
+            switch((*it)->aliasMethod)
+            {
+                case RouterInterface::UDP_PORT_UNREACHABLE:
+                    result << "UDP unreachable port";
+                    break;
+                case RouterInterface::ALLY:
+                    result << "Ally";
+                    break;
+                case RouterInterface::IPID_VELOCITY:
+                    result << "IP-ID Velocity";
+                    break;
+                case RouterInterface::REVERSE_DNS:
+                    result << "Reverse DNS";
+                    break;
+                case RouterInterface::GROUP_ECHO:
+                    result << "Echo group";
+                    break;
+                case RouterInterface::GROUP_ECHO_DNS:
+                    result << "Echo group & DNS";
+                    break;
+                case RouterInterface::GROUP_RANDOM:
+                    result << "Random group";
+                    break;
+                case RouterInterface::GROUP_RANDOM_DNS:
+                    result << "Random group & DNS";
+                    break;
+                default:
+                    break;
+            }
+            result << ")";
+        }
+    }
+    return result.str();
+}
