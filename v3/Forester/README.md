@@ -1,6 +1,6 @@
 # About TreeNET v3.0 "Forester" (treenet_forester)
 
-*By Jean-François Grailet, November 18, 2016*
+*By Jean-François Grailet, December 21, 2016*
 
 ## Compilation
 
@@ -52,6 +52,8 @@ If you intent to use `TreeNET` "*Forester*" from the PlanetLab testbed, here is 
 ## Changes history
 
 * **November 18, 2016:** first release of *Forester*, as v3.0.
+
+* **December 21, 2016:** minor update of *Forester*, fixing a light issue in the alias resolution part.
 
 ## Disclaimer
 
