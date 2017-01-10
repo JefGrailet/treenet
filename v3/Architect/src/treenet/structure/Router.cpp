@@ -129,3 +129,66 @@ string Router::toStringVerbose()
     }
     return result.str();
 }
+
+bool Router::compare(Router *r1, Router *r2)
+{
+    unsigned short size1 = r1->getNbInterfaces();
+    unsigned short size2 = r2->getNbInterfaces();
+    
+    bool result = false;
+    if (size1 < size2)
+    {
+        result = true;
+    }
+    else if(size1 == size2)
+    {
+        list<RouterInterface*> *list1 = r1->getInterfacesList();
+        list<RouterInterface*> *list2 = r2->getInterfacesList();
+        
+        list<RouterInterface*>::iterator it2 = list2->begin();
+        for(list<RouterInterface*>::iterator it1 = list1->begin(); it1 != list1->end(); it1++)
+        {
+            InetAddress ip1 = (*it1)->ip;
+            InetAddress ip2 = (*it2)->ip;
+            
+            if(ip1 < ip2)
+            {
+                result = true;
+                break;
+            }
+            else if(ip1 > ip2)
+            {
+                result = false;
+                break;
+            }
+        
+            it2++;
+        }
+    }
+    return result;
+}
+
+bool Router::equals(Router *other)
+{
+    unsigned short size1 = (unsigned short) interfaces.size();
+    unsigned short size2 = other->getNbInterfaces();
+    
+    if(size1 == size2)
+    {
+        list<RouterInterface*> *list2 = other->getInterfacesList();
+        list<RouterInterface*>::iterator it2 = list2->begin();
+        for(list<RouterInterface*>::iterator it1 = interfaces.begin(); it1 != interfaces.end(); it1++)
+        {
+            InetAddress ip1 = (*it1)->ip;
+            InetAddress ip2 = (*it2)->ip;
+            
+            if(ip1 < ip2 || ip1 > ip2)
+                return false;
+        
+            it2++;
+        }
+        
+        return true;
+    }
+    return false;
+}

@@ -23,6 +23,10 @@ NSProcesser::NSProcesser(TreeNETEnvironment *env)
     this->env = env;
     this->soilRef = NULL;
     this->result = NULL;
+    this->nNeighborhoods = 0;
+    this->nSubnets = 0;
+    this->checkArrN = NULL;
+    this->checkArrS = NULL;
 }
 
 NSProcesser::~NSProcesser()
@@ -78,6 +82,62 @@ void NSProcesser::output(string filename)
     // Cleans produced graph
     delete this->result;
     this->result = NULL;
+}
+
+double NSProcesser::check()
+{
+    if(this->result == NULL)
+    {
+        ostream *out = this->env->getOutputStream();
+        (*out) << "Critical error (check() method): no graph to check." << endl;
+        return 0.0;
+    }
+
+    list<Vertice*> *neighborhoods = this->result->getPartyOne();
+    list<Vertice*> *subnets = this->result->getPartyTwo();
+    
+    if(neighborhoods->size() == 0 || subnets->size() == 0)
+    {
+        ostream *out = this->env->getOutputStream();
+        (*out) << "Critical error (check() method): one of the parties is empty." << endl;
+        return 0.0;
+    }
+    
+    // Sets the arrays (and their size) used for checking
+    nNeighborhoods = neighborhoods->size();
+    checkArrN = new bool[nNeighborhoods];
+    for(unsigned int i = 0; i < nNeighborhoods; i++)
+        checkArrN[i] = false;
+    
+    nSubnets = subnets->size();
+    checkArrS = new bool[nSubnets];
+    for(unsigned int i = 0; i < nSubnets; i++)
+        checkArrS[i] = false;
+    
+    // Visits the graph
+    visit(neighborhoods->front());
+    
+    unsigned int visitedNeighborhoods = 0;
+    for(unsigned int i = 0; i < nNeighborhoods; i++)
+        if(checkArrN[i])
+            visitedNeighborhoods++;
+    
+    unsigned int visitedSubnets = 0;
+    for(unsigned int i = 0; i < nSubnets; i++)
+        if(checkArrS[i])
+            visitedSubnets++;
+    
+    // Frees the arrays
+    delete[] checkArrN;
+    delete[] checkArrS;
+    checkArrN = NULL;
+    checkArrS = NULL;
+    
+    // Computes final result
+    double res = (((double) (visitedNeighborhoods + visitedSubnets)) / ((double) (nNeighborhoods + nSubnets))) * 100;
+    nNeighborhoods = 0;
+    nSubnets = 0;
+    return res;
 }
 
 void NSProcesser::outputSubnetProjection(string filename)
@@ -275,6 +335,36 @@ void NSProcesser::processRecursive(NetworkTreeNode *cur)
                 {
                     bipGraph->createArtificialPath(cur, curInternal);
                 }
+            }
+        }
+    }
+}
+
+void NSProcesser::visit(Vertice *node)
+{
+    if(Neighborhood *n = dynamic_cast<Neighborhood*>(node))
+    {
+        unsigned int ID = n->getID();
+        if(!checkArrN[ID - 1])
+        {
+            checkArrN[ID - 1] = true;
+            list<Edge*> *edges = n->getIncidentEdges();
+            for(list<Edge*>::iterator it = edges->begin(); it != edges->end(); ++it)
+            {
+                visit((*it)->getVerticeTwo()); // The subnet is always the second vertice
+            }
+        }
+    }
+    else if(Subnet *s = dynamic_cast<Subnet*>(node))
+    {
+        unsigned int ID = s->getID();
+        if(!checkArrS[ID - 1])
+        {
+            checkArrS[ID - 1] = true;
+            list<Edge*> *edges = s->getIncidentEdges();
+            for(list<Edge*>::iterator it = edges->begin(); it != edges->end(); ++it)
+            {
+                visit((*it)->getVerticeOne()); // The neighborhood is always the first vertice
             }
         }
     }

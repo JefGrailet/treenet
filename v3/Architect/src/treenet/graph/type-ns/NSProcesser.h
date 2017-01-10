@@ -25,6 +25,16 @@ public:
     void process(Soil *fromSoil);
     void output(string filename);
     
+    /*
+     * check() returns a percentage of vertices being visited when travelling the graph starting 
+     * from N1. Ideally, it should return 100% of covered vertices (single connected component). 
+     * Otherwise, this should help calling code to advertise the user that there are several 
+     * connected components (with the main one having a certain coverage). check() should be 
+     * called after process(), and before output().
+     */
+    
+    double check();
+    
     void outputSubnetProjection(string filename);
     void outputNeighborhoodProjection(string filename);
 
@@ -42,6 +52,15 @@ protected:
      */
     
     NSGraph *result;
+    
+    /*
+     * Arrays used for checking the graph is made of a single connected component (via the check() 
+     * method). These fields are useful for the visit() private method (see below) and are only 
+     * set for it.
+     */
+    
+    unsigned int nNeighborhoods, nSubnets;
+    bool *checkArrN, *checkArrS;
 
     /*
      * Method to travel through the main trunk until we meet a node with multiple children. 
@@ -53,6 +72,9 @@ protected:
 
     // Method to recursively process the tree into a bipartite representation, node by node.
     void processRecursive(NetworkTreeNode *cur);
+    
+    // Method to visit a node and visits its neighbors except if already visited.
+    void visit(Vertice *node);
 
 };
 

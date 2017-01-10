@@ -1,6 +1,6 @@
 # About TreeNET v3.0.1 "Arborist" (treenet)
 
-*By Jean-François Grailet, December 21, 2016*
+*By Jean-François Grailet, January 10, 2017*
 
 ## Compilation
 
@@ -56,6 +56,8 @@ If you intent to use `TreeNET` from the PlanetLab testbed, here is some advice.
 * **November 18, 2016:** first update of *Arborist*, now in version v3.0.1. Changes include additionnal re-factoring of the code and better exception handling to safely quit (and even save data collected so far) when a resource issue arises (e.g., failure to open a new socket).
 
 * **December 21, 2016:** minor update of *Arborist*, fixing a light issue in the alias resolution part.
+
+* **January 10, 2017:** minor update of *Arborist*, fixing another light issue in the alias resolution part and updating a structure.
 
 ## Disclaimer
 

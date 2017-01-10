@@ -49,6 +49,7 @@ void Crow::climb(Soil *fromSoil)
 void Crow::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
 {
     list<NetworkTreeNode*> *children = cur->getChildren();
+    list<InetAddress> *labels = cur->getLabels();
     
     // Puts direct neighbor subnets in a list
     list<NetworkTreeNode*> childrenL;
@@ -62,8 +63,9 @@ void Crow::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
             childrenL.push_back((*i));
     }
     size_t nbNeighborSubnets = childrenL.size();
+    size_t nbLabels = labels->size();
 
-    if(nbNeighborSubnets > 0)
+    if(nbNeighborSubnets > 0 || nbLabels > 0 || (nbLabels == 1 && labels->front() != InetAddress(0)))
     {   
         // Router inference
         ar->setCurrentTTL(depth);

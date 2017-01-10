@@ -29,6 +29,16 @@ public:
     void process(Soil *fromSoil);
     void output(string filename);
     
+    /*
+     * check() returns a percentage of vertices being visited when travelling the graph starting 
+     * from R1. Ideally, it should return 100% of covered vertices (single connected component). 
+     * Otherwise, this should help calling code to advertise the user that there are several 
+     * connected components (with the main one having a certain coverage). check() should be 
+     * called after process(), and before output().
+     */
+    
+    double check();
+    
     void outputSubnetProjection(string filename);
     void outputRouterProjection(string filename);
 
@@ -47,6 +57,22 @@ protected:
     
     ERGraph *ERResult;
     RSGraph *RSResult;
+
+    /*
+     * Arrays used for checking the graph is made of a single connected component (via the check() 
+     * method). These fields are useful for the visit() private method (see below) and are only 
+     * set for it.
+     */
+    
+    unsigned int nESwitches, nRouters, nSubnets;
+    bool *checkArrE, *checkArrR, *checkArrS;
+    
+    /*
+     * In addition, there is also two arrays to map the routers from the ER graph with those from 
+     * the RS graph, so that going from one bipartite graph to another can be done quickly.
+     */
+     
+    L3Device **routersER, **routersRS;
 
     /*
      * Method to travel through the main trunk until we meet a node with multiple children. 
@@ -131,6 +157,9 @@ protected:
      */
     
     SubnetSite* getValidConnectingSubnet(NetworkTreeNode *child, InetAddress labelChild);
+    
+    // Method to visit a node and visits its neighbors except if already visited.
+    void visit(Vertice *node);
 
 };
 

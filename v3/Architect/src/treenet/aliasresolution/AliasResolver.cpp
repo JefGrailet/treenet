@@ -1032,4 +1032,35 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
             }
         }
     }
+    
+    /*
+     * Additionnal post-processing (January 2017): the list of routers is sorted and duplicates 
+     * are removed. Duplicates are a very rare occurrences but can occur when the contra-pivot of 
+     * a subnet and the last step on the route are the same IP (a consequence of a specific 
+     * routing policy OR a bad subnet measurement).
+     */
+    
+    result->sort(Router::compare);
+    Router *previousRouter = NULL;
+    for(list<Router*>::iterator i = result->begin(); i != result->end(); ++i)
+    {
+        Router *cur = (*i);
+        
+        if(previousRouter != NULL)
+        {
+            if(cur->equals(previousRouter))
+            {
+                delete cur;
+                result->erase(i--);
+            }
+            else
+            {
+                previousRouter = cur;
+            }
+        }
+        else
+        {
+            previousRouter = cur;
+        }
+    }
 }

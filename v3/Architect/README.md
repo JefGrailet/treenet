@@ -1,6 +1,6 @@
 # About TreeNET v3.0 "Architect" (treenet_architect)
 
-*By Jean-François Grailet, December 21, 2016*
+*By Jean-François Grailet, January 10, 2017*
 
 ## Compilation
 
@@ -27,8 +27,6 @@ make
 
 ## Remarks
 
-* It is possible that a few nodes in a (double) bipartite graph produced by *Architect* will not be connected to the graph (which should always consist of a single connected component). This is a rare occurrence that will be corrected in the next releases.
-
 * Unlike *Arborist* and *Forester*, *Architect* is a completely passive tool that will not conduct any measurement of any kind. It is solely dedicated to the conversion of datasets into graphs.
 
 * Most of the actual code of *Architect* is found in *src/treenet/*. *src/common/* provides the usual libraries (also included in other versions of `TreeNET`) to handle IPv4 addresses, network addresses, etc.
@@ -43,9 +41,13 @@ make
   
   Note that the file might get quite big for large datasets.
 
+* *Architect* aims at producing graphs that consist of a single connected component. It has been thoroughly tested and reviewed with many datasets to ensure this is always the case. However, if for some reason a produced graph consists of several connected components, feel free to contact me (see below) to discuss the matter.
+
 ## Changes history
 
 * **December 21, 2016:** first release of *Architect*, as v3.0.
+
+* **January 10, 2017:** upgrade of *Architect* to v3.0.1. In addition to fixing a light issue in the alias resolution part and updating a data structure, this new version brings a built-in graph verification feature to check if a generated graph indeed consists of a single connected component. The graph generation algorithms have also been reviewed to fix minor issues which caused the conversion to produce a few small-scale connected components in addition to the main one.
 
 ## Disclaimer
 

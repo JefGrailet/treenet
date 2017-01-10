@@ -66,7 +66,10 @@ void ERSProcesser::output(string filename)
     stringstream output;
     output << this->RSResult->partyOneToString() << "\n";
     output << this->RSResult->partyTwoToString() << "\n";
-    output << this->ERResult->edgesToString() << "\n";
+    if(this->ERResult->getEdges()->size() > 0)
+        output << this->ERResult->edgesToString() << "\n";
+    else
+        output << "No edge on ER side.\n\n";
     output << this->RSResult->edgesToString() << "\n";
     
     output << "L2 (ethernet switch) - L3 (router) bipartite graph metrics\n\n";
@@ -90,6 +93,101 @@ void ERSProcesser::output(string filename)
     
     delete this->RSResult;
     this->RSResult = NULL;
+}
+
+double ERSProcesser::check()
+{
+    if(this->ERResult == NULL || this->RSResult == NULL)
+    {
+        ostream *out = this->env->getOutputStream();
+        (*out) << "Critical error (check() method): no complete ERS graph to check." << endl;
+        return 0.0;
+    }
+
+    list<Vertice*> *eswitches = this->ERResult->getPartyOne();
+    list<Vertice*> *routers = this->RSResult->getPartyOne();
+    list<Vertice*> *subnets = this->RSResult->getPartyTwo();
+    
+    // N.B.: there can be no switch in an ERS graph.
+    if(routers->size() == 0 || subnets->size() == 0)
+    {
+        ostream *out = this->env->getOutputStream();
+        (*out) << "Critical error (check() method): one of the parties in RS graph is empty." << endl;
+        return 0.0;
+    }
+    
+    // Sets the arrays (and their size) used for checking
+    nESwitches = eswitches->size();
+    if(nESwitches > 0)
+    {
+        checkArrE = new bool[nESwitches];
+        for(unsigned int i = 0; i < nESwitches; i++)
+            checkArrE[i] = false;
+    }
+    
+    nRouters = routers->size();
+    checkArrR = new bool[nRouters];
+    for(unsigned int i = 0; i < nRouters; i++)
+        checkArrR[i] = false;
+    
+    nSubnets = subnets->size();
+    checkArrS = new bool[nSubnets];
+    for(unsigned int i = 0; i < nSubnets; i++)
+        checkArrS[i] = false;
+    
+    // Prepares the maps for the routers in both graphs
+    routersER = new L3Device*[nRouters];
+    routersRS = new L3Device*[nRouters];
+    list<Vertice*> *routersBis = this->ERResult->getPartyTwo();
+    list<Vertice*>::iterator it1 = routersBis->begin();
+    list<Vertice*>::iterator it2 = routers->begin();
+    for(unsigned int i = 0; i < nRouters; i++)
+    {
+        routersER[i] = (L3Device*) (*it1);
+        routersRS[i] = (L3Device*) (*it2);
+    
+        it1++;
+        it2++;
+    }
+    
+    // Visits the graph
+    visit(routers->front());
+    
+    unsigned int visitedESwitches = 0;
+    if(nESwitches > 0)
+        for(unsigned int i = 0; i < nESwitches; i++)
+            if(checkArrE[i])
+                visitedESwitches++;
+    
+    unsigned int visitedRouters = 0;
+    for(unsigned int i = 0; i < nRouters; i++)
+        if(checkArrR[i])
+            visitedRouters++;
+    
+    unsigned int visitedSubnets = 0;
+    for(unsigned int i = 0; i < nSubnets; i++)
+        if(checkArrS[i])
+            visitedSubnets++;
+    
+    // Frees the arrays
+    delete[] checkArrE;
+    delete[] checkArrR;
+    delete[] checkArrS;
+    checkArrE = NULL;
+    checkArrR = NULL;
+    checkArrS = NULL;
+    
+    delete[] routersER;
+    delete[] routersRS;
+    routersER = NULL;
+    routersRS = NULL;
+    
+    // Computes final result
+    double res = (((double) (visitedESwitches + visitedRouters + visitedSubnets)) / ((double) (nESwitches + nRouters + nSubnets))) * 100;
+    nESwitches = 0;
+    nRouters = 0;
+    nSubnets = 0;
+    return res;
 }
 
 void ERSProcesser::outputSubnetProjection(string filename)
@@ -295,27 +393,26 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
         }
         
         /*
-         * Finally, connects the remaining subnets (which the last route step is probably 0.0.0.0) 
-         * with an imaginary router.
+         * Remaining work consists in connecting remaining subnets with an imaginary router and 
+         * connecting child internal nodes which the previous labels contains 0.0.0.0 with the 
+         * same imaginary router (imaginary router also models the 0.0.0.0 interface).
          */
         
+        // Connects the remaining subnets with an imaginary router.
         if(childrenL.size() > 0)
-        {
-            // Creates edges with imaginary router
             for(list<SubnetSite*>::iterator i = childrenL.begin(); i != childrenL.end(); ++i)
                 bipGraphRS->createEdge(cur, (*i));
-            
-            // Lists child internal nodes which the previous label(s) contain 0.0.0.0
-            list<NetworkTreeNode*> lastChildrenI;
-            for(list<NetworkTreeNode*>::iterator j = childrenI.begin(); j != childrenI.end(); ++j)
-                if((*j)->hasPreviousLabel(InetAddress(0)))
-                    lastChildrenI.push_back((*j));
-            
-            // Connects with the child internal nodes
-            if(lastChildrenI.size() > 0)
-                for(list<NetworkTreeNode*>::iterator i = lastChildrenI.begin(); i != lastChildrenI.end(); ++i)
-                    this->connectToChildInternal(cur, childrenL, (*i));
-        }
+        
+        // Lists child internal nodes which the previous label(s) contain 0.0.0.0
+        list<NetworkTreeNode*> lastChildrenI;
+        for(list<NetworkTreeNode*>::iterator j = childrenI.begin(); j != childrenI.end(); ++j)
+            if((*j)->hasPreviousLabel(InetAddress(0)))
+                lastChildrenI.push_back((*j));
+        
+        // Connects with the child internal nodes
+        if(lastChildrenI.size() > 0)
+            for(list<NetworkTreeNode*>::iterator i = lastChildrenI.begin(); i != lastChildrenI.end(); ++i)
+                this->connectToChildInternal(cur, childrenL, (*i));
     }
     // Case where there is a single interface and at least one router
     else if(routers->size() > 0)
@@ -345,7 +442,7 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
         }
         
         // Creates router - subnet links of other routers (if any)
-        if(routers->size() > 1)
+        if(routers->size() > 1 || (ingressInterface == InetAddress(0) && routers->size() == 1))
         {
             for(list<Router*>::iterator i = routers->begin(); i != routers->end(); ++i)
             {
@@ -357,14 +454,19 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
         
         // Connects remaining subnets (if any) via an imaginary router (might already exist)
         if(childrenL.size() > 0)
+        {
             this->connectRemainingSubnets(cur, &childrenL);
+        }
         
         // Connects this neighborhood with the children that are internals
         if(childrenI.size() > 0)
         {
             for(list<NetworkTreeNode*>::iterator i = childrenI.begin(); i != childrenI.end(); ++i)
             {
-                this->connectToChildInternal(ingressRouter, backUpSubnets, (*i));
+                if(ingressRouter == NULL)
+                    this->connectToChildInternal(cur, backUpSubnets, (*i));
+                else
+                    this->connectToChildInternal(ingressRouter, backUpSubnets, (*i));
             }
         }
     }
@@ -434,6 +536,7 @@ void ERSProcesser::processRecursiveER(NetworkTreeNode *cur, unsigned short depth
                 }
             }
             
+            // Gets the routers which give access to each listed subnet
             list<Router*> routersToConnect;
             routersToConnect.push_back(ingressRouter);
             if(curChildrenL.size() > 0 && routers->size() > 1)
@@ -461,13 +564,21 @@ void ERSProcesser::processRecursiveER(NetworkTreeNode *cur, unsigned short depth
                 }
             }
             
-            if(routersToConnect.size() > 1)
-            {
-                if(curChildrenL.size() > 0)
-                    bipGraphER->connectRouters(routersToConnect, cur);
-                else
-                    bipGraphER->connectRouters(routersToConnect, NULL);
-            }
+            /*
+             * Connects the routers together. Two cases:
+             * 1) There is at least one router to connect and there remains at least one subnet 
+             *    for which no router was found. In that case, we put the imaginary component into 
+             *    the linkage process, so there will be at least two routers to connect in such a 
+             *    case.
+             * 2) We found a router for each listed subnet and have more than one listed routers. 
+             *    In that case, we call the same method but we do not take account of the 
+             *    imaginary component as it is unnecessary for this particular case.
+             */
+            
+            if(routersToConnect.size() >= 1 && curChildrenL.size() > 0)
+                bipGraphER->connectRouters(routersToConnect, cur);
+            else if(routersToConnect.size() > 1)
+                bipGraphER->connectRouters(routersToConnect, NULL);
         }
     }
     // Any other case: connects all routers related to this neighborhood with a single switch
@@ -688,6 +799,58 @@ void ERSProcesser::connectToChildInternal(NetworkTreeNode *p,
                     bipGraphRS->createArtificialPath(ingressRouterChild, p);
                 else
                     bipGraphRS->createArtificialPath(p, child);
+            }
+        }
+    }
+}
+
+void ERSProcesser::visit(Vertice *node)
+{
+    if(L2Device *l2 = dynamic_cast<L2Device*>(node))
+    {
+        unsigned int ID = l2->getID();
+        if(!checkArrE[ID - 1])
+        {
+            checkArrE[ID - 1] = true;
+            list<Edge*> *edges = l2->getIncidentEdges();
+            for(list<Edge*>::iterator it = edges->begin(); it != edges->end(); ++it)
+            {
+                L3Device *l3 = (L3Device*) (*it)->getVerticeTwo(); // The router is always second
+                L3Device *eq = routersRS[l3->getID() - 1];
+                visit(eq);
+            }
+        }
+    }
+    else if(L3Device *l3 = dynamic_cast<L3Device*>(node))
+    {
+        unsigned int ID = l3->getID();
+        if(!checkArrR[ID - 1])
+        {
+            checkArrR[ID - 1] = true;
+            list<Edge*> *edges = l3->getIncidentEdges();
+            for(list<Edge*>::iterator it = edges->begin(); it != edges->end(); ++it)
+            {
+                visit((*it)->getVerticeTwo()); // The subnet is always the second vertice here
+            }
+            
+            L3Device *eq = routersER[ID - 1];
+            list<Edge*> *edgesBis = eq->getIncidentEdges();
+            for(list<Edge*>::iterator it = edgesBis->begin(); it != edgesBis->end(); ++it)
+            {
+                visit((*it)->getVerticeOne()); // The switch is always first here
+            }
+        }
+    }
+    else if(Subnet *s = dynamic_cast<Subnet*>(node))
+    {
+        unsigned int ID = s->getID();
+        if(!checkArrS[ID - 1])
+        {
+            checkArrS[ID - 1] = true;
+            list<Edge*> *edges = s->getIncidentEdges();
+            for(list<Edge*>::iterator it = edges->begin(); it != edges->end(); ++it)
+            {
+                visit((*it)->getVerticeOne()); // The router is always the first vertice here
             }
         }
     }

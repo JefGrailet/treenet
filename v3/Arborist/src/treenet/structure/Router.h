@@ -56,6 +56,10 @@ public:
     // Similar method, but with more aliasing details (i.e. with which method an IP was aliased)
     string toStringVerbose();
     
+    // Methods to sort and compare routers
+    static bool compare(Router *r1, Router *r2);
+    bool equals(Router *other);
+    
 private:
 
     // Interfaces are stored with a list

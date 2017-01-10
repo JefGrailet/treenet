@@ -1,6 +1,6 @@
 # TreeNET, a subnet-based topology discovery tool
 
-*By Jean-François Grailet (last update: December 21, 2016)*
+*By Jean-François Grailet (last update: January 10, 2017)*
 
 ## Overview
 

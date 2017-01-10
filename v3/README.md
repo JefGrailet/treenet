@@ -1,6 +1,6 @@
 # About TreeNET v3.0
 
-*Last edited by Jean-François Grailet, December 21, 2016*
+*Last edited by Jean-François Grailet, January 10, 2017*
 ## Overview of the changes
 
 ### A full suite of software
