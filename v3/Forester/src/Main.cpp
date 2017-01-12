@@ -1268,17 +1268,21 @@ int main(int argc, char *argv[])
             cout << newFileName << ".subnet." << endl;
         }
         
-        if(redoMode >= REDO_MODE_ALIASES)
-        {
-            cout << "Newly inferred alias lists have been saved in an output file ";
-            cout << newFileName << ".alias." << endl;
-        }
-        
         if(redoMode >= REDO_MODE_ALIAS_HINTS)
         {
             env->getIPTable()->outputDictionnary(newFileName + ".ip");
             cout << "IP dictionnary with new alias resolution hints has been saved in an output file ";
             cout << newFileName << ".ip." << endl;
+        }
+        
+        if(redoMode >= REDO_MODE_ALIASES)
+        {
+            cout << "Newly inferred alias lists have been saved in an output file ";
+            cout << newFileName << ".alias." << endl;
+            
+            env->getIPTable()->outputFingerprints(newFileName + ".fingerprint");
+            cout << "IP dictionnary with fingerprints has been saved in an output file ";
+            cout << newFileName << ".fingerprint." << endl;
         }
         
         delete result;
