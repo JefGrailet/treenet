@@ -30,6 +30,7 @@ Ant::Ant(TreeNETEnvironment *env) : Climber(env)
     nCompleteLinkage = 0;
     nPartialLinkage = 0;
     nKnownLabels = 0;
+    sizeBiggestFingerprintList = 0;
 }
 
 Ant::~Ant()
@@ -83,6 +84,10 @@ void Ant::climbRecursive(NetworkTreeNode *cur)
     else
     {
         this->nbNeighborhoods++;
+        
+        unsigned int curSizeFingerprintList = (unsigned int) cur->getFingerprints().size();
+        if(curSizeFingerprintList > this->sizeBiggestFingerprintList)
+            this->sizeBiggestFingerprintList = curSizeFingerprintList;
         
         if(cur->hasOnlyLeavesAsChildren())
         {
@@ -210,6 +215,8 @@ string Ant::getStatisticsStr()
     ss << "Total of neighborhoods with complete linkage: " << nCompleteLinkage << " (" << ratioCompleteLinkage << "%)\n";
     ss << "Total of neighborhoods with partial linkage: " << nPartialLinkage << " (" << ratioPartialLinkage << "%)\n";
     ss << "Total of neighborhoods which labels all appear in inferred subnets: " << nKnownLabels << " (" << ratioKnownLabels << "%)\n";
+    
+    ss << "Size of the largest fingerprint list (in a single neighborhood): " << sizeBiggestFingerprintList << "\n";
     
     return ss.str();
 }

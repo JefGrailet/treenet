@@ -42,6 +42,8 @@ protected:
     unsigned int nbNeighborhoods;
     unsigned int nOnlyLeaves, nCompleteLinkage, nPartialLinkage;
     unsigned int nKnownLabels;
+    
+    unsigned int sizeBiggestFingerprintList;
 
     /*
      * Method to recursively "climb" the tree, node by node.
