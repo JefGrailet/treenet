@@ -1,0 +1,12 @@
+Total of responsive IPs: 15687
+Total of IPs covered by inferred subnets: 114746
+Ratio responsive to covered IPs: 13.6711%
+Total of inferred subnets: 3010
+Total of credible subnets: 2286
+Ratio of credible subnets: 75.9468%
+Total of neighborhoods: 201
+Total of neighborhoods with only leaves: 144 (71.6418%)
+Total of neighborhoods with complete linkage: 148 (73.6318%)
+Total of neighborhoods with partial linkage: 42 (20.8955%)
+Total of neighborhoods which labels all appear in inferred subnets: 182 (90.5473%)
+Size of the largest fingerprint list (in a single neighborhood): 1349

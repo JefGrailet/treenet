@@ -1,6 +1,6 @@
 # About Fingerprints/ folder
 
-*By Jean-François Grailet, Oct 10, 2016*
+*By Jean-François Grailet, January 25, 2017*
 
 ## Overview
 
@@ -37,7 +37,7 @@ For convenience, the ASes are denoted by an index in the figures. The assigned i
 
 For each date, we provide 8 different figures.
 
-* **AliasMethods_\[year\]_\[date\].pdf:** shows the proportion of aliases which were obtained through a particular method. This figure helps to figure out the relevancy of current state-of-the-art alias resolution techniques. It should be noted that the "Group" bars correspond to cases where no classical method could be used, which forced `TreeNET` to exclusively rely on the space search reduction and similar fingerprint grouping, except when the DNS names (when available) are too different.
+* **AliasMethods_\[year\]_\[date\].pdf:** shows the proportion of aliases which were obtained through a particular method. This figure helps to figure out the relevancy of current state-of-the-art alias resolution techniques. It should be noted that the "Group" bars correspond to cases where no classical method could be used, which forced `TreeNET` to exclusively rely on the space search reduction and similar fingerprint grouping, except when the DNS names (when available) are too different. The "DNS" bars are similar, except that in this case, the fingerprints were almost empty (e.g. <*,*,*,Yes,*>).
 
 * **AliasProportions_\[year\]_\[date\].pdf:** shows the proportion of fingerprinted IPs which were aliased vs. the proportion of IPs which were not aliased to any other IP at all. The goal of this figure is to show that we successfully obtain a large amount of aliases in most cases, despite a few pathological cases where this proportion is rather low. This can be explained by the supposed lack of precision of the subnet inference or the classical issues of `traceroute` which affect the neighborhood inference (which amounts to space search reduction, in this context) of `TreeNET`.
 
@@ -59,6 +59,6 @@ For each date, we provide 8 different figures.
 
 ## Scripts/ sub-folder
 
-All figures were obtained through Python scripts. Interested readers can view these scripts in the *Scripts/* sub-folder. Note that the scripts should be edited to take account of user's filesystem, and that they all need some input file to have a list of the concerned ASes. Examples of such files are provided.
+All figures were obtained through Python scripts. Interested readers can view these scripts in the *Scripts [...]/* sub-folders. There are two sub-folders: one for scripts which were used in 2016, and one with those used in 2017 (starting from January). The scripts from the 2017 folder are more convenient to use though the main body of each is the same as before. Note that the scripts should be edited to take account of user's filesystem, and that they all need some input file to have a list of the concerned ASes. Examples of such files are provided.
 
-Also note that the output files of the scripts are not exactly identical to the names of the provided figures.
+Also note that the output files produced by the scripts from 2016 are suffixed with a last part after the date (e.g., "_AllASes" or "_ASesList" if you use the provided example files). This references the input file that listed the ASes which were considered for the figures. This suffix is no longer added by the scripts for 2017 for the sake of convenience.

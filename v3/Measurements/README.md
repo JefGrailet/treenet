@@ -1,6 +1,6 @@
 # About Measurements/ folder
 
-*By Jean-François Grailet, Oct 10, 2016*
+*By Jean-François Grailet, January 25, 2017*
 
 ## Overview
 
@@ -10,7 +10,7 @@ At the root of each AS sub-folder, you should also find a "\[AS number\].txt" fi
 
 ## Composition of a dataset
 
-Each dataset consists of 7 files:
+Each dataset consists of 7 to 8 files:
 
 * A subnet dump (.subnet), where subnets are listed with the following syntax:
  
@@ -28,9 +28,11 @@ Each dataset consists of 7 files:
  
   IP - Minimum TTL
 
-* A "*Bipartite ...*" file containing a double bipartite representation of the measured AS (one bipartite being router - subnet, the other being switch (L2) -- router), based on its representation as a network tree (not given, but can be obtained using `TreeNET Reader` v2.3). The bipartite file can be roughly split into 4 parts: the first lists the routers (and their labels), the second lists subnets (and their labels), the third provides links between routers of a same neighborhood with an imaginary switch and the last gives the links between routers and subnets, using their respective labels.
+* **(2016 only)** A "*Bipartite ...*" file containing a double bipartite representation of the measured AS (one bipartite being router - subnet, the other being switch (L2) -- router), based on its representation as a network tree (not given, but can be obtained using either `TreeNET Reader` v2.3, either `TreeNET` v3.0 "*Architect*" or "*Forester*"). The bipartite file can be roughly split into 4 parts: the first lists the routers (and their labels), the second lists subnets (and their labels), the third provides links between routers of a same neighborhood with an imaginary switch and the last gives the links between routers and subnets, using their respective labels.
 
-* A "*Statistics*" file giving some statistics on the subnets and the neighborhoods observed in the network tree obtained for this AS. Those can be re-obtained and analyzed in depth using `TreeNET Reader` v2.3.
+* **(Starting from 2017)** Two files, similar to the old "*Bipartite ...*" output file, suffixed with *.ers-graph* and *.ns-graph*. These output files present two distinct bipartite models of the dataset, with the *.ers-graph* file giving an output similar to the old "*Bipartite ...*" file while *.ns-graph* presents a simpler version where routers and imaginary switches are replaced by neighborhoods as seen in a network tree. These output files are exclusively produced by `TreeNET` v3.0 "*Architect*".
+
+* A "*Statistics*" file giving some statistics on the subnets and the neighborhoods observed in the network tree obtained for this AS. Those can be re-obtained and analyzed in depth using `TreeNET Reader` v2.3 or `TreeNET` v3.0 "*Architect*".
 
 * An .alias file which contains alias lists (one per line).
 
