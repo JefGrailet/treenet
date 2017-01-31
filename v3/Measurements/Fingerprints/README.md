@@ -1,6 +1,6 @@
 # About Fingerprints/ folder
 
-*By Jean-François Grailet, January 25, 2017*
+*By Jean-François Grailet, January 31, 2017*
 
 ## Overview
 
@@ -10,28 +10,28 @@ This folder contains figures used for the analysis of the list of fingerprints c
 
 For convenience, the ASes are denoted by an index in the figures. The assigned indexes are given below.
 
-| Index |   AS    | AS name                  |
-| ----: | :-----: | :----------------------- |
-| 1     | AS109   | Cisco Systems            |
-| 2     | AS10010 | TOKAI Communications     |
-| 3     | AS224   | UNINETT                  |
-| 4     | AS2764  | AAPT Limited             |
-| 5     | AS5400  | British Telecom          |
-| 6     | AS5511  | Orange S.A.              |
-| 7     | AS6453  | TATA Communications      |
-| 8     | AS703   | Verizon Business         |
-| 9     | AS8220  | COLT Technology          |
-| 10    | AS8928  | Interoute Communications |
-| 11    | AS12956 | Telefonica International |
-| 12    | AS13789 | Internap Network         |
-| 13    | AS14    | University of Columbia   |
-| 14    | AS22652 | Fibrenoire, Inc.         |
-| 15    | AS30781 | Jaguar Network           |
-| 16    | AS37    | University of Maryland   |
-| 17    | AS4711  | INET Inc.                |
-| 18    | AS50673 | Serverius Holding        |
-| 19    | AS52    | University of California |
-| 20    | AS802   | University of York       |
+| Index |   AS    | AS name                  | Type    | Max. amount of IPs |
+| ----: | :-----: | :----------------------- | :------ | :----------------- |
+| 1     | AS109   | Cisco Systems            | Stub    | 1,600,512          |
+| 2     | AS10010 | TOKAI Communications     | Transit | 1,860,096          |
+| 3     | AS224   | UNINETT                  | Stub    | 1,115,392          |
+| 4     | AS2764  | AAPT Limited             | Transit | 1,074,688          |
+| 5     | AS5400  | British Telecom          | Transit | 1,385,472          |
+| 6     | AS5511  | Orange S.A.              | Transit | 922,880            |
+| 7     | AS6453  | TATA Communications      | Tier-1  | 966,144            |
+| 8     | AS703   | Verizon Business         | Transit | 873,728            |
+| 9     | AS8220  | COLT Technology          | Transit | 1,372,160          |
+| 10    | AS8928  | Interoute Communications | Transit | 841,728            |
+| 11    | AS12956 | Telefonica International | Tier-1  | 215,040            |
+| 12    | AS13789 | Internap Network         | Transit | 106,240            |
+| 13    | AS14    | University of Columbia   | Stub    | 339,968            |
+| 14    | AS22652 | Fibrenoire, Inc.         | Transit | 76,544             |
+| 15    | AS30781 | Jaguar Network           | Transit | 45,824             |
+| 16    | AS37    | University of Maryland   | Stub    | 140,544            |
+| 17    | AS4711  | INET Inc.                | Stub    | 34,816             |
+| 18    | AS50673 | Serverius Holding        | Transit | 65,280             |
+| 19    | AS52    | University of California | Stub    | 328,960            |
+| 20    | AS802   | University of York       | Stub    | 75,264             |
 
 ## Figures
 

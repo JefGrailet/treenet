@@ -1,12 +1,39 @@
 # About Measurements/ folder
 
-*By Jean-François Grailet, January 25, 2017*
+*By Jean-François Grailet, January 31, 2017*
 
 ## Overview
 
 This folder contains measurements which were conducted from the PlanetLab testbed with `TreeNET` v3.0. Each sub-folder is named after a target Autonomous System (or AS) and contains measurements for that particular AS, with a sub-folder per dataset, denoted by the date at which the measurements for this dataset were  started.
 
 At the root of each AS sub-folder, you should also find a "\[AS number\].txt" file, which contains the IP prefixes which are fed to `TreeNET` as the target prefixes of this AS.
+
+## Typical target ASes
+
+The next table lists the typical target ASes we measured with `TreeNET` and for which we provide our data in this repository.
+
+|   AS    | AS name                  | Type    | Max. amount of IPs |
+| :-----: | :----------------------- | :------ | :----------------- |
+| AS109   | Cisco Systems            | Stub    | 1,600,512          |
+| AS10010 | TOKAI Communications     | Transit | 1,860,096          |
+| AS224   | UNINETT                  | Stub    | 1,115,392          |
+| AS2764  | AAPT Limited             | Transit | 1,074,688          |
+| AS5400  | British Telecom          | Transit | 1,385,472          |
+| AS5511  | Orange S.A.              | Transit | 922,880            |
+| AS6453  | TATA Communications      | Tier-1  | 966,144            |
+| AS703   | Verizon Business         | Transit | 873,728            |
+| AS8220  | COLT Technology          | Transit | 1,372,160          |
+| AS8928  | Interoute Communications | Transit | 841,728            |
+| AS12956 | Telefonica International | Tier-1  | 215,040            |
+| AS13789 | Internap Network         | Transit | 106,240            |
+| AS14    | University of Columbia   | Stub    | 339,968            |
+| AS22652 | Fibrenoire, Inc.         | Transit | 76,544             |
+| AS30781 | Jaguar Network           | Transit | 45,824             |
+| AS37    | University of Maryland   | Stub    | 140,544            |
+| AS4711  | INET Inc.                | Stub    | 34,816             |
+| AS50673 | Serverius Holding        | Transit | 65,280             |
+| AS52    | University of California | Stub    | 328,960            |
+| AS802   | University of York       | Stub    | 75,264             |
 
 ## Composition of a dataset
 
@@ -44,11 +71,11 @@ Each dataset consists of 7 to 8 files:
 
 To better understand the datasets and the provided statistics, here are some definitions.
 
-* **Accurate subnet:** a subnet which, having N responsive interfaces, features exactly N - 1 interfaces located at the same TTL (Pivot interface) while the last one is located at that same TTL minus 1 (Contra-Pivot interface). From a topological point of view, the Contra-Pivot interface is the interface of the last router crossed before reaching the subnet that belongs to that subnet.
+* **Accurate subnet:** a subnet which, having N responsive interfaces, features exactly N - 1 interfaces located at the same TTL (pivot interface) while the last one is located at that same TTL minus 1 (contra-pivot interface). From a topological point of view, the contra-pivot interface is the interface of the last router crossed before reaching the subnet that belongs to that subnet.
 
 * **Odd subnet:** a subnet which features outliers preventing it from being classified as *accurate*. An *odd* subnet is not necessarily the result of a bad measurement, and can be the result of particularities in the target network architecture or routing policy.
 
-* **Shadow subnet:** a subnet for which no Contra-Pivot could be found.
+* **Shadow subnet:** a subnet for which no contra-pivot could be found.
 
 * **Alias Resolution Hint:** a notation consisting of:
   
@@ -71,3 +98,9 @@ To better understand the datasets and the provided statistics, here are some def
 * **Complete linkage:** denotes the fact that a neighborhood either has only leaves (i.e. subnets) as children, either has a subnet for each label of its children internal nodes (i.e. each subnet contains the label).
   
 * **Partial linkage:** a relaxed definition of *complete* linkage. Either the neighborhood has *complete* linkage, either there lacks a single subnet for a single child internal.
+
+## Notable remarks
+
+* The .alias files only list the aliases themselves. The idea is that these files should be usable as input in software that has nothing to do with `TreeNET` but uses the same format for aliases (one alias per line, with one space between each IP). However, the aliases with the methods through which they were obtained can be found in the "*Bipartite...*" and .ers-graph files.
+
+* Usually, datasets are *aligned* time-wise, i.e., the date at which measurements started (used to name the folders where you can find the data itself) is the same for all datasets. However, in January 2017, due to the unusually long time required for a few ASes (AS10010, AS2764 and AS8220), the other ASes were measured a few more times starting from January 15. This is why you will not find datasets for January 18, 25 and 27 in the folders of AS10010, AS2764 and AS8220.
