@@ -291,6 +291,7 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
         else if((*i)->isInternal())
             childrenI.push_back((*i));
     }
+    list<SubnetSite*> backUpSubnets(childrenL);
     
     // Goes deeper in the tree first
     for(list<NetworkTreeNode*>::iterator i = childrenI.begin(); i != childrenI.end(); ++i)
@@ -305,15 +306,32 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
         {
             InetAddress ingressInterface = (*i);
             
-            // Skips null label if it exists (will be replaced by an imaginary router)
+            bool isMissingInterface = false;
             if(ingressInterface == InetAddress(0))
-                continue;
+            {
+                /* 
+                 * !!! Unique case (fixed on January 31, 2017) !!!
+                 *
+                 * It is possible, but not common, that the last route hop to some subnets is 
+                 * missing (this amounts to 0.0.0.0 as a InetAddress object). Simply skipping the
+                 * case will result in the routers associated with these subnets not appearing in
+                 * the final graph, while the same subnets will be connected with an imaginary 
+                 * component. Therefore, we raise a special flag to keep running the next 
+                 * instructions except those related to the ingressRouter.
+                 */
+                
+                isMissingInterface = true;
+            }
             
-            Router *ingressRouter = cur->getRouterHaving(ingressInterface);
+            Router *ingressRouter = NULL;
+            if(!isMissingInterface)
+            {
+                ingressRouter = cur->getRouterHaving(ingressInterface);
             
-            // The ingress router should exist by construction. If not, we skip to next label.
-            if(ingressRouter == NULL)
-                continue;
+                // The ingress router should exist by construction. If not, we skip to next label.
+                if(ingressRouter == NULL)
+                    continue;
+            }
             
             // Lists children subnets which last label in the route is ingressInterface
             list<SubnetSite*> curChildrenL;
@@ -325,7 +343,6 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
                     childrenL.erase(j--);
                 }
             }
-            list<SubnetSite*> backUpSubnets(curChildrenL);
             
             /*
              * Lists children internals which the routes to the leaves contain at least one 
@@ -345,20 +362,21 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
                 }
             }
             
-            this->connectToRelatedSubnets(ingressRouter, &curChildrenL);
+            if(!isMissingInterface)
+                this->connectToRelatedSubnets(ingressRouter, &curChildrenL);
             
             /*
              * The code now looks for routers which give access to the remaining subnets. It will 
              * connect these subnets with the selected routers.
              */
             
-            if(curChildrenL.size() > 0 && routers->size() > 1)
+            if(curChildrenL.size() > 0 && ((!isMissingInterface && routers->size() > 1) || (routers->size() > 0)))
             {
                 for(list<Router*>::iterator j = routers->begin(); j != routers->end(); ++j)
                 {
                     Router *curRouter = (*j);
                 
-                    if(curRouter == ingressRouter)
+                    if(!isMissingInterface && curRouter == ingressRouter)
                         continue;
                     
                     // Router must give access to at least one listed subnet to continue
@@ -382,37 +400,29 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
                 this->connectRemainingSubnets(cur, &curChildrenL);
             }
             
-            // Connects this router with its child internals
+            // Connects with child internal nodes
             if(curChildrenI.size() > 0)
             {
                 for(list<NetworkTreeNode*>::iterator j = curChildrenI.begin(); j != curChildrenI.end(); ++j)
                 {
-                    this->connectToChildInternal(ingressRouter, backUpSubnets, (*j));
+                    // Case where we have a "true" ingress router
+                    if(!isMissingInterface)
+                    {
+                        this->connectToChildInternal(ingressRouter, backUpSubnets, (*j));
+                    }
+                    // Case where the current interface is a missing one
+                    else
+                    {
+                        this->connectToChildInternal(cur, backUpSubnets, (*j));
+                    }
                 }
             }
         }
         
-        /*
-         * Remaining work consists in connecting remaining subnets with an imaginary router and 
-         * connecting child internal nodes which the previous labels contains 0.0.0.0 with the 
-         * same imaginary router (imaginary router also models the 0.0.0.0 interface).
-         */
-        
-        // Connects the remaining subnets with an imaginary router.
+        // Connects the remaining subnets (if any) with an imaginary router.
         if(childrenL.size() > 0)
             for(list<SubnetSite*>::iterator i = childrenL.begin(); i != childrenL.end(); ++i)
                 bipGraphRS->createEdge(cur, (*i));
-        
-        // Lists child internal nodes which the previous label(s) contain 0.0.0.0
-        list<NetworkTreeNode*> lastChildrenI;
-        for(list<NetworkTreeNode*>::iterator j = childrenI.begin(); j != childrenI.end(); ++j)
-            if((*j)->hasPreviousLabel(InetAddress(0)))
-                lastChildrenI.push_back((*j));
-        
-        // Connects with the child internal nodes
-        if(lastChildrenI.size() > 0)
-            for(list<NetworkTreeNode*>::iterator i = lastChildrenI.begin(); i != lastChildrenI.end(); ++i)
-                this->connectToChildInternal(cur, childrenL, (*i));
     }
     // Case where there is a single interface and at least one router
     else if(routers->size() > 0)
@@ -515,15 +525,28 @@ void ERSProcesser::processRecursiveER(NetworkTreeNode *cur, unsigned short depth
         {
             InetAddress ingressInterface = (*i);
 
-            // Skips 0.0.0.0 label if it exists
+            bool isMissingInterface = false;
             if(ingressInterface == InetAddress(0))
-                continue;
+            {
+                /* 
+                 * !!! Unique case (fixed on January 31, 2017) !!!
+                 *
+                 * To take account of routers which connect to subnets which the last route hop is 
+                 * a missing interface (see also processRecursiveRS()).
+                 */
+                 
+                isMissingInterface = true;
+            }
             
-            Router *ingressRouter = cur->getRouterHaving(ingressInterface);
-            
-            // The ingress router should exist by construction. If not, we skip to next label.
-            if(ingressRouter == NULL)
-                continue;
+            Router *ingressRouter = NULL;
+            if(!isMissingInterface)
+            {
+                ingressRouter = cur->getRouterHaving(ingressInterface);
+                
+                // The ingress router should exist by construction. If not, we skip to next label.
+                if(ingressRouter == NULL)
+                    continue;
+            }
             
             // Lists children subnets which last label in the route is ingressInterface
             list<SubnetSite*> curChildrenL;
@@ -538,14 +561,15 @@ void ERSProcesser::processRecursiveER(NetworkTreeNode *cur, unsigned short depth
             
             // Gets the routers which give access to each listed subnet
             list<Router*> routersToConnect;
-            routersToConnect.push_back(ingressRouter);
+            if(!isMissingInterface)
+                routersToConnect.push_back(ingressRouter);
             if(curChildrenL.size() > 0 && routers->size() > 1)
             {
                 for(list<Router*>::iterator j = routers->begin(); j != routers->end(); ++j)
                 {
                     Router *curRouter = (*j);
                 
-                    if(curRouter == ingressRouter)
+                    if(!isMissingInterface && curRouter == ingressRouter)
                         continue;
                     
                     // Router must give access to at least one listed subnet to continue
@@ -565,20 +589,28 @@ void ERSProcesser::processRecursiveER(NetworkTreeNode *cur, unsigned short depth
             }
             
             /*
-             * Connects the routers together. Two cases:
-             * 1) There is at least one router to connect and there remains at least one subnet 
-             *    for which no router was found. In that case, we put the imaginary component into 
-             *    the linkage process, so there will be at least two routers to connect in such a 
+             * Connects the routers together. Three cases:
+             * 1) (ingress router exists) There is at least one router to connect and there 
+             *    remains at least one subnet for which no router was found. In that case, we put 
+             *    the imaginary component into the linkage process, so there will be at least two 
+             *    routers to connect in such a case.
+             * 2) (ingress router exists) We found a router for each listed subnet and have more 
+             *    than one listed routers. In that case, we call the same method but we do not 
+             *    take account of the imaginary component as it is unnecessary for this particular 
              *    case.
-             * 2) We found a router for each listed subnet and have more than one listed routers. 
-             *    In that case, we call the same method but we do not take account of the 
-             *    imaginary component as it is unnecessary for this particular case.
+             * 3) (current interface is a missing one) There is at least one router to connect. In 
+             *    that case, we put the imaginary component into the linkage process.
              */
             
-            if(routersToConnect.size() >= 1 && curChildrenL.size() > 0)
+            if(!isMissingInterface)
+            {
+                if(routersToConnect.size() >= 1 && curChildrenL.size() > 0)
+                    bipGraphER->connectRouters(routersToConnect, cur);
+                else if(routersToConnect.size() > 1)
+                    bipGraphER->connectRouters(routersToConnect, NULL);
+            }
+            else if(routersToConnect.size() >= 1)
                 bipGraphER->connectRouters(routersToConnect, cur);
-            else if(routersToConnect.size() > 1)
-                bipGraphER->connectRouters(routersToConnect, NULL);
         }
     }
     // Any other case: connects all routers related to this neighborhood with a single switch

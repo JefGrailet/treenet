@@ -1637,7 +1637,6 @@ R131 - S450
 R131 - S451
 R131 - S452
 R132 - S453
-R133 - S453
 R133 - S454
 R133 - S455
 R133 - S456
@@ -1991,6 +1990,6 @@ Maximum degree:
 -left party: 103 (R78)
 -right party: 5 (S8)
 Average degree:
--left party: 4.11848
--right party: 1.1791
-Density: 0.00558817
+-left party: 4.11374
+-right party: 1.17775
+Density: 0.00558174

@@ -108,7 +108,7 @@ if __name__ == "__main__":
     p1 = plt.bar(ind + padding, ratioFingerprinted, width, color='#AAAAAA')
     p2 = plt.plot(arange(0.5,20.5,1.0), ratioWithLargestList, color='#000000', linewidth=3)
     
-    plt.ylabel('Ratio (%)', **hfont)
+    plt.ylabel('Ratio (%) of responsive IPs', **hfont)
     plt.xlabel('AS index', **hfont)
     plt.ylim([0,100])
     plt.xlim([0,20])

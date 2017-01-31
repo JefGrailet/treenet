@@ -534,8 +534,6 @@ R21 - S32
 R22 - S43
 R23 - S48
 R23 - S49
-R23 - S51
-R23 - S52
 R23 - S53
 R23 - S73
 R24 - S50
@@ -836,6 +834,6 @@ Maximum degree:
 -left party: 22 (R106)
 -right party: 6 (S185)
 Average degree:
--left party: 2.48921
--right party: 1.42387
-Density: 0.0102437
+-left party: 2.47482
+-right party: 1.41564
+Density: 0.0101844
