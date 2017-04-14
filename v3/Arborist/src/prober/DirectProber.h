@@ -184,6 +184,14 @@ public:
      */
     
     string getAndClearLog();
+    
+    /*
+     * Addition by J.-F. Grailet: methods to get the amounts of probes (total and "successful", 
+     * i.e., probes for which we got a reply) sent by this prober object.
+     */
+    
+    inline unsigned int getNbProbes() { return this->nbProbes; }
+    inline unsigned int getNbSuccessfulProbes() { return this->nbSuccessfulProbes; }
 
 protected:
 
@@ -327,10 +335,15 @@ protected:
     const unsigned short upperBoundDstPortICMPseq;
     unsigned long long probeCountStatistic;
     
-    // Values to handle verbose/debug mode, via small logs displayed from time to time.
+    // Fields to handle verbose/debug mode, via small logs displayed from time to time.
     
     bool verbose;
     string log;
+    
+    // Fields to count the amount of probes sent with a prober object
+    
+    unsigned int nbProbes;
+    unsigned int nbSuccessfulProbes;
 };
 
 #endif /* DIRECTPROBER_H_ */

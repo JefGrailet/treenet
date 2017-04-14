@@ -14,24 +14,18 @@
 Mutex IPIDUnit::collectorMutex(Mutex::ERROR_CHECKING_MUTEX);
 
 IPIDUnit::IPIDUnit(TreeNETEnvironment *e, 
-                   AliasHintCollector *gP, 
+                   AliasHintCollector *p, 
                    InetAddress IP, 
                    unsigned short lbii, 
                    unsigned short ubii, 
                    unsigned short lbis, 
                    unsigned short ubis):
 env(e), 
-grandParent(gP), 
+parent(p), 
 IPToProbe(IP), 
+resultTuple(IP), 
 log("")
 {
-    // Default values for results
-    this->probeToken = 0;
-    this->IPID = 0;
-    gettimeofday(&this->timeValue, NULL);
-    this->echo = false;
-    this->replyTTL = (unsigned char) 0;
-
     // Initial timeout
     baseTimeout = env->getTimeoutPeriod();
     
@@ -112,7 +106,11 @@ log("")
 
 IPIDUnit::~IPIDUnit()
 {
-    delete prober;
+    if(prober != NULL)
+    {
+        env->updateProbeAmounts(prober);
+        delete prober;
+    }
 }
 
 void IPIDUnit::stop()
@@ -154,7 +152,7 @@ void IPIDUnit::run()
     {
         // Gets a token
         collectorMutex.lock();
-        unsigned long int token = grandParent->getProbeToken();
+        unsigned long int token = parent->getProbeToken();
         collectorMutex.unlock();
         
         // Adapts timeout
@@ -177,12 +175,12 @@ void IPIDUnit::run()
         
         if(newProbe->getRplyICMPtype() == DirectProber::ICMP_TYPE_ECHO_REPLY && newProbe->getRplyAddress() == target)
         {
-            this->probeToken = token;
-            this->IPID = newProbe->getRplyIPidentifier();
-            gettimeofday(&this->timeValue, NULL);
-            if(newProbe->getSrcIPidentifier() == this->IPID)
-                this->echo = true;
-            this->replyTTL = newProbe->getRplyTTL();
+            resultTuple.probeToken = token;
+            resultTuple.IPID = newProbe->getRplyIPidentifier();
+            gettimeofday(&(resultTuple.timeValue), NULL);
+            if(newProbe->getSrcIPidentifier() == resultTuple.IPID)
+                resultTuple.echo = true;
+            resultTuple.replyTTL = newProbe->getRplyTTL();
 
             delete newProbe;
             break;
@@ -197,17 +195,7 @@ void IPIDUnit::run()
 
 bool IPIDUnit::hasExploitableResults()
 {
-    if(this->probeToken != 0)
+    if(resultTuple.probeToken != 0)
         return true;
     return false;
-}
-
-IPIDTuple *IPIDUnit::getTuple()
-{
-    IPIDTuple *res = new IPIDTuple(this->probeToken, 
-                                   this->IPID, 
-                                   this->timeValue,
-                                   this->echo, 
-                                   this->replyTTL);
-    return res;
 }

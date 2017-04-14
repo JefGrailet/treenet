@@ -1,6 +1,6 @@
-# About TreeNET v3.0.1 "Arborist" (treenet)
+# About TreeNET v3.2 "Arborist" (treenet)
 
-*By Jean-François Grailet, January 10, 2017*
+*By Jean-François Grailet, April 14, 2017*
 
 ## Compilation
 
@@ -27,7 +27,7 @@ If you intent to use `TreeNET` from the PlanetLab testbed, here is some advice.
 
 ## Usage
 
-`TreeNET` v3.0 "*Arborist*" will describe in details its options, flags and how you can use it by running the line:
+`TreeNET` v3.2 "*Arborist*" will describe in details its options, flags and how you can use it by running the line:
 
 ```sh
 ./treenet -h
@@ -59,9 +59,11 @@ If you intent to use `TreeNET` from the PlanetLab testbed, here is some advice.
 
 * **January 10, 2017:** minor update of *Arborist*, fixing another light issue in the alias resolution part and updating a structure.
 
+* **April 14, 2017:** major update of *Arborist*, now in version v3.2. Changes includes improvements in alias resolution (new approach for dealing with multi-label nodes and improved scheduling upon collecting IP-IDs), extensions of the traceroute module to conduct route analysis and post-processing, and the possibility to move console messages to text logs with a new flag (-k). `TreeNET` now also times its different algorithmic steps and counts the amount of probes it uses during each step.
+
 ## Disclaimer
 
-`TreeNET` v3 and its different versions were written by Jean-François Grailet, currently Ph. D. student at the University of Liège (Belgium) in the Research Unit in Networking (RUN), using the sources of `ExploreNET` v2.1 as a basis.
+`TreeNET` v3.2 and its different versions were written by Jean-François Grailet, currently Ph. D. student at the University of Liège (Belgium) in the Research Unit in Networking (RUN), using the sources of `ExploreNET` v2.1 as a basis.
 
 `ExploreNET` v2.1 has been elaborated and written by Dr. Mehmet Engin Tozal, currently assistant teacher at the University of Louisiana at Lafayette (USA). The sources of this program can be downloaded at the following address:
 

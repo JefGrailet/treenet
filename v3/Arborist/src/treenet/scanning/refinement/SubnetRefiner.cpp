@@ -521,16 +521,32 @@ void SubnetRefiner::fill(SubnetSite *ss)
             /*
              * Just in case, it is also checked that the IP found in the dictionnary also has a 
              * TTL value which is different from the default value (= no "good" TTL computed for 
-             * this IP) though this should ideally not occur.
+             * this IP) though this should not occur.
              */
             
-            if(iEntry != NULL && iEntry->getTTL() != IPTableEntry::NO_KNOWN_TTL)
+            if(iEntry != NULL)
             {
-                ss->insert(new SubnetSiteNode(i, 
-                                              prefixLength, 
-                                              iEntry->getTTL(), 
-                                              SubnetSiteNode::UNKNOWN_ALIAS_SX));
-                
+                if(iEntry->getTTL() != IPTableEntry::NO_KNOWN_TTL)
+                {
+                    ss->insert(new SubnetSiteNode(i, 
+                                                  prefixLength, 
+                                                  iEntry->getTTL(), 
+                                                  SubnetSiteNode::UNKNOWN_ALIAS_SX));
+                }
+                else
+                {
+                    unsigned char pivotTTL = ss->getShortestTTL();
+                    if(pivotTTL < ss->getGreatestTTL())
+                        pivotTTL++; // Otherwise, no increment (because of shadow subnets)
+                    
+                    ss->insert(new SubnetSiteNode(i, 
+                                                  prefixLength, 
+                                                  pivotTTL, 
+                                                  SubnetSiteNode::UNKNOWN_ALIAS_SX, 
+                                                  true));
+                    
+                    iEntry->setTTL(pivotTTL);
+                }
                 newIPs++;
             }
         }

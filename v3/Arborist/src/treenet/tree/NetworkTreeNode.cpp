@@ -293,23 +293,86 @@ list<InetAddress> NetworkTreeNode::listInterfaces()
         }
     }
     
-    // Sorts and removes duplicata (rare but possible in some cases)
+    // Sorts and removes duplicata (rare but possible when a contra-pivot is also a label)
     interfacesList.sort(InetAddress::smaller);
-    InetAddress previous("0.0.0.0");
+    InetAddress previous(0);
     for(list<InetAddress>::iterator i = interfacesList.begin(); i != interfacesList.end(); ++i)
     {
         InetAddress cur = (*i);
         if(cur == previous)
-        {
             interfacesList.erase(i--);
-        }
         else
-        {
             previous = cur;
-        }
     }
     
     return interfacesList;
+}
+
+list<list<InetAddress> > NetworkTreeNode::listInterfacesByLastHop(list<InetAddress> *lastHops)
+{
+    list<list<InetAddress> > sets;
+
+    for(list<InetAddress>::iterator i = labels.begin(); i != labels.end(); ++i)
+    {
+        InetAddress curLastHop = (*i);
+        list<InetAddress> candidates;
+    
+        // Lists targets for which the last hop is the current label
+        for(list<NetworkTreeNode*>::iterator j = children.begin(); j != children.end(); ++j)
+        {
+            if((*j)->isLeaf())
+            {
+                SubnetSite *ss = (*j)->getAssociatedSubnet();
+                unsigned short routeSize = ss->getRouteSize();
+                RouteInterface *route = ss->getRoute();
+                
+                if(route[routeSize - 1].ip == curLastHop)
+                {
+                    unsigned short status = ss->getStatus();
+                    unsigned char shortestTTL = ss->getShortestTTL();
+                    
+                    if(status == SubnetSite::ACCURATE_SUBNET || status == SubnetSite::ODD_SUBNET)
+                    {
+                        list<SubnetSiteNode*> *ssn = ss->getSubnetIPList();
+                        
+                        for(list<SubnetSiteNode*>::iterator k = ssn->begin(); k != ssn->end(); ++k)
+                        {
+                            if((*k)->TTL == shortestTTL)
+                            {
+                                candidates.push_back(((*k)->ip));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        if(candidates.size() > 0 || curLastHop != InetAddress(0))
+        {
+            if(curLastHop != InetAddress(0))
+                candidates.push_front(curLastHop);
+            if(lastHops != NULL)
+                lastHops->push_back(curLastHop);
+        }
+        else
+            continue;
+        
+        // Sorts and removes duplicata (rare but possible when a contra-pivot is also a label)
+        candidates.sort(InetAddress::smaller);
+        InetAddress previous(0);
+        for(list<InetAddress>::iterator j = candidates.begin(); j != candidates.end(); ++j)
+        {
+            InetAddress cur = (*j);
+            if(cur == previous)
+                candidates.erase(j--);
+            else
+                previous = cur;
+        }
+        
+        sets.push_back(candidates);
+    }
+    
+    return sets;
 }
 
 Router* NetworkTreeNode::getRouterHaving(InetAddress interface)

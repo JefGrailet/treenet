@@ -11,10 +11,6 @@ using std::exit;
 #include <iomanip> // For the display of inferred/refined subnets
 using std::left;
 using std::setw;
-#include <fstream>
-using std::ifstream;
-using std::ofstream;
-using std::ios;
 #include <memory>
 using std::auto_ptr;
 #include <string>
@@ -54,6 +50,7 @@ using std::iterator;
 #include "treenet/tree/climbers/Crow.h"
 #include "treenet/tree/climbers/Cat.h"
 #include "treenet/tree/climbers/Ant.h"
+#include "treenet/tree/climbers/Termite.h"
 #include "treenet/graph/type-ns/NSProcesser.h"
 #include "treenet/graph/type-ers/ERSProcesser.h"
 
@@ -152,13 +149,16 @@ void printUsage()
     cout << "Short   Verbose                             Expected value\n";
     cout << "-----   -------                             --------------\n";
     cout << "\n";
-    cout << "-o      --parsing-omit-merging              None (flag)\n";
+    cout << "-m      --parsing-check-merging              None (flag)\n";
     cout << "\n";
-    cout << "Because datasets can get quite large, checking at each newly parsed subnet\n";
-    cout << "that there is a collision between the new subnet and any subnet of the set\n";
-    cout << "being built (i.e., the former overlaps the latter), in which case both subnets\n";
-    cout << "should be merged, can be a waste of time. Add this flag to your command line\n";
-    cout << "to ask Architect to omit this verification.\n";
+    cout << "Because datasets can get quite large, checking at each newly parsed subnet or\n";
+    cout << "IP that there is a collision between the new item and any item previously\n";
+    cout << "parsed (for instance, a new subnet overlaps a formerly parsed subnet), in\n"; 
+    cout << "which case both items should be merged, can be a waste of time. By default,\n";
+    cout << "Architect will not check for such collisions as it aims at parsing a single\n";
+    cout << "dataset at a time as produced by other versions of TreeNET, which are supposed\n";
+    cout << "to be free of any redudancy. But if collision checking is needed for some\n";
+    cout << "reason, you can add this flag to your command line.\n";
     cout << "\n"; 
     cout << "-w      --alias-resolution-amount-ip-ids    Integer from [3,20]\n";
     cout << "\n";
@@ -212,6 +212,25 @@ void printUsage()
     cout << "file titled \"Statistics [label]\" (see -l flag to know how you can modify\n";
     cout << "[label] and what is its default value).\n";
     cout << "\n";
+    cout << "-t      --output-tree                       None (flag)\n";
+    cout << "\n";
+    cout << "Add this flag to your command line to request the text equivalent of the\n";
+    cout << "network tree after the end of the neighborhood inference step (or tree\n";
+    cout << "construction). This will produce a new file \"[label].tree\" providing the\n";
+    cout << "requested output.\n";
+    cout << "\n";
+    cout << "-a      --output-tree-analysis              None (flag)\n";
+    cout << "\n";
+    cout << "Add this flag to your command line to request in-depth tree (neighborhoods)\n";
+    cout << "analysis after the end of the alias resolution step. This will produce a new\n";
+    cout << "file \"[label].neighborhoods\" providing the requested analysis.\n";
+    cout << "\n";
+    cout << "-o      --output-datalink-estimation        None (flag)\n";
+    cout << "\n";
+    cout << "Add this flag to your command line to request L2 estimation after the end of\n";
+    cout << "the alias resolution step. This will produce a new file \"[label].l2\" providing\n";
+    cout << "the requested analysis.\n";
+    cout << "\n";
     cout << "-e      --bipartite-ers                     None (flag)\n";
     cout << "\n";
     cout << "Add this flag to your command line to request conversion of the network tree\n";
@@ -259,12 +278,10 @@ void printUsage()
     cout << "Architect. Each accepted value corresponds to a \"mode\":\n";
     cout << "\n";
     cout << "* 0: it is the default verbosity. In this mode, Architect only displays the\n";
-    cout << "  most important steps, such as the in-depth analysis of the network tree.\n";
+    cout << "  typical steps and how much time they take respecitvely.\n";
     cout << "\n";
-    cout << "* 1: this is the \"verbose\" mode. In addition to the in-depth analysis,\n";
-    cout << "  Architect will also display the structure of the network tree it produced.\n";
-    cout << "  In this node, it can also display more details about the bipartite\n";
-    cout << "  transformation of the network tree.\n";
+    cout << "* 1: this is the \"verbose\" mode. In addition to the default output,\n";
+    cout << "  Architect will also display detailed errors when parsing is unsuccessful.\n";
     cout << "\n";
     cout << "-c      --credits                           None (flag)\n";
     cout << "\n";
@@ -293,11 +310,72 @@ void printVersion()
     cout << "Version and credits\n";
     cout << "===================\n";
     cout << "\n";
-    cout << "TreeNET v3.0 \"Architect\", written by Jean-François Grailet (11/2016).\n";
+    cout << "TreeNET v3.2 \"Architect\", written by Jean-François Grailet (03/2017).\n";
     cout << "Based on ExploreNET version 2.1, copyright (c) 2013 Mehmet Engin Tozal.\n";
     cout << "\n";
     
     cout.flush();
+}
+
+// Simple function to get the current time as a string object.
+
+string getCurrentTimeStr()
+{
+    time_t rawTime;
+    struct tm *timeInfo;
+    char buffer[80];
+
+    time(&rawTime);
+    timeInfo = localtime(&rawTime);
+
+    strftime(buffer, 80, "%d-%m-%Y %T", timeInfo);
+    string timeStr(buffer);
+    
+    return timeStr;
+}
+
+// Simple function to convert an elapsed time (in seconds) into days/hours/mins/secs format
+
+string elapsedTimeStr(unsigned long elapsedSeconds)
+{
+    if(elapsedSeconds == 0)
+    {
+        return "less than one second";
+    }
+
+    unsigned short secs = (unsigned short) elapsedSeconds % 60;
+    unsigned short mins = (unsigned short) (elapsedSeconds / 60) % 60;
+    unsigned short hours = (unsigned short) (elapsedSeconds / 3600) % 24;
+    unsigned short days = (unsigned short) elapsedSeconds / 86400;
+    
+    stringstream ss;
+    if(days > 0)
+    {
+        if(days > 1)
+            ss << days << " days ";
+        else
+            ss << "1 day ";
+    }
+    if(hours > 0)
+    {
+        if(hours > 1)
+            ss << hours << " hours ";
+        else
+            ss << "1 hour ";
+    }
+    if(mins > 0)
+    {
+        if(mins > 1)
+            ss << mins << " minutes ";
+        else
+            ss << "1 minute ";
+    }
+    if(secs > 1)
+        ss << secs << " seconds";
+    else
+        ss << secs << " second";
+    
+    return ss.str();    
 }
 
 // Constants to deal with the methods for generating a subnet graph
@@ -315,14 +393,19 @@ int main(int argc, char *argv[])
     unsigned short maxRollovers = 10; // Idem
     double baseTolerance = 0.2; // Idem
     double maxError = 0.35; // Idem
-    bool parsingOmitMerging = false;
+    bool parsingOmitMerging = true;
     unsigned short displayMode = TreeNETEnvironment::DISPLAY_MODE_LACONIC;
     string labelOutputFiles = ""; // Gets a default value later if not set by user.
     bool computeStatistics = false;
+    
+    // Boolean variables to check which analysis should be outputted.
+    bool outputTree = false, outputNeighborhoods = false, outputL2 = false;
+    
+    // Boolean variables to check which graphs should be generated.
     bool createBipERS = false, createBipNS = false, createNGraph = false, createRGraph = false;
     unsigned short createSGraph = SUBNET_GRAPH_NONE;
     
-    // Values to check if info, usage, version... should be displayed.
+    // Boolean variables to check if info, usage, version... should be displayed.
     bool displayInfo = false, displayUsage = false, displayVersion = false;
     
     /*
@@ -343,15 +426,18 @@ int main(int argc, char *argv[])
         {
             switch(argv[i][1])
             {
+                case 'a':
                 case 'c':
                 case 'e':
                 case 'g':
                 case 'h':
                 case 'i':
                 case 'n':
+                case 'm':
                 case 'o':
                 case 'r':
                 case 's':
+                case 't':
                     break;
                 default:
                     flagParam = true;
@@ -388,15 +474,18 @@ int main(int argc, char *argv[])
      
     int opt = 0;
     int longIndex = 0;
-    const char* const shortOpts = "ceghil:norsu:v:w:x:y:z:";
+    const char* const shortOpts = "aceghil:nmorstu:v:w:x:y:z:";
     const struct option longOpts[] = {
-            {"parsing-omit-merging", no_argument, NULL, 'o'}, 
+            {"parsing-check-merging", no_argument, NULL, 'm'}, 
             {"alias-resolution-amount-ip-ids", required_argument, NULL, 'w'}, 
             {"alias-resolution-rollovers-max", required_argument, NULL, 'x'}, 
             {"alias-resolution-range-tolerance", required_argument, NULL, 'y'}, 
             {"alias-resolution-error-tolerance", required_argument, NULL, 'z'}, 
             {"label-output", required_argument, NULL, 'l'}, 
             {"statistics", no_argument, NULL, 's'}, 
+            {"output-tree", no_argument, NULL, 't'}, 
+            {"output-tree-analysis", no_argument, NULL, 'a'}, 
+            {"output-datalink-estimation", no_argument, NULL, 'o'}, 
             {"bipartite-ers", no_argument, NULL, 'e'}, 
             {"bipartite-ns", no_argument, NULL, 'n'}, 
             {"graph-neighborhood", no_argument, NULL, 'g'}, 
@@ -405,7 +494,8 @@ int main(int argc, char *argv[])
             {"verbosity", required_argument, NULL, 'v'}, 
             {"credits", no_argument, NULL, 'c'}, 
             {"help", no_argument, NULL, 'h'}, 
-            {"info", no_argument, NULL, 'i'}
+            {"info", no_argument, NULL, 'i'},
+            {NULL, 0, NULL, 0}
     };
     
     string optargSTR;
@@ -426,15 +516,18 @@ int main(int argc, char *argv[])
             
             switch(opt)
             {
+                case 'a':
                 case 'c':
                 case 'e':
                 case 'g':
                 case 'h':
                 case 'i':
                 case 'n':
+                case 'm':
                 case 'o':
                 case 'r':
                 case 's':
+                case 't':
                     break;
                 default:
                     optargSTR = string(optarg);
@@ -451,8 +544,8 @@ int main(int argc, char *argv[])
             int gotNb = 0;
             switch(opt)
             {
-                case 'o':
-                    parsingOmitMerging = true;
+                case 'm':
+                    parsingOmitMerging = false;
                     break;
                 case 'w':
                     gotNb = std::atoi(optargSTR.c_str());
@@ -511,6 +604,15 @@ int main(int argc, char *argv[])
                     break;
                 case 's':
                     computeStatistics = true;
+                    break;
+                case 't':
+                    outputTree = true;
+                    break;
+                case 'a':
+                    outputNeighborhoods = true;
+                    break;
+                case 'o':
+                    outputL2 = true;
                     break;
                 case 'n':
                     createBipNS = true;
@@ -578,10 +680,19 @@ int main(int argc, char *argv[])
         return 0;
     }
     
+    // Some checks to see if Architect as actually anything to do.
+    if(!outputTree && !outputNeighborhoods && !outputL2 && !createBipERS && !createBipNS && 
+       !createNGraph && !createRGraph && createSGraph == SUBNET_GRAPH_NONE)
+    {
+        cout << "No particular output was requested. Use -h or --help to get more details on how ";
+        cout << "to use TreeNET \"Architect\"." << endl;
+        return 0;
+    }
+    
     if(!found)
     {
-        cout << "No input file was provided. Use -h or --help to get more ";
-        cout << "details on how to use TreeNET \"Architect\"." << endl;
+        cout << "No input file was provided. Use -h or --help to get more details on how to use ";
+        cout << "TreeNET \"Architect\"." << endl;
         return 0;
     }
     
@@ -635,7 +746,7 @@ int main(int argc, char *argv[])
     }
     
     // Some welcome message
-    cout << "TreeNET v3.0 \"Architect\"\n" << endl;
+    cout << "TreeNET v3.2 \"Architect\" (time at start: " << getCurrentTimeStr() << ")\n" << endl;
     
     /*
      * INPUT DATASET PARSING
@@ -645,113 +756,50 @@ int main(int argc, char *argv[])
      * the main argument, as it means the user is trying to input several datasets (which is 
      * possible in Forester, but not Architect).
      */
-
-    cout << "Parsing input dataset...\n" << endl;
+     
+    cout << "--- Start of input file(s) parsing ---" << endl;
+    timeval parsingStart, parsingEnd;
+    gettimeofday(&parsingStart, NULL);
 
     size_t pos = inputsStr.find(',');
     if(pos != std::string::npos)
     {
-        cout << "Architect is not mean to parse several datasets at once. Please use TreeNET ";
+        cout << "Architect is not meant to parse several datasets at once. Please use TreeNET ";
         cout << "\"Forester\" if you intend to merge several datasets together.\n" << endl;
         delete env;
         return 0;
     }
     
-    // Parsing utilities
+    string subnetDumpPath = inputsStr + ".subnet";
+    
     SubnetParser *sp = new SubnetParser(env);
-    IPDictionnaryParser *idp = new IPDictionnaryParser(env);
-
-    // Subnet dump
-    string subnetDumpContent = "";
-    ifstream inFileSubnet;
-    inFileSubnet.open((inputsStr + ".subnet").c_str());
-    bool subnetDumpOk = false;
-    if(inFileSubnet.is_open())
+    bool subnetParsingResult = sp->parse(subnetDumpPath);
+    delete sp;
+    
+    if(subnetParsingResult && set->getNbSubnets() > 0)
     {
-        subnetDumpContent.assign((std::istreambuf_iterator<char>(inFileSubnet)),
-                                 (std::istreambuf_iterator<char>()));
+        string ipDictPath = inputsStr + ".ip";
         
-        inFileSubnet.close();
-        subnetDumpOk = true;
+        IPDictionnaryParser *idp = new IPDictionnaryParser(env);
+        bool ipParsingResult = idp->parse(ipDictPath);
+        delete idp;
+        
+        if(!ipParsingResult)
+        {
+            env->fillIPDictionnary();
+        }
     }
     else
     {
-        cout << "No " << inputsStr << ".subnet to parse.\n" << endl;
+        cout << "Could not parse any subnet. Architect cannot continue and will halt now." << endl;
+        delete env;
+        return 0;
     }
     
-    if(subnetDumpOk)
-    {
-        // IP dictionnary dump
-        string IPDumpContent = "";
-        ifstream inFileIP;
-        inFileIP.open((inputsStr + ".ip").c_str());
-        bool IPDumpOk = false;
-        if(inFileIP.is_open())
-        {
-            IPDumpContent.assign((std::istreambuf_iterator<char>(inFileIP)),
-                                 (std::istreambuf_iterator<char>()));
-            
-            inFileIP.close();
-            IPDumpOk = true;
-        }
-        
-        // Code also checks the amount of subnets before/after parsing
-        size_t curNbSubnets = set->getSubnetSiteList()->size();
-        cout << "Parsing " << inputsStr << ".subnet..." << endl;
-        sp->parse(set, subnetDumpContent, !IPDumpOk);
-        cout << "Parsing of " << inputsStr << ".subnet completed.\n" << endl;
-        size_t newNbSubnets = set->getSubnetSiteList()->size();
-        
-        if(newNbSubnets > curNbSubnets)
-        {
-            cout << "Parsing " << inputsStr << ".ip..." << endl;
-            idp->parse(IPDumpContent);
-            cout << "Parsing of " << inputsStr << ".ip completed.\n" << endl;
-        }
-        else if(IPDumpOk)
-        {
-            cout << "No subnet were found. " << inputsStr << ".ip parsing has been ";
-            cout << "skipped.\n" << endl;
-        }
-        else
-        {
-            cout << "No " << inputsStr << ".ip to parse. IP Dictionnary has been ";
-            cout << "partially completed with the IPs mentioned in ";
-            cout << inputsStr << ".subnet.\n" << endl;
-        }
-    }
-    
-    delete sp;
-    delete idp;
-        
-    // Outputting results with the set (simple display).
-    cout << left << setw(25) << "Subnet";
-    cout << left << setw(15) << "Class" << endl;
-    cout << left << setw(25) << "------";
-    cout << left << setw(15) << "-----" << endl;
-    
-    list<SubnetSite*> *ssList = set->getSubnetSiteList();
-    for(list<SubnetSite*>::iterator it = ssList->begin(); it != ssList->end(); ++it)
-    {
-        cout << left << setw(25) << (*it)->getInferredNetworkAddressString();
-        cout << left << setw(15);
-        switch((*it)->getStatus())
-        {
-            case SubnetSite::ACCURATE_SUBNET:
-                cout << "Accurate";
-                break;
-            case SubnetSite::ODD_SUBNET:
-                cout << "Odd";
-                break;
-            case SubnetSite::SHADOW_SUBNET:
-                cout << "Shadow";
-                break;
-            default:
-                cout << "Undefined";
-                break;
-        }
-        cout << endl;
-    }
+    cout << "--- End of input file(s) parsing (" << getCurrentTimeStr() << ") ---" << endl;
+    gettimeofday(&parsingEnd, NULL);
+    unsigned long parsingElapsed = parsingEnd.tv_sec - parsingStart.tv_sec;
+    cout << "Elapsed time: " << elapsedTimeStr(parsingElapsed) << "\n" << endl;
 
     /*
      * SUBNET NEIGHBORHOOD INFERENCE
@@ -761,44 +809,85 @@ int main(int argc, char *argv[])
      * dataset already provides all the useful data and goes straight to the network tree 
      * growth.
      */
-     
+    
+    cout << "--- Start of neighborhood inference ---" << endl;
+    timeval nInferenceStart, nInferenceEnd;
+    gettimeofday(&nInferenceStart, NULL);
+    
     Grower *g = new ClassicGrower(env);
-
-    cout << "\nGrowing network tree..." << endl;
-    
     g->grow();
-    
-    // End of tree growth
-    cout << "Growth complete.\n" << endl;
     
     Soil *result = g->getResult();
     delete g;
     
-    // Simple tree display
-    if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+    // Tree output
+    if(outputTree)
     {
+        env->openLogStream(newFileName + ".tree");
         Climber *robin = new Robin(env);
         robin->climb(result);
+        env->closeLogStream();
         delete robin;
+        
+        cout << "Network tree in text form has been written in a new file \"";
+        cout << newFileName << ".tree\"." << endl;
     }
     
+    cout << "--- End of neighborhood inference (" << getCurrentTimeStr() << ") ---" << endl;
+    gettimeofday(&nInferenceEnd, NULL);
+    unsigned long nInferenceElapsed = nInferenceEnd.tv_sec - nInferenceStart.tv_sec;
+    cout << "Elapsed time: " << elapsedTimeStr(nInferenceElapsed) << "\n" << endl;
+    
     /*
-     * ALIAS RESOLUTION
+     * ALIAS RESOLUTION (AND ANALYSIS)
      *
-     * The alias resolution can now take place. As Architect is entirely passive, only the 
-     * actual alias resolution occurs (there is no hint collection). Indeed, it is assumed 
-     * the provided dataset already provides all the data Architect needs.
+     * The alias resolution can now take place. As Architect is entirely passive, only the actual 
+     * alias resolution occurs (there is no hint collection). Indeed, it is assumed the provided 
+     * dataset already provides all the data Architect needs. Just after, Architect performs 
+     * tree/neighborhood/statistical analysis of the final tree before going to the conversion 
+     * into (bipartite) graphs.
      */
+     
+    cout << "--- Start of alias resolution and tree analysis ---" << endl;
+    timeval aliasResoStart, aliasResoEnd;
+    gettimeofday(&aliasResoStart, NULL);
     
     // Re-does alias resolution
     Climber *crow = new Crow(env);
     crow->climb(result);
+    
+    if(outputNeighborhoods)
+    {
+        ((Crow*) crow)->outputAliases(newFileName + ".alias");
+    
+        env->openLogStream(newFileName + ".neighborhoods");
+        Climber *cat = new Cat(env);
+        cat->climb(result);
+        env->closeLogStream();
+        delete cat;
+        
+        cout << "New aliases have been written in a new file \"";
+        cout << newFileName << ".aliases\".\n";
+        cout << "Neighborhood analysis has been written in a new file \"";
+        cout << newFileName << ".neighborhoods\".\n";
+    }
+    
     delete crow;
     
-    Climber *cat = new Cat(env);
-    cat->climb(result);
-    delete cat;
-
+    if(outputL2)
+    {
+        env->openLogStream(newFileName + ".l2");
+        Climber *termite = new Termite(env);
+        termite->climb(result);
+        env->closeLogStream();
+        delete termite;
+        
+        cout << "L2 estimation (experimental) has been written in a new file \"";
+        cout << newFileName << ".l2\".\n";
+        
+        // TODO in the future: takes account of L2 estimation in graph conversion
+    }
+    
     // Computation of statistics (if asked by the user)
     if(computeStatistics)
     {
@@ -811,17 +900,40 @@ int main(int argc, char *argv[])
         cout << "\nYou will also find these statistics in a file ";
         cout << "\"Statistics " << newFileName << "\"." << endl;
     }
+    
+    cout << "--- End of alias resolution and analysis (" << getCurrentTimeStr() << ") ---" << endl;
+    gettimeofday(&aliasResoEnd, NULL);
+    unsigned long aliasResoElapsed = aliasResoEnd.tv_sec - aliasResoStart.tv_sec;
+    cout << "Elapsed time: " << elapsedTimeStr(aliasResoElapsed) << "\n" << endl;
 
     // Graph generation
     
     if(createBipNS || createNGraph || createSGraph == SUBNET_GRAPH_FROM_NS)
     {
+        cout << "--- Start of NS graph conversion ---" << endl;
+        timeval NSGraphStart, NSGraphEnd;
+        gettimeofday(&NSGraphStart, NULL);
+    
         NSProcesser *NSTranslator = new NSProcesser(env);
         
         cout << "Processing the network tree into a neighborhood - subnet bipartite ";
         cout << "graph... " << flush;
         NSTranslator->process(result);
         cout << "Done." << endl;
+        
+        cout << "Checking that the graph has a single connected component... " << flush;
+        double completeness = NSTranslator->check();
+        cout << "Done." << endl;
+        
+        if(completeness == 100.0)
+        {
+            cout << "The graph is indeed made of a single component." << endl;
+        }
+        else
+        {
+            cout << "The graph has several components (main component = " << completeness;
+            cout << "\% of the vertices)." << endl;
+        }
         
         if(createNGraph)
         {
@@ -845,16 +957,39 @@ int main(int argc, char *argv[])
         }
         
         delete NSTranslator;
+        
+        cout << "--- End of NS graph conversion (" << getCurrentTimeStr() << ") ---" << endl;
+        gettimeofday(&NSGraphEnd, NULL);
+        unsigned long NSGraphElapsed = NSGraphEnd.tv_sec - NSGraphStart.tv_sec;
+        cout << "Elapsed time: " << elapsedTimeStr(NSGraphElapsed) << "\n" << endl;
     }
     
     if(createBipERS || createRGraph || createSGraph == SUBNET_GRAPH_FROM_ERS)
     {
+        cout << "--- Start of ERS graph conversion ---" << endl;
+        timeval ERSGraphStart, ERSGraphEnd;
+        gettimeofday(&ERSGraphStart, NULL);
+    
         ERSProcesser *ERSTranslator = new ERSProcesser(env);
         
         cout << "Processing the network tree into an Ethernet switch - router - subnet double ";
         cout << "bipartite graph... " << flush;
         ERSTranslator->process(result);
         cout << "Done." << endl;
+        
+        cout << "Checking that the graph has a single connected component... " << flush;
+        double completeness = ERSTranslator->check();
+        cout << "Done." << endl;
+        
+        if(completeness == 100.0)
+        {
+            cout << "The graph is indeed made of a single component." << endl;
+        }
+        else
+        {
+            cout << "The graph has several components (main component = " << completeness;
+            cout << "\% of the vertices)." << endl;
+        }
         
         if(createRGraph)
         {
@@ -878,10 +1013,14 @@ int main(int argc, char *argv[])
         }
         
         delete ERSTranslator;
+        
+        cout << "--- End of ERS graph conversion (" << getCurrentTimeStr() << ") ---" << endl;
+        gettimeofday(&ERSGraphEnd, NULL);
+        unsigned long ERSGraphElapsed = ERSGraphEnd.tv_sec - ERSGraphStart.tv_sec;
+        cout << "Elapsed time: " << elapsedTimeStr(ERSGraphElapsed) << "\n" << endl;
     }
     
     delete result;
-    
     delete env;
     return 0;
 }

@@ -37,26 +37,11 @@ Grafter::Grafter(TreeNETEnvironment *env, list<string> setList)
         filePaths[j] = curPath;
         buildingSets[j] = new SubnetSiteSet();
         
-        // Parses the file content
-        string subnetDumpContent = "";
-        ifstream inFileSubnet;
-        inFileSubnet.open((curPath + ".subnet").c_str());
-        if(inFileSubnet.is_open())
-        {
-            subnetDumpContent.assign((std::istreambuf_iterator<char>(inFileSubnet)),
-                                     (std::istreambuf_iterator<char>()));
-            
-            inFileSubnet.close();
-        }
-        else
-        {
-            // Should not occur, but if yes, next instruction will insert zero subnet
-        }
-        
-        sp->parse(buildingSets[j], subnetDumpContent, true);
+        // Parses the file content        
+        bool res = sp->parse(curPath + ".subnet", buildingSets[j]);
         
         ostream *out = env->getOutputStream();
-        if(buildingSets[j]->getNbSubnets() > 0)
+        if(res && buildingSets[j]->getNbSubnets() > 0)
         {
             successfullyParsed++;
             (*out) << "Successfully parsed " << curPath << ".\n" << endl;

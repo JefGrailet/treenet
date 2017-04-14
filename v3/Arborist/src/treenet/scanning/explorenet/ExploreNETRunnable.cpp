@@ -72,8 +72,9 @@ void ExploreNETRunnable::run()
     if(coverage != NULL)
     {
         TreeNETEnvironment::consoleMessagesMutex.lock();
-        cout << t << " is already in previously inferred subnet ";
-        cout << coverage->getInferredNetworkAddressString() << "." << endl;
+        ostream *out = env->getOutputStream();
+        (*out) << t << " is already in previously inferred subnet ";
+        (*out) << coverage->getInferredNetworkAddressString() << "." << endl;
         
         // Finds and gives TTL to that target in IP table
         list<SubnetSiteNode*> *nodes = coverage->getSubnetIPList();
@@ -96,9 +97,28 @@ void ExploreNETRunnable::run()
         {
             if(tTTL != 0)
                 entry->setTTL(tTTL);
-            else
-                entry->setTTL(minTTL + 1); // Pivot TTL
+            else // Pivot TTL
+            {
+                // Status of coverage subnet is checked, just in case.
+                unsigned short status = coverage->getStatus();
+                if(status == SubnetSite::ACCURATE_SUBNET || status == SubnetSite::ODD_SUBNET)
+                   entry->setTTL(minTTL + 1);
+                else
+                   entry->setTTL(minTTL);
+            }
         }
+        
+        /*
+         * N.B. (April 2017): since the encompassing subnet was either obtained straight from 
+         * ExploreNET module or through expansion, the encompassed IP either:
+         * -is already in the inferred subnet through probing, 
+         * -was probed at some point during the refinement of the encompassing subnet and is 
+         *  necessarily located farther than the contra-pivot TTL, therefore at pivot IP. If it 
+         *  is actually farther in the real network, then it means either the contra-pivot IP(s) 
+         *  of the encompassing subnet should have been found earlier (something which is very 
+         *  hard to infer without a groundtruth; potential improvement for future TreeNET 
+         *  versions), either the encompassed IP is an (undetected) outlier.
+         */
         
         TreeNETEnvironment::consoleMessagesMutex.unlock();
         sssMutex.unlock();

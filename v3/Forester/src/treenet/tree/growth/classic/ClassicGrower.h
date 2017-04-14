@@ -28,12 +28,27 @@ public:
 
 protected:
 
+    /**** Fields ****/
+
     // Depth map for tree construction, and the tree being grown
     list<NetworkTreeNode*> *depthMap;
     NetworkTree *tree;
     
     // List of new subnet map entries (will be moved to the map in a Soil object)
     list<SubnetMapEntry*> newSubnetMapEntries;
+    
+    /**** Private methods for route repairment and analysis ****/
+    
+    // Method to count the amount of incomplete routes among a list of subnets.
+    unsigned int countIncompleteRoutes();
+    
+    // Repairment of a route (see prepare()); returns the amount of replaced 0.0.0.0's
+    unsigned short repairRouteOffline(SubnetSite *ss);
+    
+    // Evaluates route stretching and route cycling and mitigates them
+    void postProcessRoutes();
+    
+    /**** Private methods for tree construction ****/
     
     // Method to insert a subnet in the tree.
     void insert(SubnetSite *subnet);
@@ -46,9 +61,6 @@ protected:
      */
     
     void prune(NetworkTreeNode *cur, NetworkTreeNode *prev, unsigned short depth);
-    
-    // Completes the route to a given subnet with information present in the tree.
-    void repairRoute(SubnetSite *ss);
     
     // Static methods to create a branch and to visit one to list subnets (respectively)
     static NetworkTreeNode *createBranch(SubnetSite *subnet, unsigned short depth);

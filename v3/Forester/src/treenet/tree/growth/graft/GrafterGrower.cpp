@@ -88,8 +88,8 @@ void GrafterGrower::insert(SubnetSite *subnet)
     list<NetworkTreeNode*> *map = this->depthMap;
 
     // Gets route information of the new subnet
-    RouteInterface *route = subnet->getRoute();
-    unsigned short routeSize = subnet->getRouteSize();
+    unsigned short routeSize;
+    RouteInterface *route = subnet->getFinalRoute(&routeSize);
     
     // Finds the deepest node which occurs in the route of current subnet
     NetworkTreeNode *insertionPoint = NULL;
@@ -318,8 +318,8 @@ void GrafterGrower::prune(NetworkTreeNode *cur, NetworkTreeNode *prev, unsigned 
 
 NetworkTreeNode *GrafterGrower::createBranch(SubnetSite *subnet, unsigned short depth)
 {
-    RouteInterface *route = subnet->getRoute();
-    unsigned short routeSize = subnet->getRouteSize();
+    unsigned short routeSize;
+    RouteInterface *route = subnet->getFinalRoute(&routeSize);
     
     // If current depth minus 1 equals the route size, then we just have to create a leaf
     if((depth - 1) == routeSize)
@@ -346,8 +346,8 @@ NetworkTreeNode *GrafterGrower::createBranch(SubnetSite *subnet, unsigned short 
 bool GrafterGrower::matchesTrunk(SubnetSite *subnet)
 {
     // Gets route details
-    unsigned short routeSize = subnet->getRouteSize();
-    RouteInterface *route = subnet->getRoute();
+    unsigned short routeSize;
+    RouteInterface *route = subnet->getFinalRoute(&routeSize);
 
     // Goes through the main trunk
     NetworkTreeNode *trunkEnd = tree->getRoot();
@@ -374,8 +374,8 @@ bool GrafterGrower::isGraftable(SubnetSite *ss,
                                 InetAddress **newPrefix)
 {
     // Gets route information of the new subnet
-    RouteInterface *route = ss->getRoute();
-    unsigned short routeSize = ss->getRouteSize();
+    unsigned short routeSize;
+    RouteInterface *route = ss->getFinalRoute(&routeSize);
     
     // Finds the earliest node which has a label occurring in route (first interfaces first)
     NetworkTreeNode *matchingPoint = NULL;

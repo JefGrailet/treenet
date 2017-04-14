@@ -7,9 +7,6 @@ using std::cout;
 using std::cin;
 using std::endl;
 using std::exit;
-#include <iomanip> // For the display of inferred/refined subnets
-using std::left;
-using std::setw;
 #include <fstream>
 using std::ifstream;
 using std::ofstream;
@@ -54,6 +51,7 @@ using std::iterator;
 #include "treenet/tree/climbers/Cuckoo.h"
 #include "treenet/tree/climbers/Crow.h"
 #include "treenet/tree/climbers/Cat.h"
+#include "treenet/tree/climbers/Termite.h"
 
 const static unsigned short REDO_MODE_NOTHING = 0;
 const static unsigned short REDO_MODE_ALIASES = 1;
@@ -127,62 +125,52 @@ void printInfo()
     cout << "implemented but not yet validated. It also has the advantage of being entirely\n";
     cout << "passive.\n";
     cout << "\n";
-    cout << "2) (Optional) Paris traceroute\n";
+    cout << "2) (Optional) Neighborhood inference\n";
+    cout << "------------------------------------\n";
+    cout << "\n";
+    cout << "This step can be decomposed in two separate steps: traceroute and network tree\n";
+    cout << "construction. In the former, Paris traceroute is ran towards a live IP of each\n";
+    cout << "subnet to obtain a route for each inferred (and refined) subnet. This step\n";
+    cout << "also uses multi-threading to speed up the process and multiple techniques\n";
+    cout << "(both offline and online) to mitigate traceroute anomalies. A new .subnet\n";
+    cout << "output file is then produced to provide the new routes. Next, the subnet and\n";
+    cout << "route data is used to build the network tree that will locate subnets with\n";
+    cout << "respect to each other and isolate neighborhoods. This part is entirely passive\n";
+    cout << "(i.e., no probing). In addition to the new .subnet output file, this step also\n";
+    cout << "produces a .tree output file which provides a text representation of the tree\n";
+    cout << "structure.\n";
+    cout << "\n";
+    cout << "In Forester, the traceroute part is optional as the provided input can already\n";
+    cout << "have route data. The user can however request Forester to re-run this part of\n";
+    cout << "TreeNET along alias resolution because of a previous emergency stop or major\n";
+    cout << "networking issues. The traceroute also has some additionnal steps in Forester,\n";
+    cout << "like re-evaluating distances in TTL and (contra-)pivot interfaces.\n";
+    cout << "\n";
+    cout << "3) (Optional) Alias resolution\n";
     cout << "------------------------------\n";
     cout << "\n";
-    cout << "If asked by the user, Forester re-does the Paris traceroute step as done by\n";
-    cout << "Arborist. However, this step is quite different than in Arborist, because the\n";
-    cout << "potential change of vantage point (or VP) might result in completely different\n";
-    cout << "distances (in TTL). Because of that, Forester does Paris traceroute by forward\n";
-    cout << "probing to the pivot IP of a target subnet in order to estimate the distance\n";
-    cout << "at the same time. It also double checks the contra-pivot IP(s) to re-position\n";
-    cout << "the subnet if needed: changing of VP might also change the contra-pivot IP in\n";
-    cout << "some situations.\n";
+    cout << "The inferred neighborhoods are used to isolate candidate IPs for alias\n";
+    cout << "resolution, which are probed again to obtain alias resolution \"hints\" - data\n";
+    cout << "used to fingerprint each candidate and later select the best alias resolution\n";
+    cout << "method to use for a given set of alias candidates. It is only after this final\n";
+    cout << "probing task that TreeNET carries out the actual alias resolution by analyzing\n";
+    cout << "each neighborhood separately. At the end of this step, several output files\n";
+    cout << "are produced:\n";
+    cout << "-a .ip file, providing all responsive IPs (both from pre-scanning and others\n";
+    cout << " appearing in routes),\n";
+    cout << "-a .fingerprint file, listing all candidate IPs for alias resolution and their\n";
+    cout << " respective fingerprint,\n";
+    cout << "-an .alias file, which provides all the aliases that were obtained,\n";
+    cout << "-a .neighborhoods file, which provides a detailed analysis of each\n";
+    cout << " neighborhood as seen in the tree, along aliasing details.\n";
+    cout << "The hint collection requires probing, but analysis is entirely passive.\n";
     cout << "\n";
-    cout << "3) Network tree construction\n";
-    cout << "----------------------------\n";
-    cout << "\n";
-    cout << "Forester builds the network tree with the data it got from parsing and Paris\n";
-    cout << "traceroute (if the user asked the program to re-do it) with the same method as\n";
-    cout << "used in Arborist. This step is entirely passive and is a pre-requisite for\n";
-    cout << "alias resolution.\n";
-    cout << "\n";
-    cout << "4) (Optional) Alias resolution hints collection\n";
-    cout << "-----------------------------------------------\n";
-    cout << "\n";
-    cout << "The network tree is used to isolate candidate IPs for alias resolution,\n";
-    cout << "which are probed again to obtain alias resolution \"hints\" - data that will\n";
-    cout << "help to fingerprint them and select the best alias resolution method to\n";
-    cout << "associate together IPs bordering a same neighborhood.\n";
-    cout << "\n";
-    cout << "This step only occurs if the user explicitely asks the program to re-collect\n";
-    cout << "these hints, rather than using the data available in the IP dictionnary. It\n";
-    cout << "also produces a new .ip output file.\n";
-    cout << "\n";
-    cout << "5) (Optional) Alias resolution\n";
-    cout << "------------------------------\n";
-    cout << "\n";
-    cout << "The data provided in the input files or collected at the previous step (if the\n";
-    cout << "user asked for data re-collection) is used to carry out the actual alias\n";
-    cout << "resolution, maybe with edited parameters (-x, -y and -z options, cf. usage),\n";
-    cout << "if requested by the user via any of the non-default re-do modes. As a\n";
-    cout << "consequence, Forester produces new .alias and .fingerprint output files. This\n";
-    cout << "step is entirely passive.\n";
-    cout << "\n";
-    cout << "6) (Semi-optional) Network tree display and analysis\n";
-    cout << "----------------------------------------------------\n";
-    cout << "\n";
-    cout << "Forester displays the structure of the tree in console. Unlike Arborist, this\n";
-    cout << "step is systematical and not bound the display mode. Indeed, in Arborist, the\n";
-    cout << "tree structure is only showed if the display mode is set to \"slightly verbose\"\n";
-    cout << "or an even more verbose mode.\n";
-    cout << "\n";
-    cout << "However, the network tree in-depth analysis, in which every relevant\n";
-    cout << "neighborhood is described and analyzed in details, is optional in Forester and\n";
-    cout << "can be requested via an optional flag (see usage). This is because the typical\n";
-    cout << "usage of Forester consists in fixing or completing existing data, rather than\n";
-    cout << "analyzing it (which is the responsibility of Architect). This option is\n";
-    cout << "nevertheless still relevant in some situations.\n";
+    cout << "Again, in Forester, re-doing alias resolution (either the actual alias\n";
+    cout << "resolution alone, either both hint collection and actual alias resolution) is\n";
+    cout << "not mandatory as the input data can already have everything. The user can\n";
+    cout << "nevertheless request Forester to re-run (partially or totally) this step\n";
+    cout << "to fix alias resolution hints or re-conduct the actual alias resolution with\n";
+    cout << "different parameters.\n";
     cout << "\n";
     
     cout.flush();
@@ -241,12 +229,6 @@ void printUsage()
     cout << "  necessarily the same as the one who measured the subnet. For the same\n";
     cout << "  reason, it also checks the contra-pivot interface(s) to re-position the IPs\n";
     cout << "  of the whole subnet if necessary.\n";
-    cout << "\n";
-    cout << "-n      --neighborhood-analysis             None (flag)\n";
-    cout << "\n";
-    cout << "Unlike Arborist, Forester does not systematically analyze the final network\n";
-    cout << "tree to analyze each neighborhood. Add this flag to your command line to ask\n";
-    cout << "for such an analysis at the end of the execution.\n";
     cout << "\n";
     cout << "-o      --parsing-omit-merging              None (flag)\n";
     cout << "\n";
@@ -402,6 +384,17 @@ void printUsage()
     cout << "  as redirecting the console output to files might produce unnecessarily large\n";
     cout << "  files.\n";
     cout << "\n";
+    cout << "-k      --external-logs                     None (flag)\n";
+    cout << "\n";
+    cout << "Add this flag to your command line to place the different logs in separate\n";
+    cout << "output files rather than having them in the main console output. The goal of\n";
+    cout << "this feature is to allow the user to have a short summary of the execution of\n";
+    cout << "Forester at the end (to learn quickly elapsed time for each phase, amount of\n";
+    cout << "probes, etc.) while probing details remain accessible in separate files. Given\n";
+    cout << "[label], the label used for output files (either edited with -l or set\n";
+    cout << "by default to dd-mm-yyyy hh:mm:ss), the logs will be named Log_[label]_[phase]\n";
+    cout << "where [phase] is either: grafting, neighborhood_inference or alias_resolution.\n";
+    cout << "\n";
     cout << "-c      --credits                           None (flag)\n";
     cout << "\n";
     cout << "Add this flag to your command line to display the version of Forester and some\n";
@@ -429,11 +422,72 @@ void printVersion()
     cout << "Version and credits\n";
     cout << "===================\n";
     cout << "\n";
-    cout << "TreeNET v3.0 \"Forester\", written by Jean-François Grailet (10 - 11/2016).\n";
+    cout << "TreeNET v3.2 \"Forester\", written by Jean-François Grailet (03/2017).\n";
     cout << "Based on ExploreNET version 2.1, copyright (c) 2013 Mehmet Engin Tozal.\n";
     cout << "\n";
     
     cout.flush();
+}
+
+// Simple function to get the current time as a string object.
+
+string getCurrentTimeStr()
+{
+    time_t rawTime;
+    struct tm *timeInfo;
+    char buffer[80];
+
+    time(&rawTime);
+    timeInfo = localtime(&rawTime);
+
+    strftime(buffer, 80, "%d-%m-%Y %T", timeInfo);
+    string timeStr(buffer);
+    
+    return timeStr;
+}
+
+// Simple function to convert an elapsed time (in seconds) into days/hours/mins/secs format
+
+string elapsedTimeStr(unsigned long elapsedSeconds)
+{
+    if(elapsedSeconds == 0)
+    {
+        return "less than one second";
+    }
+
+    unsigned short secs = (unsigned short) elapsedSeconds % 60;
+    unsigned short mins = (unsigned short) (elapsedSeconds / 60) % 60;
+    unsigned short hours = (unsigned short) (elapsedSeconds / 3600) % 24;
+    unsigned short days = (unsigned short) elapsedSeconds / 86400;
+    
+    stringstream ss;
+    if(days > 0)
+    {
+        if(days > 1)
+            ss << days << " days ";
+        else
+            ss << "1 day ";
+    }
+    if(hours > 0)
+    {
+        if(hours > 1)
+            ss << hours << " hours ";
+        else
+            ss << "1 hour ";
+    }
+    if(mins > 0)
+    {
+        if(mins > 1)
+            ss << mins << " minutes ";
+        else
+            ss << "1 minute ";
+    }
+    if(secs > 1)
+        ss << secs << " seconds";
+    else
+        ss << secs << " second";
+    
+    return ss.str();    
 }
 
 // Main function; deals with inputs and launches thread(s)
@@ -454,9 +508,9 @@ int main(int argc, char *argv[])
     bool doubleProbe = false;
     bool useFixedFlowID = true;
     unsigned short redoMode = REDO_MODE_NOTHING;
-    bool neighborhoodAnalysis = false;
     bool parsingOmitMerging = false;
     unsigned short displayMode = TreeNETEnvironment::DISPLAY_MODE_LACONIC;
+    bool kickLogs = false;
     unsigned short nbThreads = 256;
     string labelOutputFiles = ""; // Gets a default value later if not set by user.
     
@@ -485,7 +539,7 @@ int main(int argc, char *argv[])
                 case 'f':
                 case 'h':
                 case 'i':
-                case 'n':
+                case 'k':
                 case 'o':
                 case 's':
                     break;
@@ -524,10 +578,9 @@ int main(int argc, char *argv[])
      
     int opt = 0;
     int longIndex = 0;
-    const char* const shortOpts = "a:b:cd:e:fhil:m:nop:r:st:v:w:x:y:z:";
+    const char* const shortOpts = "a:b:cd:e:fhikl:m:op:r:st:v:w:x:y:z:";
     const struct option longOpts[] = {
             {"redo-mode", required_argument, NULL, 'm'}, 
-            {"neighborhood-analysis", no_argument, NULL, 'n'}, 
             {"parsing-omit-merging", no_argument, NULL, 'o'}, 
             {"probing-egress-interface", required_argument, NULL, 'e'}, 
             {"probing-no-fixed-flow", no_argument, NULL, 'f'}, 
@@ -544,9 +597,11 @@ int main(int argc, char *argv[])
             {"alias-resolution-error-tolerance", required_argument, NULL, 'z'}, 
             {"label-output", required_argument, NULL, 'l'}, 
             {"verbosity", required_argument, NULL, 'v'}, 
+            {"external-logs", no_argument, NULL, 'k'}, 
             {"credits", no_argument, NULL, 'c'}, 
             {"help", no_argument, NULL, 'h'}, 
-            {"info", no_argument, NULL, 'i'}
+            {"info", no_argument, NULL, 'i'},
+            {NULL, 0, NULL, 0}
     };
     
     string optargSTR;
@@ -574,7 +629,7 @@ int main(int argc, char *argv[])
                 case 'f':
                 case 'h':
                 case 'i':
-                case 'n':
+                case 'k':
                 case 'o':
                 case 's':
                     break;
@@ -603,9 +658,6 @@ int main(int argc, char *argv[])
                         cout << "out of [0,3]) was provided. Forester will not re-compute ";
                         cout << "anything.\n" << endl;
                     }
-                    break;
-                case 'n':
-                    neighborhoodAnalysis = true;
                     break;
                 case 'o':
                     parsingOmitMerging = true;
@@ -798,6 +850,9 @@ int main(int argc, char *argv[])
                         cout << "mode (default mode).\n" << endl;
                     }
                     break;
+                case 'k':
+                    kickLogs = true;
+                    break;
                 case 'c':
                     displayVersion = true;
                     break;
@@ -922,6 +977,7 @@ int main(int argc, char *argv[])
 
     // Initialization of the environment
     TreeNETEnvironment *env = new TreeNETEnvironment(&cout, 
+                                                     kickLogs, 
                                                      !parsingOmitMerging, 
                                                      probingProtocol, 
                                                      doubleProbe, 
@@ -942,7 +998,7 @@ int main(int argc, char *argv[])
     SubnetSiteSet *set = env->getSubnetSet();
     
     // Some welcome message
-    cout << "TreeNET v3.0 \"Forester\"\n" << endl;
+    cout << "TreeNET v3.2 \"Forester\" (time at start: " << getCurrentTimeStr() << ")\n" << endl;
     
     /*
      * INPUT FILE PARSING
@@ -951,8 +1007,6 @@ int main(int argc, char *argv[])
      * dictionnary dump) are read and parsed into the subnet set and the IP dictionnary of the 
      * current instance of TreeNET "Forester".
      */
-
-    cout << "Parsing input file(s)...\n" << endl;
 
     // Listing input dump file(s)
     bool graftingMode = false; // Triggered when multiple files are input
@@ -1006,72 +1060,39 @@ int main(int argc, char *argv[])
     // Single input file: both .subnet and .ip dumps are parsed
     if(!graftingMode)
     {
-        // Parsing utilities
+        cout << "--- Start of input file parsing ---" << endl;
+        timeval parsingStart, parsingEnd;
+        gettimeofday(&parsingStart, NULL);
+        
+        string subnetDumpPath = inputsStr + ".subnet";
         SubnetParser *sp = new SubnetParser(env);
-        IPDictionnaryParser *idp = new IPDictionnaryParser(env);
-    
-        // Subnet dump
-        string subnetDumpContent = "";
-        ifstream inFileSubnet;
-        inFileSubnet.open((inputsStr + ".subnet").c_str());
-        bool subnetDumpOk = false;
-        if(inFileSubnet.is_open())
+        bool subnetParsingResult = sp->parse(subnetDumpPath);
+        delete sp;
+        
+        if(subnetParsingResult && set->getNbSubnets() > 0)
         {
-            subnetDumpContent.assign((std::istreambuf_iterator<char>(inFileSubnet)),
-                                     (std::istreambuf_iterator<char>()));
+            string ipDictPath = inputsStr + ".ip";
             
-            inFileSubnet.close();
-            subnetDumpOk = true;
+            IPDictionnaryParser *idp = new IPDictionnaryParser(env);
+            bool ipParsingResult = idp->parse(ipDictPath);
+            delete idp;
+            
+            if(!ipParsingResult)
+            {
+                env->fillIPDictionnary();
+            }
         }
         else
         {
-            cout << "No " << inputsStr << ".subnet to parse.\n" << endl;
+            cout << "Could not parse any subnet. Forester cannot continue and will halt now." << endl;
+            delete env;
+            return 0;
         }
         
-        if(subnetDumpOk)
-        {
-            // IP dictionnary dump
-            string IPDumpContent = "";
-            ifstream inFileIP;
-            inFileIP.open((inputsStr + ".ip").c_str());
-            bool IPDumpOk = false;
-            if(inFileIP.is_open())
-            {
-                IPDumpContent.assign((std::istreambuf_iterator<char>(inFileIP)),
-                                     (std::istreambuf_iterator<char>()));
-                
-                inFileIP.close();
-                IPDumpOk = true;
-            }
-            
-            // Code also checks the amount of subnets before/after parsing
-            size_t curNbSubnets = set->getSubnetSiteList()->size();
-            cout << "Parsing " << inputsStr << ".subnet..." << endl;
-            sp->parse(set, subnetDumpContent, !IPDumpOk);
-            cout << "Parsing of " << inputsStr << ".subnet completed.\n" << endl;
-            size_t newNbSubnets = set->getSubnetSiteList()->size();
-            
-            if(newNbSubnets > curNbSubnets)
-            {
-                cout << "Parsing " << inputsStr << ".ip..." << endl;
-                idp->parse(IPDumpContent);
-                cout << "Parsing of " << inputsStr << ".ip completed.\n" << endl;
-            }
-            else if(IPDumpOk)
-            {
-                cout << "No subnet were found. " << inputsStr << ".ip parsing has been ";
-                cout << "skipped.\n" << endl;
-            }
-            else
-            {
-                cout << "No " << inputsStr << ".ip to parse. IP Dictionnary has been ";
-                cout << "partially completed with the IPs mentioned in ";
-                cout << inputsStr << ".subnet.\n" << endl;
-            }
-        }
-        
-        delete sp;
-        delete idp;
+        cout << "--- End of input file(s) parsing (" << getCurrentTimeStr() << ") ---" << endl;
+        gettimeofday(&parsingEnd, NULL);
+        unsigned long parsingElapsed = parsingEnd.tv_sec - parsingStart.tv_sec;
+        cout << "Elapsed time: " << elapsedTimeStr(parsingElapsed) << "\n" << endl;
     }
     else
     {
@@ -1089,8 +1110,15 @@ int main(int argc, char *argv[])
          * towards a subnet should stay the same.
          */
          
-        cout << "Multiple input files were recognized. TreeNET Reader will now proceed to ";
+        cout << "Multiple input files were recognized. TreeNET Forester will now proceed to ";
         cout << "merge them together into a single dataset.\n" << endl;
+        
+        cout << "--- Start of grafting ---" << endl;
+        timeval graftingStart, graftingEnd;
+        gettimeofday(&graftingStart, NULL);
+        
+        if(kickLogs)
+            env->openLogStream("Log_" + newFileName + "_grafting");
         
         try
         {
@@ -1104,6 +1132,14 @@ int main(int argc, char *argv[])
             robin->climb(result);
             delete robin;
             
+            if(kickLogs)
+                env->closeLogStream();
+            
+            cout << "--- End of grafting (" << getCurrentTimeStr() << ") ---" << endl;
+            gettimeofday(&graftingEnd, NULL);
+            unsigned long graftingElapsed = graftingEnd.tv_sec - graftingStart.tv_sec;
+            cout << "Elapsed time: " << elapsedTimeStr(graftingElapsed) << "\n" << endl;
+            
             // Save subnets with adapted routes
             result->outputSubnets(newFileName + ".subnet");
             cout << "Merged subnet sets with adapted routes have been saved in ";
@@ -1114,12 +1150,11 @@ int main(int argc, char *argv[])
             {
                 grafter->outputScrappedSubnets("Scrapped "+ newFileName + ".subnet");
                 cout << "Scrapped subnets (i.e., they could not be grafted) have been saved in ";
-                cout << "an output file \"Scrapped " << newFileName << ".subnet\".\n" << endl;
+                cout << "an output file \"Scrapped " << newFileName << ".subnet\"." << endl;
             }
             
-            cout << "Grafting ended. TreeNET Forester will stop running here.\n\n";
             cout << "It is strongly recommended to re-run TreeNET Forester with the new dataset ";
-            cout << "as input to re-collect alias resolution hints before analyzing the data.";
+            cout << "to re-do alias resolution.";
             cout << endl;
             
             delete grafter;
@@ -1129,40 +1164,20 @@ int main(int argc, char *argv[])
         }
         catch(BadInputException &bie)
         {
-            cout << "TreeNET cannot go on with grafting if less than 2 files provide accurately ";
+            if(kickLogs)
+                env->closeLogStream();
+            
+            cout << "--- End of grafting (" << getCurrentTimeStr() << ") ---" << endl;
+            gettimeofday(&graftingEnd, NULL);
+            unsigned long graftingElapsed = graftingEnd.tv_sec - graftingStart.tv_sec;
+            cout << "Elapsed time: " << elapsedTimeStr(graftingElapsed) << "\n" << endl;
+        
+            cout << "TreeNET could not perform grafting as less than 2 files provide accurately ";
             cout << "formatted subnets. Please check your input files before re-trying." << endl;
+            
             delete env;
             return 1;
         }
-    }
-        
-    // Outputting results with the set (simple display).
-    cout << left << setw(25) << "Subnet";
-    cout << left << setw(15) << "Class" << endl;
-    cout << left << setw(25) << "------";
-    cout << left << setw(15) << "-----" << endl;
-    
-    list<SubnetSite*> *ssList = set->getSubnetSiteList();
-    for(list<SubnetSite*>::iterator it = ssList->begin(); it != ssList->end(); ++it)
-    {
-        cout << left << setw(25) << (*it)->getInferredNetworkAddressString();
-        cout << left << setw(15);
-        switch((*it)->getStatus())
-        {
-            case SubnetSite::ACCURATE_SUBNET:
-                cout << "Accurate";
-                break;
-            case SubnetSite::ODD_SUBNET:
-                cout << "Odd";
-                break;
-            case SubnetSite::SHADOW_SUBNET:
-                cout << "Shadow";
-                break;
-            default:
-                cout << "Undefined";
-                break;
-        }
-        cout << endl;
     }
     
     Grower *g = NULL;
@@ -1181,7 +1196,21 @@ int main(int argc, char *argv[])
          * of info. The construction itself can be enterily passive (i.e., no probing) or involve 
          * additionnal probing work.
          */
-         
+        
+        cout << "--- Start of neighborhood inference ---" << endl;
+        timeval nInferenceStart, nInferenceEnd;
+        gettimeofday(&nInferenceStart, NULL);
+        
+        ostream *inferenceStream = &cout;
+        if(kickLogs)
+        {
+            if(redoMode >= REDO_MODE_ROUTES)
+                env->openLogStream("Log_" + newFileName + "_neighborhood_inference");
+            else
+                env->openLogStream("Log_" + newFileName + "_neighborhood_inference", false);
+            inferenceStream = env->getOutputStream();
+        }
+        
         g = new ClassicGrower(env);
         
         /*
@@ -1191,26 +1220,50 @@ int main(int argc, char *argv[])
         
         if(redoMode >= REDO_MODE_ROUTES)
         {
-            cout << "\nPreparing the tree growth...\n" << endl;
+            (*inferenceStream) << "Preparing the tree growth...\n" << endl;
             g->prepare();
-            cout << "Preparation complete." << endl;
+            (*inferenceStream) << "Preparation complete.\n\n" << endl;
         }
         
-        cout << "\nGrowing network tree..." << endl;
+        (*inferenceStream) << "Growing network tree..." << endl;
         
         g->grow();
         
-        // End of tree growth
-        cout << "Growth complete.\n" << endl;
+        (*inferenceStream) << "Growth complete." << endl;
         
         result = g->getResult();
         delete g;
         g = NULL;
         
-        // Simple tree display
+        if(kickLogs)
+            env->closeLogStream();
+        
+        cout << "--- End of neighborhood inference (" << getCurrentTimeStr() << ") ---" << endl;
+        gettimeofday(&nInferenceEnd, NULL);
+        unsigned long nInferenceElapsed = nInferenceEnd.tv_sec - nInferenceStart.tv_sec;
+        cout << "Elapsed time: " << elapsedTimeStr(nInferenceElapsed) << endl;
+        if(redoMode >= REDO_MODE_ROUTES)
+        {
+            double successRate = ((double) env->getTotalSuccessfulProbes() / (double) env->getTotalProbes()) * 100;
+            cout << "Total amount of probes: " << env->getTotalProbes() << endl;
+            cout << "Total amount of successful probes: " << env->getTotalSuccessfulProbes();
+            cout << " (" << successRate << "%)" << endl;
+        }
+        cout << endl;
+        env->resetProbeAmounts();
+        
+        // New save of the subnets
+        result->outputSubnets(newFileName + ".subnet");
+        
+        // Tree text display (to an output file)
+        env->openLogStream(newFileName + ".tree", false);
         Climber *robin = new Robin(env);
         robin->climb(result);
+        env->closeLogStream();
         delete robin;
+        
+        cout << "Network tree in text form has been written in a file ";
+        cout << newFileName << ".tree.\n" << endl;
         
         /*
          * ALIAS RESOLUTION
@@ -1229,41 +1282,68 @@ int main(int argc, char *argv[])
          * detailed analysis of the tree (-n flag).
          */
         
-        // Collects alias resolution hints.
+        // Re-does the full alias resolution.
         if(redoMode >= REDO_MODE_ALIAS_HINTS)
         {
-            cout << "Collecting new alias resolution hints...\n" << endl;
+            cout << "--- Start of alias resolution ---" << endl;
+            timeval aliasResoStart, aliasResoEnd;
+            gettimeofday(&aliasResoStart, NULL);
             
             env->getIPTable()->clearAliasHints();
+            
+            if(kickLogs)
+                env->openLogStream("Log_" + newFileName + "_alias_resolution");
             
             cuckoo = new Cuckoo(env);
             cuckoo->climb(result);
             delete cuckoo;
             cuckoo = NULL;
             
-            if(displayMode < TreeNETEnvironment::DISPLAY_MODE_DEBUG)
-                cout << endl; // Unnecessary outside debug mode.
-        }
-        
-        // Re-does alias resolution (+ save in output file if asked).
-        Climber *crow = new Crow(env);
-        crow->climb(result);
-        if(redoMode >= REDO_MODE_ALIASES)
+            Climber *crow = new Crow(env);
+            crow->climb(result);
             ((Crow *) crow)->outputAliases(newFileName + ".alias");
-        delete crow;
+            delete crow;
+            
+            if(kickLogs)
+                env->closeLogStream();
+            
+            cout << "--- End of alias resolution (" << getCurrentTimeStr() << ") ---" << endl;
+            gettimeofday(&aliasResoEnd, NULL);
+            unsigned long aliasResoElapsed = aliasResoEnd.tv_sec - aliasResoStart.tv_sec;
+            double successRate = ((double) env->getTotalSuccessfulProbes() / (double) env->getTotalProbes()) * 100;
+            cout << "Elapsed time: " << elapsedTimeStr(aliasResoElapsed) << endl;
+            cout << "Total amount of probes: " << env->getTotalProbes() << endl;
+            cout << "Total amount of successful probes: " << env->getTotalSuccessfulProbes();
+            cout << " (" << successRate << "%)\n" << endl;
+            env->resetProbeAmounts();
+        }
+        // Re-does only the "actual" alias resolution (+ save of the new .alias file if asked).
+        else
+        {
+            Climber *crow = new Crow(env);
+            crow->climb(result);
+            if(redoMode >= REDO_MODE_ALIASES)
+                ((Crow *) crow)->outputAliases(newFileName + ".alias");
+            delete crow;
+        }
         
         // Internal node exploration and actual alias resolution are only done now.
-        if(neighborhoodAnalysis)
-        {
-            Climber *cat = new Cat(env);
-            cat->climb(result);
-            delete cat;
-        }
+        env->openLogStream(newFileName + ".neighborhoods", false);
+        Climber *cat = new Cat(env);
+        cat->climb(result);
+        env->closeLogStream();
+        delete cat;
         
-        // Outputs the new files and/or advertises they have been produced.
+        // L2 inference (experimental)
+        env->openLogStream(newFileName + ".l2", false);
+        Climber *termite = new Termite(env);
+        termite->climb(result);
+        env->closeLogStream();
+        delete termite;
+        
+        // Outputs the new files and advertises they have been produced.
         if(redoMode >= REDO_MODE_ROUTES)
         {
-            result->outputSubnets(newFileName + ".subnet");
             cout << "Inferred subnets with new routes have been saved in ";
             cout << newFileName << ".subnet." << endl;
         }
@@ -1285,6 +1365,12 @@ int main(int argc, char *argv[])
             cout << newFileName << ".fingerprint." << endl;
         }
         
+        cout << "Neighborhood analysis has been written in a file ";
+        cout << newFileName << ".neighborhoods." << endl;
+        
+        cout << "L2 estimation (experimental) has been written in a file ";
+        cout << newFileName << ".l2." << endl;
+
         delete result;
         result = NULL;
     }

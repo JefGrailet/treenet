@@ -28,8 +28,11 @@ refinementStatus(0),
 refinementContrapivot(0),
 refinementTTL1(0),
 refinementTTL2(0),
-routeSize(0),
-route(NULL)
+routeTarget(0), 
+routeSize(0), 
+processedRouteSize(0), 
+route(NULL), 
+processedRoute(NULL)
 {
 
 }
@@ -39,6 +42,8 @@ SubnetSite::~SubnetSite()
     clearIPlist();
     if(route != NULL)
         delete[] route;
+    if(processedRoute != NULL)
+        delete[] processedRoute;
 }
 
 void SubnetSite::clearIPlist()
@@ -728,27 +733,55 @@ InetAddress SubnetSite::getPivot()
     unsigned short shortestTTL = this->refinementTTL1;
     for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
     {
-        if((*i) != NULL && (*i)->TTL == shortestTTL + 1)
+        if((*i) != NULL && (*i)->TTL == shortestTTL + 1 && !(*i)->addedAtFilling)
         {
             return (*i)->ip;
         }
     }
     
-    // Null if no result (very unlikely)
+    // IP 0 if no result (unlikely)
     return InetAddress(0);
 }
 
 bool SubnetSite::hasCompleteRoute()
 {
-    for(unsigned short i = 0; i < this->routeSize; ++i)
-    {
-        unsigned short s = this->route[i].state;
-        if(s == RouteInterface::NOT_MEASURED || s == RouteInterface::MISSING)
-        {
+    for(unsigned short i = 0; i < routeSize; ++i)
+        if(route[i].ip == InetAddress(0))
             return false;
-        }
-    }
     return true;
+}
+
+bool SubnetSite::hasIncompleteRoute()
+{
+    for(unsigned short i = 0; i < routeSize; ++i)
+        if(route[i].ip == InetAddress(0))
+            return true;
+    return false;
+}
+
+unsigned short SubnetSite::countMissingHops()
+{
+    unsigned short res = 0;
+    for(unsigned short i = 0; i < routeSize; ++i)
+        if(route[i].ip == InetAddress(0))
+            res++;
+    return res;
+}
+
+RouteInterface* SubnetSite::getFinalRoute(unsigned short *finalRouteSize)
+{
+    if(processedRouteSize > 0 && processedRoute != NULL)
+    {
+        (*finalRouteSize) = processedRouteSize;
+        return processedRoute;
+    }
+    if(routeSize > 0 && route != NULL)
+    {
+        (*finalRouteSize) = routeSize;
+        return route;
+    }
+    (*finalRouteSize) = 0;
+    return NULL;
 }
 
 bool SubnetSite::isAnArtifact()
@@ -761,11 +794,11 @@ bool SubnetSite::isAnArtifact()
 string SubnetSite::toString()
 {
     stringstream ss;
-    unsigned short status = this->refinementStatus;
+    unsigned short status = refinementStatus;
     
     if(status == SubnetSite::ACCURATE_SUBNET || status == SubnetSite::SHADOW_SUBNET || status == SubnetSite::ODD_SUBNET)
     {
-        ss << this->getInferredNetworkAddressString() << "\n";
+        ss << getInferredNetworkAddressString() << "\n";
         if(status == SubnetSite::ACCURATE_SUBNET)
             ss << "ACCURATE\n";
         else if(status == SubnetSite::SHADOW_SUBNET)
@@ -792,7 +825,7 @@ string SubnetSite::toString()
              * This condition is present in the original ExploreNET.
              */
             
-            if((*i)->prefix >= this->inferredSubnetPrefix)
+            if((*i)->prefix >= inferredSubnetPrefix)
             {
                 if(guardian)
                     ss << ", ";
@@ -806,27 +839,40 @@ string SubnetSite::toString()
         }
         ss << "\n";
         
-        // Writes route
-        if(this->routeSize > 0 && this->route != NULL)
+        // Writes (observed) route
+        if(routeSize > 0 && route != NULL)
         {
             guardian = false;
-            for(unsigned int i = 0; i < this->routeSize; i++)
+            for(unsigned int i = 0; i < routeSize; i++)
             {
                 if(guardian)
                     ss << ", ";
                 else
                     guardian = true;
                 
-                unsigned short curState = this->route[i].state;
-                if(curState != RouteInterface::NOT_MEASURED && curState != RouteInterface::MISSING)
+                unsigned short curState = route[i].state;
+                if(route[i].ip != InetAddress(0))
                 {
-                    ss << this->route[i].ip;
-                    if(curState == RouteInterface::REPAIRED)
-                        ss << " [Repaired]";
+                    ss << route[i].ip;
+                    if(curState == RouteInterface::REPAIRED_1)
+                        ss << " [Repaired-1]";
+                    else if(curState == RouteInterface::REPAIRED_2)
+                        ss << " [Repaired-2]";
+                    else if(curState == RouteInterface::LIMITED)
+                        ss << " [Limited]";
+                    else if(curState == RouteInterface::STRETCHED)
+                        ss << " [Stretched]";
+                    else if(curState == RouteInterface::CYCLE)
+                        ss << " [Cycle]";
+                    else if(curState == RouteInterface::PREDICTED)
+                        ss << " [Predicted]";
+                    // Predicted is unused in Arborist, since there is no grafting
                 }
                 else
                 {
-                    if(curState == RouteInterface::MISSING)
+                    if(curState == RouteInterface::ANONYMOUS)
+                        ss << "Anonymous";
+                    else if(curState == RouteInterface::MISSING)
                         ss << "Missing";
                     else
                         ss << "Skipped";
@@ -837,6 +883,26 @@ string SubnetSite::toString()
         else
         {
             ss << "No route\n";
+        }
+        
+        // Writes post-processed route if existing (otherwise, regular display)
+        if(processedRouteSize > 0 && processedRoute != NULL)
+        {
+            guardian = false;
+            ss << "Post-processed: ";
+            for(unsigned int i = 0; i < processedRouteSize; i++)
+            {
+                if(guardian)
+                    ss << ", ";
+                else
+                    guardian = true;
+                
+                if(processedRoute[i].ip != InetAddress(0))
+                    ss << processedRoute[i].ip;
+                else
+                    ss << "Anonymous";
+            }
+            ss << "\n";
         }
     }
     

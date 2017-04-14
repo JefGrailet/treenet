@@ -95,8 +95,9 @@ public:
     int getProbingCost() const { return this->probingCost; }
     bool getUsingFixedFlowID() const { return this->usingFixedFlowID; }
     
-    // Addition by J.-F. Grailet for TreeNET v3.0: toString() method for debug mode.
+    // Additions by J.-F. Grailet for TreeNET v3.0
     string toString();
+    bool isATimeout();
 
 protected:
 

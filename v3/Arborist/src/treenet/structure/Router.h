@@ -56,6 +56,9 @@ public:
     // Similar method, but with more aliasing details (i.e. with which method an IP was aliased)
     string toStringVerbose();
     
+    // Third toString() method, this one displays up to 3 interfaces then "..." (+ # interfaces)
+    string toStringMinimalist();
+    
     // Methods to sort and compare routers
     static bool compare(Router *r1, Router *r2);
     bool equals(Router *other);

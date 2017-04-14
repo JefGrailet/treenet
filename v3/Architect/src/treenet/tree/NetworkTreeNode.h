@@ -140,19 +140,25 @@ public:
     unsigned short getLinkage();
     
     /*
-     * List the interfaces of this node if internal. The listed interfaces are:
-     * -the interfaces listed as labels,
-     * -the contra-pivots of the children subnets.
-     * It should be noted that the list does not exactly have the number of inferred interfaces 
-     * during internals analysis. It should be identical, however, for cases where there is only 
-     * one label and only accurate and credible subnets as children.
+     * List the interfaces of this node if internal. The listed interfaces are the interfaces 
+     * listed as labels and the contra-pivot interface of the children subnets. It should be noted 
+     * that the list does not exactly have the number of inferred interfaces during internals 
+     * analysis. It should be identical, however, for cases where there is only one label and only 
+     * accurate and credible subnets as children.
+     * 
+     * Since February 2017, there is also a method to list these interfaces by last hop if the 
+     * node has multiple labels. The corresponding last hops are stored in a list passed with a 
+     * pointer.
      */
     
     list<InetAddress> listInterfaces();
+    list<list<InetAddress> > listInterfacesByLastHop(list<InetAddress> *lastHops = NULL);
     
-    // Methods to handle fingerprint lists
-    inline void storeFingerprints(list<Fingerprint> ls) { this->fingerprints = ls; }
-    inline list<Fingerprint> getFingerprints() { return this->fingerprints; }
+    // Methods to handle fingerprint lists and last hops (for hedera's)
+    inline void storeFingerprints(list<Fingerprint> ls) { this->fingerprints.push_back(ls); }
+    inline list<list<Fingerprint> > getFingerprints() { return this->fingerprints; }
+    inline void storeLastHop(InetAddress lh) { this->lastHops.push_back(lh); }
+    inline list<InetAddress> getLastHops() { return this->lastHops; }
     
     // Method to get the inferred router having a given interface. Returns NULL if no router.
     Router* getRouterHaving(InetAddress interface);
@@ -184,8 +190,16 @@ private:
      * inference will be elaborated in depth and implemented in TreeNET.
      */
     
-    // The sorted fingerprints of the alias candidates surrounding this node (when available).
-    list<Fingerprint> fingerprints;
+    /*
+     * The sorted fingerprints lists of the alias candidates surrounding this node (available only 
+     * after the end of alias resolution). Note that, as of February 2017, this is no longer a 
+     * simple list but a list of lists in order to be able to display fingerprints according to 
+     * the last hop towards the subnet(s) containing the corresponding IP interfaces when we are 
+     * dealing with an hedera. This list is also completed by a list of these last hops.
+     */
+    
+    list<list<Fingerprint> > fingerprints;
+    list<InetAddress> lastHops;
     
     // List of routers of this node after L3 inference/actual alias resolution.
     list<Router*> inferredRouters;

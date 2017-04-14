@@ -14,7 +14,7 @@ Mutex NetworkPrescanningUnit::prescannerMutex(Mutex::ERROR_CHECKING_MUTEX);
 
 NetworkPrescanningUnit::NetworkPrescanningUnit(TreeNETEnvironment *e, 
                                                NetworkPrescanner *p, 
-                                               std::list<InetAddress> IPs, 
+                                               list<InetAddress> IPs, 
                                                unsigned short lbii, 
                                                unsigned short ubii, 
                                                unsigned short lbis, 
@@ -93,7 +93,10 @@ IPsToProbe(IPs)
 NetworkPrescanningUnit::~NetworkPrescanningUnit()
 {
     if(prober != NULL)
+    {
+        env->updateProbeAmounts(prober);
         delete prober;
+    }
 }
 
 ProbeRecord *NetworkPrescanningUnit::probe(const InetAddress &dst)
@@ -133,7 +136,7 @@ void NetworkPrescanningUnit::stop()
 
 void NetworkPrescanningUnit::run()
 {
-    for(std::list<InetAddress>::iterator it = IPsToProbe.begin(); it != IPsToProbe.end(); ++it)
+    for(list<InetAddress>::iterator it = IPsToProbe.begin(); it != IPsToProbe.end(); ++it)
     {
         InetAddress curIP = *it;
         

@@ -32,7 +32,6 @@ public:
     
     // Methods to configure the prescanner
     inline void setTimeoutPeriod(TimeVal timeout) { this->timeout = timeout; }
-    inline void setTargets(list<InetAddress> targets) { this->targets = targets; }
     bool hasUnresponsiveTargets();
     void reloadUnresponsiveTargets();
     
@@ -44,6 +43,9 @@ public:
     
     // Launches a pre-scanning (i.e. probing once all IPs from targets)
     void probe();
+    
+    // Performs the whole pre-scanning phase. This slightly simplifies Main.cpp.
+    void run(list<InetAddress> targets);
     
 private:
 

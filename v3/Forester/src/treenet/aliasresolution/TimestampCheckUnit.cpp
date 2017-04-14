@@ -60,7 +60,11 @@ IPToProbe(IP)
 
 TimestampCheckUnit::~TimestampCheckUnit()
 {
-    delete prober;
+    if(prober != NULL)
+    {
+        env->updateProbeAmounts(prober);
+        delete prober;
+    }
 }
 
 void TimestampCheckUnit::stop()

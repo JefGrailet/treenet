@@ -108,7 +108,11 @@ env(e)
 
 SubnetInferrer::~SubnetInferrer()
 {
-    delete prober;
+    if(prober != NULL)
+    {
+        env->updateProbeAmounts(prober);
+        delete prober;
+    }
 }
 
 SubnetSite *SubnetInferrer::inferRemoteSubnet(const InetAddress &destinationAddress, 
@@ -416,13 +420,6 @@ bool SubnetInferrer::populateRecords(const InetAddress &dst,
         }
     }
     
-    // Registers the TTL for this IP
-    IPTableEntry *IPEntry = env->getIPTable()->lookUp(dst);
-    if(IPEntry != NULL)
-    {
-        IPEntry->setTTL(TTL);
-    }
-    
     // Stops probing if the program failed in obtaining an echo reply.
     if(firstICMPEchoReply == NULL)
     {
@@ -453,6 +450,13 @@ bool SubnetInferrer::populateRecords(const InetAddress &dst,
             msg += " is not responsive.";
             throw UnresponsiveIPException(dst, msg);
         }
+    }
+    
+    // Registers the TTL for this IP
+    IPTableEntry *IPEntry = env->getIPTable()->lookUp(dst);
+    if(IPEntry != NULL)
+    {
+        IPEntry->setTTL(TTL);
     }
     
     /**

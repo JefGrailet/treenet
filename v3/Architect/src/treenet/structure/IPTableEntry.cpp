@@ -179,7 +179,7 @@ string IPTableEntry::toStringFingerprint()
     else
         ss << "*";
     ss << ",";
-    if(this->portUnreachableSrcIP != InetAddress("0"))
+    if(this->portUnreachableSrcIP != InetAddress(0))
         ss << this->portUnreachableSrcIP;
     else
         ss << "*";

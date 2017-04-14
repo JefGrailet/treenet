@@ -64,8 +64,10 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
     uint16_t dstPort_16 = (uint16_t) dstPort;
 
     uint32_t tcpSeq_32 = (uint32_t) rand();
+    
+    this->nbProbes++;
 
-    // 1 prepare packet to send
+    // 1) Prepares packet to send
     uint32_t IPHeaderLength = DirectProber::MINIMUM_IP_HEADER_LENGTH;
     struct ip *ip = (struct ip*) buffer;
     ip->ip_v = DirectProber::DEFAULT_IP_VERSION;
@@ -143,7 +145,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
     
     // return 0;
     
-    // 2) send the SYN+ACK packet
+    // 2) Sends the SYN+ACK packet
     struct sockaddr_in to;
     memset(&to, 0, sizeof(to));
     to.sin_family = AF_INET;
@@ -397,6 +399,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
                             this->log += newRecord->toString();
                         }
                         
+                        this->nbSuccessfulProbes++;
                         return newRecord;
                     }
                 }
@@ -451,6 +454,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
                         this->log += newRecord->toString();
                     }
                     
+                    this->nbSuccessfulProbes++;
                     return newRecord;
                 }
                 else if(verbose)

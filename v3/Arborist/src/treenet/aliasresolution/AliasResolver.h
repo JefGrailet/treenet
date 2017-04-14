@@ -92,9 +92,8 @@ private:
     /* 
      * Method to perform Ally method between each member of a group of fingerprints and a given, 
      * isolated fingerprint. The purpose of this method is to check that all fingerprints grouped 
-     * for a growing alias are compatible for velocity overlap with the additionnal fingerprint 
-     * (there must be no possible rejection by Ally) if Ally does not acknowledge a possible 
-     * association between one IP of the group and the isolated IP.
+     * for a growing alias are compatible with the additionnal fingerprint (there must be no 
+     * possible rejection by Ally).
      * 
      * @param Fingerprint isolatedIP    The isolated IP
      * @param list<Fingerprint> group   The group of already aliased IPs
@@ -127,6 +126,19 @@ private:
     
     bool velocityOverlap(IPTableEntry *ip1, IPTableEntry *ip2);
     
+    /* 
+     * Just like groupAlly(), next method checks an isolated IP is compatible with a growing alias 
+     * of IPs associated with the velocity-based approach. The purpose is to check that all 
+     * fingerprints grouped in the growing alias are compatible with the additionnal fingerprint 
+     * velocity-wise.
+     * 
+     * @param Fingerprint isolatedIP    The isolated IP
+     * @param list<Fingerprint> group   The group of already aliased IPs
+     * @return unsigned short           True if the isolated IP is compatible
+     */
+    
+    bool groupVelocity(Fingerprint isolatedIP, list<Fingerprint> group);
+    
     /*
      * Method to check if two distinct IPs (given as IPTableEntry objects) can be associated 
      * with the reverse DNS method.
@@ -137,6 +149,22 @@ private:
      */
     
     bool reverseDNS(IPTableEntry *ip1, IPTableEntry *ip2);
+    
+    /*
+     * Method to apply alias resolution to a group of IPs, from a given neighborhood. The reason 
+     * why this method exists is because multi-label nodes, as of February 2017, are treated 
+     * differently than regular nodes: instead of taking all interfaces together, they are grouped 
+     * per last hop on the route to their respective subnet, and both the alias hint collection 
+     * alias resolution are applied one group at a time. Of course, in the case of a regular 
+     * neighborhood, we will provide the full list of inferred interfaces. The method returns 
+     * nothing.
+     *
+     * @param NetworkTreeNode*   neighborhood  The internal node from which the interfaces are from
+     * @param list<InetAddress>  interfaces    The interfaces to alias together
+     */
+    
+    void resolveGroup(NetworkTreeNode *neighborhood, list<InetAddress> interfaces);
+    
 };
 
 #endif /* ALIASRESOLVER_H_ */

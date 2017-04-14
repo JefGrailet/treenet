@@ -8,9 +8,7 @@
  * the ICMP reply. The results are stored within IPIDUnit, but can later be retrieved by the 
  * calling code with a IPIDTuple object created by it.
  *
- * As its name suggests, IPIDUnit is used by IPIDCollector for its probing, which itself has a 
- * AliasHintCollector object as parent. This same object must be provided in the constructor to 
- * be able to obtain a probe token.
+ * It was updated in early April 2017 to implement the new IP-ID collection scheduling strategy.
  */
 
 #ifndef IPIDUNIT_H_
@@ -41,7 +39,7 @@ public:
     
     // Constructor
     IPIDUnit(TreeNETEnvironment *env, 
-             AliasHintCollector *grandParent, 
+             AliasHintCollector *parent, 
              InetAddress IPToProbe, 
              unsigned short lowerBoundICMPid = DirectICMPProber::DEFAULT_LOWER_ICMP_IDENTIFIER,
              unsigned short upperBoundICMPid = DirectICMPProber::DEFAULT_UPPER_ICMP_IDENTIFIER,
@@ -54,7 +52,7 @@ public:
     
     // Methods to check results and get a IPIDTuple object after completion of run()
     bool hasExploitableResults();
-    IPIDTuple *getTuple();
+    inline IPIDTuple getTuple() { return resultTuple; }
     
     // Method to get the debug log of this thread
     inline string getDebugLog() { return this->log; }
@@ -65,18 +63,14 @@ private:
     TreeNETEnvironment *env;
     
     // Private fields
-    AliasHintCollector *grandParent;
+    AliasHintCollector *parent;
     InetAddress IPToProbe;
-   
+    
+    // Resulting tuple
+    IPIDTuple resultTuple;
+    
     // Debug log
     string log;
-    
-    // Private fields to maintain results
-    unsigned short probeToken;
-    unsigned long int IPID;
-    timeval timeValue;
-    bool echo;
-    unsigned char replyTTL;
     
     // Probing stuff
     DirectProber *prober;

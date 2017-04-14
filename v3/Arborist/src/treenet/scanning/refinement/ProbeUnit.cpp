@@ -102,7 +102,11 @@ log("")
 
 ProbeUnit::~ProbeUnit()
 {
-    delete prober;
+    if(prober != NULL)
+    {
+        env->updateProbeAmounts(prober);
+        delete prober;
+    }
 }
 
 ProbeRecord *ProbeUnit::probe(const InetAddress &dst, unsigned char TTL)

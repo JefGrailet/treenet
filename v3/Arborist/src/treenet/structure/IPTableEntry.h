@@ -17,6 +17,8 @@
 
 #include <string>
 using std::string;
+#include <list>
+using std::list;
 
 #include "../../common/date/TimeVal.h"
 #include "../../common/inet/InetAddress.h"
@@ -50,6 +52,19 @@ public:
     inline TimeVal getPreferredTimeout() { return this->preferredTimeout; }
     inline void setTTL(unsigned char TTL) { this->TTL = TTL; }
     inline void setPreferredTimeout(TimeVal timeout) { this->preferredTimeout = timeout; }
+    
+    /*
+     * Remark (March 2017): from now on, the TTL field will contain the shortest observed TTL for 
+     * that IP. This is relevant for the IPs appearing in traceroute records, as it makes the user 
+     * able to re-compute the stretch distances using the .subnet and .ip dump with a script (like 
+     * a Python script). The IPTableEntry class also now offers a list of unsigned char to keep 
+     * track of all hop distances at which an IP was observed in traceroute records. It is however 
+     * not written in the .ip file because easily re-computable.
+     */
+    
+    inline bool sameTTL(unsigned char TTL) { return (this->TTL != 0 && this->TTL == TTL); }
+    bool hasHopCount(unsigned char hopCount);
+    void recordHopCount(unsigned char hopCount);
     
     // Comparison method for sorting purposes
     static bool compare(IPTableEntry *ip1, IPTableEntry *ip2);
@@ -99,6 +114,7 @@ public:
 private:
     unsigned char TTL;
     TimeVal preferredTimeout;
+    list<unsigned char> hopCounts;
     
     // Alias resolution hints
     unsigned short nbIPIDs;

@@ -60,14 +60,29 @@ public:
     // Comparison method for sorting purposes
     inline static bool smaller(SubnetSiteNode *ssn1, SubnetSiteNode *ssn2) { return ssn1->ip < ssn2->ip; }
 
-    // Constructor, destructor and private fields
-    SubnetSiteNode(const InetAddress &ip, unsigned char prefix, unsigned char TTL, enum SubnetSiteNode::AliasDiscoveryMethod aliasStatus);
+    // Constructor, destructor
+    SubnetSiteNode(const InetAddress &ip, 
+                   unsigned char prefix, 
+                   unsigned char TTL, 
+                   enum SubnetSiteNode::AliasDiscoveryMethod aliasStatus, 
+                   bool addedAtFilling = false);
     virtual ~SubnetSiteNode();
+    
+    // Fields
     InetAddress ip;
     unsigned char prefix;
     unsigned char TTL;
     enum SubnetSiteNode::AliasDiscoveryMethod aliasStatus; // Contrapivot
     enum SubnetSiteNode::SubnetSiteNodeStatus nodeStatus;
+    bool addedAtFilling; // See below (April 2017)
+    
+    /* 
+     * About "addedAtFilling": IPs added during the filling are most of them IPs which were 
+     * responsive during pre-scanning but not during scanning, hence, they were classed as Pivot 
+     * IPs (because it is the best we can infer in this case) but should be avoided as targets 
+     * during the traceroute phase. Hence this special field.
+     */
+    
 };
 
 #endif /* SUBNETSITENODE_H_ */

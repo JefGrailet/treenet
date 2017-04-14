@@ -7,7 +7,6 @@ CPP_SRCS += \
 ../src/treenet/aliasresolution/AliasHintCollector.cpp \
 ../src/treenet/aliasresolution/IPIDTuple.cpp \
 ../src/treenet/aliasresolution/IPIDUnit.cpp \
-../src/treenet/aliasresolution/IPIDCollector.cpp \
 ../src/treenet/aliasresolution/UDPUnreachablePortUnit.cpp \
 ../src/treenet/aliasresolution/TimestampCheckUnit.cpp \
 ../src/treenet/aliasresolution/ReverseDNSUnit.cpp \
@@ -18,7 +17,6 @@ OBJS += \
 ./src/treenet/aliasresolution/AliasHintCollector.o \
 ./src/treenet/aliasresolution/IPIDTuple.o \
 ./src/treenet/aliasresolution/IPIDUnit.o \
-./src/treenet/aliasresolution/IPIDCollector.o \
 ./src/treenet/aliasresolution/UDPUnreachablePortUnit.o \
 ./src/treenet/aliasresolution/TimestampCheckUnit.o \
 ./src/treenet/aliasresolution/ReverseDNSUnit.o \
@@ -29,7 +27,6 @@ CPP_DEPS += \
 ./src/treenet/aliasresolution/AliasHintCollector.d \
 ./src/treenet/aliasresolution/IPIDTuple.d \
 ./src/treenet/aliasresolution/IPIDUnit.d \
-./src/treenet/aliasresolution/IPIDCollector.d \
 ./src/treenet/aliasresolution/UDPUnreachablePortUnit.d \
 ./src/treenet/aliasresolution/TimestampCheckUnit.d \
 ./src/treenet/aliasresolution/ReverseDNSUnit.d \

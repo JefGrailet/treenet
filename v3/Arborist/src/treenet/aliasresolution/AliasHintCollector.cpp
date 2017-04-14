@@ -9,7 +9,7 @@
  */
 
 #include "AliasHintCollector.h"
-#include "IPIDCollector.h"
+#include "IPIDUnit.h"
 #include "UDPUnreachablePortUnit.h"
 #include "TimestampCheckUnit.h"
 #include "ReverseDNSUnit.h"
@@ -36,14 +36,10 @@ AliasHintCollector::~AliasHintCollector()
 
 void AliasHintCollector::collect()
 {
-    IPLookUpTable *table = env->getIPTable();
     ostream *out = env->getOutputStream();
+    IPLookUpTable *table = env->getIPTable();
     
-    /*
-     * Sorts and removes duplicata (possible because ingress interface of neighborhood can be a 
-     * contra-pivot). Also inserts the IPs that are missing from the IP table.
-     */
-    
+    // Sorts and removes duplicata (an ingress interface of a neighborhood can be a contra-pivot).
     this->IPsToProbe.sort(InetAddress::smaller);
     InetAddress previous(0);
     for(list<InetAddress>::iterator i = this->IPsToProbe.begin(); i != this->IPsToProbe.end(); ++i)
@@ -53,14 +49,6 @@ void AliasHintCollector::collect()
         if(current == previous)
         {
             this->IPsToProbe.erase(i--);
-        }
-        else
-        {
-            if(table->lookUp(current) == NULL)
-            {
-                IPTableEntry *newEntry = table->create(current);
-                newEntry->setTTL(this->currentTTL);
-            }
         }
         
         previous = current;
@@ -76,14 +64,13 @@ void AliasHintCollector::collect()
     }
     unsigned short nbThreads = 1;
     
-    // Computes the amount of required threads (+1 is due to collector thread itself)
-    unsigned short maxCollectors = maxThreads / (nbIPIDs + 1);
-    if(nbIPs > (unsigned long int) maxCollectors)
-        nbThreads = maxCollectors;
+    // Computes the amount of required threads (valid for each step)
+    if(nbIPs > (unsigned long int) maxThreads)
+        nbThreads = maxThreads;
     else
         nbThreads = (unsigned short) nbIPs;
     
-    // Initializes an array of threads
+    // Initializes the array of threads
     Thread **th = new Thread*[nbThreads];
     for(unsigned short i = 0; i < nbThreads; i++)
         th[i] = NULL;
@@ -101,89 +88,302 @@ void AliasHintCollector::collect()
             (*out) << endl;
         }
     }
-
-    // Starts scheduling for IP-ID retrieval
-    unsigned short j = 0;
-    for(unsigned long int i = 0; i < nbIPs; i++)
+    
+    // Creates the IP-ID tuple arrays
+    for(list<InetAddress>::iterator it = IPsToProbe.begin(); it != IPsToProbe.end(); ++it)
     {
-        InetAddress IPToProbe(this->IPsToProbe.front());
-        this->IPsToProbe.pop_front();
+        IPIDTuple *newArray = new IPIDTuple[nbIPIDs];
+        IPIDTuples.insert(pair<InetAddress, IPIDTuple*>((*it), newArray));
+    }
+
+    /*
+     * Starts scheduling for IP-ID collection; the code proceeds by rounds, i.e., it will probe 
+     * all candidate during the first round and wait for a reply. It is only after getting a reply 
+     * or a timeout for each that the next round can start.
+     */
+    
+    list<InetAddress> roundTargets = this->IPsToProbe;
+    for(unsigned short i = 0; i < nbIPIDs; i++)
+    {
+        list<IPIDTuple> tuples;
         
-        if(th[j] != NULL)
+        // Schedules one IPIDUnit per IP
+        unsigned short range = (DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID - DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID) / maxThreads;
+        unsigned short j = 0;
+        while(roundTargets.size() > 0)
         {
-            th[j]->join();
-            IPIDCollector *curCollector = (IPIDCollector*) th[j]->getRunnable();
+            InetAddress IPToProbe(roundTargets.front());
+            roundTargets.pop_front();
             
-            // Dump probe logs on the console output
-            if(debug)
+            // If current thread not null, waits for completion before scheduling the new IPIDUnit
+            if(th[j] != NULL)
             {
-                (*out) << curCollector->getDebugLog();
+                th[j]->join();
+                IPIDUnit *curUnit = (IPIDUnit*) th[j]->getRunnable();
+                
+                if(env->debugMode())
+                    (*out) << curUnit->getDebugLog();
+                
+                if(curUnit->hasExploitableResults())
+                    tuples.push_back(curUnit->getTuple());
+                
+                delete th[j];
+                th[j] = NULL;
             }
             
-            delete th[j];
-            th[j] = NULL;
-        }
-        
-        try
-        {
-            th[j] = new Thread(new IPIDCollector(env, this, IPToProbe, j * nbIPIDs));
-        }
-        catch(ThreadException &te)
-        {
-            (*out) << "\nUnable to create more threads." << endl;
-        
-            for(unsigned short k = 0; k < nbThreads; k++)
+            // Schedules the new IPIDUnit
+            Runnable *task = NULL;
+            try
             {
-                if(th[k] != NULL)
+                task = new IPIDUnit(this->env, 
+                                    this, 
+                                    IPToProbe, 
+                                    DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (j * range), 
+                                    DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (j * range) + range - 1, 
+                                    DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ, 
+                                    DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ);
+                th[j] = new Thread(task);
+            }
+            catch(SocketException &se)
+            {
+                // Cleans remaining threads (if any is set)
+                for(unsigned short k = 0; k < nbThreads; k++)
                 {
-                    th[k]->join();
-                    delete th[k];
-                    th[k] = NULL;
+                    if(th[k] != NULL)
+                    {
+                        th[k]->join();
+                        delete th[k];
+                        th[k] = NULL;
+                    }
+                }
+                
+                delete[] th;
+                
+                throw StopException();
+            }
+            catch(ThreadException &te)
+            {
+                (*out) << "\nUnable to create more threads." << endl;
+            
+                delete task;
+            
+                // Cleans remaining threads (if any is set)
+                for(unsigned short k = 0; k < nbThreads; k++)
+                {
+                    if(th[k] != NULL)
+                    {
+                        th[k]->join();
+                        delete th[k];
+                        th[k] = NULL;
+                    }
+                }
+                
+                delete[] th;
+            
+                throw StopException();
+            }
+            
+            // Starts and moves to next thread
+            th[j]->start();
+            
+            j++;
+            if(j == nbThreads)
+                j = 0;
+            
+            // 0,01s of delay before next thread
+            Thread::invokeSleep(TimeVal(0, 10000));
+            
+            if(env->isStopping())
+                break;
+        }
+
+        // Waiting for all remaining threads to complete
+        for(j = 0; j < nbThreads; j++)
+        {
+            if(th[j] != NULL)
+            {
+                th[j]->join();
+                IPIDUnit *curUnit = (IPIDUnit*) th[j]->getRunnable();
+                
+                if(env->debugMode())
+                    (*out) << curUnit->getDebugLog();
+                
+                if(curUnit->hasExploitableResults())
+                    tuples.push_back(curUnit->getTuple());
+                
+                delete th[j];
+                th[j] = NULL;
+            }
+        }
+        
+        /*
+         * End of current round, we do a quick post-processing of the tuples to schedule the next 
+         * round and re-order IP-IDs which clearly form a sequence but came out-of-order due to 
+         * network delays.
+         */
+        
+        tuples.sort(IPIDTuple::compareByTime);
+        for(list<IPIDTuple>::iterator it = tuples.begin(); it != tuples.end(); ++it)
+            roundTargets.push_back((*it).target);
+        
+        tuples.sort(IPIDTuple::compareByID);
+        IPIDTuple prev;
+        unsigned short reordered = 0;
+        for(list<IPIDTuple>::iterator it = tuples.begin(); it != tuples.end(); ++it)
+        {
+            if(prev.probeToken != 0)
+            {
+                IPIDTuple cur = (*it);
+                if(cur.echo || prev.echo)
+                    continue;
+                
+                unsigned short diff = cur.IPID - prev.IPID;
+                if(diff < IPID_MAX_DIFF && cur.probeToken < prev.probeToken)
+                {
+                    reordered++;
+                    // Moves the problematic token backwards
+                    IPIDTuple *prevBis = &(*it);
+                    for(list<IPIDTuple>::iterator it2 = it; it2 != tuples.begin(); --it2)
+                    {
+                        if(it2 == it)
+                        {
+                            it2--;
+                            continue;
+                        }
+                        IPIDTuple *curBis = &(*it2);
+                        if(curBis->echo)
+                            break;
+                        
+                        unsigned short diffBis = prevBis->IPID - curBis->IPID;
+                        if(diffBis < IPID_MAX_DIFF && curBis->probeToken > prevBis->probeToken)
+                        {
+                            unsigned long tempToken = curBis->probeToken;
+                            curBis->probeToken = prevBis->probeToken;
+                            prevBis->probeToken = tempToken;
+                            prevBis = &(*it2);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
                 }
             }
-            
-            delete[] th;
-        
-            throw StopException();
+            else
+            {
+                prev = (*it);
+            }
         }
         
-        th[j]->start();
-        
-        j++;
-        if(j == nbThreads)
-            j = 0;
-        
-        // 0,01s of delay before next thread
-        Thread::invokeSleep(TimeVal(0, 10000));
+        // Stores the tuples in the IPIDTuples map
+        while(tuples.size() > 0)
+        {
+            IPIDTuple curTuple = tuples.front();
+            tuples.pop_front();
+            
+            map<InetAddress, IPIDTuple*>::iterator res = IPIDTuples.find(curTuple.target);
+            if(res != IPIDTuples.end())
+            {
+                IPIDTuple *tuplesArray = res->second;
+                tuplesArray[i] = curTuple;
+            }
+        }
         
         if(env->isStopping())
             break;
-    }
-
-    // Waiting for all remaining threads to complete
-    for(unsigned short i = 0; i < nbThreads; i++)
-    {
-        if(th[i] != NULL)
+        
+        if(printSteps)
         {
-            th[i]->join();
-            IPIDCollector *curCollector = (IPIDCollector*) th[i]->getRunnable();
-            
-            // Dump probe logs on the console output
-            if(debug)
+            if(i == 0)
+                (*out) << endl;
+            (*out) << "Done with round " << (i + 1) << ".";
+            if(reordered > 0)
             {
-                (*out) << curCollector->getDebugLog();
+                if(reordered > 1)
+                    (*out) << " Changed position of " << reordered << " tokens.";
+                else
+                    (*out) << " Changed position of one token.";
             }
-            
-            delete th[i];
-            th[i] = NULL;
+            (*out) << endl;
         }
     }
     
-    delete[] th;
-    
     if(env->isStopping())
     {
+        delete[] th;
         throw StopException();
+    }
+    
+    /*
+     * For each initial target IP, computes the final data (uses backUp1 for this) to store in 
+     * the IP dictionnary, using the map.
+     */
+    
+    for(list<InetAddress>::iterator it = backUp1.begin(); it != backUp1.end(); ++it)
+    {
+        InetAddress curIP = (*it);
+        map<InetAddress, IPIDTuple*>::iterator res = IPIDTuples.find(curIP);
+        if(res != IPIDTuples.end())
+        {
+            IPIDTuple *tuplesArray = res->second;
+            IPTableEntry *targetEntry = table->lookUp(curIP);
+            if(targetEntry == NULL) // Should not occur, ideally, but just in case (avoids crash)
+                continue;
+            
+            unsigned char inferredInitialTTL = 0;
+            bool differentTTLs = false;
+            for(unsigned short i = 0; i < nbIPIDs; i++)
+            {
+                IPIDTuple curTuple = tuplesArray[i];
+                
+                targetEntry->setProbeToken(i, curTuple.probeToken);
+                targetEntry->setIPIdentifier(i, curTuple.IPID);
+                if(curTuple.echo)
+                    targetEntry->setEcho(i);
+                
+                // Only if the same initial TTL was observed on every previous tuple
+                if(!differentTTLs)
+                {
+                    // Infers initial TTL value of the reply packet for the current tuple
+                    unsigned char initialTTL = 0;
+                    unsigned short replyTTLAsShort = (unsigned short) curTuple.replyTTL;
+                    if(replyTTLAsShort > 128)
+                        initialTTL = (unsigned char) 255;
+                    else if(replyTTLAsShort > 64)
+                        initialTTL = (unsigned char) 128;
+                    else if(replyTTLAsShort > 32)
+                        initialTTL = (unsigned char) 64;
+                    else
+                        initialTTL = (unsigned char) 32;
+                    
+                    // Checks if distinct initial TTLs are observed (it should always be the same)
+                    if(inferredInitialTTL == 0)
+                    {
+                        inferredInitialTTL = initialTTL;
+                    }
+                    else if(inferredInitialTTL != initialTTL)
+                    {
+                        differentTTLs = true;
+                    }
+                }
+                
+                // Computes delay with next entry
+                if(i < nbIPIDs - 1)
+                {
+                    IPIDTuple nextTuple = tuplesArray[i + 1];
+                    
+                    unsigned long time1, time2;
+                    time1 = curTuple.timeValue.tv_sec * 1000000 + curTuple.timeValue.tv_usec;
+                    time2 = nextTuple.timeValue.tv_sec * 1000000 + nextTuple.timeValue.tv_usec;
+                            
+                    unsigned long delay = time2 - time1;
+                    targetEntry->setDelay(i, delay);
+                }
+            }
+            
+            if(inferredInitialTTL > 0 && !differentTTLs)
+                targetEntry->setEchoInitialTTL(inferredInitialTTL);
+        }
     }
     
     if(printSteps)
@@ -197,16 +397,6 @@ void AliasHintCollector::collect()
             (*out) << "Done." << endl;
     }
     
-    // Re-sizes th[] for the other hints (because each time, there is a single thread per IP)
-    if(nbIPs > (unsigned long int) maxThreads)
-        nbThreads = maxThreads;
-    else
-        nbThreads = (unsigned short) nbIPs;
-    
-    th = new Thread*[nbThreads];
-    for(unsigned short i = 0; i < nbThreads; i++)
-        th[i] = NULL;
-    
     // Now schedules threads to try the UDP/ICMP Port Unreachable approach
     if(printSteps)
     {
@@ -217,17 +407,19 @@ void AliasHintCollector::collect()
         }
     }
     
+    // TODO: compile and debug
+    
     unsigned short range = (DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID - DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID) / maxThreads;
-    j = 0;
-    for(unsigned long int i = 0; i < nbIPs; i++)
+    unsigned short i = 0;
+    while(backUp1.size() > 0)
     {
         InetAddress IPToProbe = backUp1.front();
         backUp1.pop_front();
         
-        if(th[j] != NULL)
+        if(th[i] != NULL)
         {
-            th[j]->join();
-            UDPUnreachablePortUnit *udpThread = (UDPUnreachablePortUnit*) th[j]->getRunnable();
+            th[i]->join();
+            UDPUnreachablePortUnit *udpThread = (UDPUnreachablePortUnit*) th[i]->getRunnable();
             
             // Dump probe logs on the console output
             if(debug)
@@ -235,8 +427,8 @@ void AliasHintCollector::collect()
                 (*out) << udpThread->getDebugLog();
             }
             
-            delete th[j];
-            th[j] = NULL;
+            delete th[i];
+            th[i] = NULL;
         }
         
         Runnable *task = NULL;
@@ -244,25 +436,25 @@ void AliasHintCollector::collect()
         {
             task = new UDPUnreachablePortUnit(env, 
                                               IPToProbe, 
-                                              DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (j * range), 
-                                              DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (j * range) + range - 1, 
+                                              DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (i * range), 
+                                              DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (i * range) + range - 1, 
                                               DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ, 
                                               DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ);
         
-            th[j] = new Thread(task);
+            th[i] = new Thread(task);
         }
         catch(SocketException &se)
         {
             (*out) << endl;
         
-            // Cleaning remaining threads (if any is set)
-            for(unsigned short k = 0; k < nbThreads; k++)
+            // Cleans remaining threads (if any is set)
+            for(unsigned short j = 0; j < nbThreads; j++)
             {
-                if(th[k] != NULL)
+                if(th[j] != NULL)
                 {
-                    th[k]->join();
-                    delete th[k];
-                    th[k] = NULL;
+                    th[j]->join();
+                    delete th[j];
+                    th[j] = NULL;
                 }
             }
             
@@ -276,14 +468,14 @@ void AliasHintCollector::collect()
         
             delete task;
             
-            // Cleaning remaining threads (if any is set)
-            for(unsigned short k = 0; k < nbThreads; k++)
+            // Cleans remaining threads (if any is set)
+            for(unsigned short j = 0; j < nbThreads; j++)
             {
-                if(th[k] != NULL)
+                if(th[j] != NULL)
                 {
-                    th[k]->join();
-                    delete th[k];
-                    th[k] = NULL;
+                    th[j]->join();
+                    delete th[j];
+                    th[j] = NULL;
                 }
             }
             
@@ -292,11 +484,11 @@ void AliasHintCollector::collect()
             throw StopException();
         }
         
-        th[j]->start();
+        th[i]->start();
         
-        j++;
-        if(j == maxThreads)
-            j = 0;
+        i++;
+        if(i == maxThreads)
+            i = 0;
         
         // 0,1s of delay before next thread (if same router, avoids to "bomb" it)
         Thread::invokeSleep(TimeVal(0, 100000));
@@ -305,8 +497,8 @@ void AliasHintCollector::collect()
             break;
     }
     
-    // Waiting for all remaining threads to complete
-    for(unsigned short i = 0; i < nbThreads; i++)
+    // Waits for all remaining threads to complete
+    for(i = 0; i < nbThreads; i++)
     {
         if(th[i] != NULL)
         {
@@ -327,7 +519,6 @@ void AliasHintCollector::collect()
     if(env->isStopping())
     {
         delete[] th;
-    
         throw StopException();
     }
     
@@ -352,16 +543,16 @@ void AliasHintCollector::collect()
         }
     }
     
-    j = 0;
-    for(unsigned long int i = 0; i < nbIPs; i++)
+    i = 0;
+    while(backUp2.size() > 0)
     {
         InetAddress IPToProbe = backUp2.front();
         backUp2.pop_front();
         
-        if(th[j] != NULL)
+        if(th[i] != NULL)
         {
-            th[j]->join();
-            TimestampCheckUnit *tsThread = (TimestampCheckUnit*) th[j]->getRunnable();
+            th[i]->join();
+            TimestampCheckUnit *tsThread = (TimestampCheckUnit*) th[i]->getRunnable();
             
             // Dump probe logs on the console output
             if(debug)
@@ -369,8 +560,8 @@ void AliasHintCollector::collect()
                 (*out) << tsThread->getDebugLog();
             }
             
-            delete th[j];
-            th[j] = NULL;
+            delete th[i];
+            th[i] = NULL;
         }
         
         Runnable *task = NULL;
@@ -378,24 +569,24 @@ void AliasHintCollector::collect()
         {
             task = new TimestampCheckUnit(env, 
                                           IPToProbe, 
-                                          DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (j * range), 
-                                          DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (j * range) + range - 1, 
+                                          DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (i * range), 
+                                          DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID + (i * range) + range - 1, 
                                           DirectProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ, 
                                           DirectProber::DEFAULT_UPPER_DST_PORT_ICMP_SEQ);
-            th[j] = new Thread(task);
+            th[i] = new Thread(task);
         }
         catch(SocketException &se)
         {
             (*out) << endl;
         
-            // Cleaning remaining threads (if any is set)
-            for(unsigned short k = 0; k < nbThreads; k++)
+            // Cleans remaining threads (if any is set)
+            for(unsigned short j = 0; j < nbThreads; j++)
             {
-                if(th[k] != NULL)
+                if(th[j] != NULL)
                 {
-                    th[k]->join();
-                    delete th[k];
-                    th[k] = NULL;
+                    th[j]->join();
+                    delete th[j];
+                    th[j] = NULL;
                 }
             }
         
@@ -409,14 +600,14 @@ void AliasHintCollector::collect()
         
             delete task;
         
-            // Cleaning remaining threads (if any is set)
-            for(unsigned short k = 0; k < nbThreads; k++)
+            // Cleans remaining threads (if any is set)
+            for(unsigned short j = 0; j < nbThreads; j++)
             {
-                if(th[k] != NULL)
+                if(th[j] != NULL)
                 {
-                    th[k]->join();
-                    delete th[k];
-                    th[k] = NULL;
+                    th[j]->join();
+                    delete th[j];
+                    th[j] = NULL;
                 }
             }
         
@@ -425,11 +616,11 @@ void AliasHintCollector::collect()
             throw StopException();
         }
         
-        th[j]->start();
+        th[i]->start();
         
-        j++;
-        if(j == maxThreads)
-            j = 0;
+        i++;
+        if(i == maxThreads)
+            i = 0;
         
         // 0,1s of delay before next thread (if same router, avoids to "bomb" it)
         Thread::invokeSleep(TimeVal(0, 100000));
@@ -438,8 +629,8 @@ void AliasHintCollector::collect()
             break;
     }
     
-    // Waiting for all remaining threads to complete
-    for(unsigned short i = 0; i < nbThreads; i++)
+    // Waits for all remaining threads to complete
+    for(i = 0; i < nbThreads; i++)
     {
         if(th[i] != NULL)
         {
@@ -460,7 +651,6 @@ void AliasHintCollector::collect()
     if(env->isStopping())
     {
         delete[] th;
-    
         throw StopException();
     }
     
@@ -484,34 +674,35 @@ void AliasHintCollector::collect()
     if(printSteps)
         (*out) << "4. Reverse DNS... " << std::flush;
     
-    j = 0;
-    for(unsigned long int i = 0; i < nbIPs; i++)
+    i = 0;
+    while(backUp3.size() > 0)
     {
         InetAddress IPToProbe = backUp3.front();
         backUp3.pop_front();
         
-        if(th[j] != NULL)
+        if(th[i] != NULL)
         {
-            th[j]->join();
-            delete th[j];
-            th[j] = NULL;
+            th[i]->join();
+            delete th[i];
+            th[i] = NULL;
         }
         
         try
         {
-            th[j] = new Thread(new ReverseDNSUnit(env, IPToProbe));
+            th[i] = new Thread(new ReverseDNSUnit(env, IPToProbe));
         }
         catch(ThreadException &te)
         {
             (*out) << "\nUnable to create more threads." << endl;
         
-            for(unsigned short k = 0; k < nbThreads; k++)
+            // Cleans remaining threads (if any is set)
+            for(unsigned short j = 0; j < nbThreads; j++)
             {
-                if(th[k] != NULL)
+                if(th[j] != NULL)
                 {
-                    th[k]->join();
-                    delete th[k];
-                    th[k] = NULL;
+                    th[j]->join();
+                    delete th[j];
+                    th[j] = NULL;
                 }
             }
             
@@ -520,11 +711,11 @@ void AliasHintCollector::collect()
             throw StopException();
         }
         
-        th[j]->start();
+        th[i]->start();
         
-        j++;
-        if(j == maxThreads)
-            j = 0;
+        i++;
+        if(i == maxThreads)
+            i = 0;
         
         // 0,01s of delay before next thread
         Thread::invokeSleep(TimeVal(0, 10000));
@@ -533,8 +724,8 @@ void AliasHintCollector::collect()
             break;
     }
     
-    // Waiting for all remaining threads to complete
-    for(unsigned short i = 0; i < nbThreads; i++)
+    // Waits for all remaining threads to complete
+    for(i = 0; i < nbThreads; i++)
     {
         if(th[i] != NULL)
         {

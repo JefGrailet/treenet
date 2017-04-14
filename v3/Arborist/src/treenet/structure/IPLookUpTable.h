@@ -39,8 +39,9 @@ public:
     IPLookUpTable(unsigned short nbIPIDs);
     ~IPLookUpTable();
     
-    // Method to check if the dictionnary is empty or not
+    // Methods to check if the dictionnary is empty or not and count the IPs it contains
     bool isEmpty();
+    unsigned int getTotalIPs();
     
     // Creation and look-up methods
     IPTableEntry *create(InetAddress needle); // NULL if already existed

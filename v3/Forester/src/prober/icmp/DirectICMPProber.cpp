@@ -70,6 +70,8 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
         msg + "a fixed flow ID (with Paris traceroute). Please only use one feature at a time.";
         throw SocketSendException(msg);
     }
+    
+    this->nbProbes++;
 
     // 1) Prepares packet to send; sets IP fields
     uint32_t IPHeaderLength = DirectProber::MINIMUM_IP_HEADER_LENGTH;
@@ -434,7 +436,8 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
                     {
                         this->log += newRecord->toString();
                     }
-                     
+                    
+                    this->nbSuccessfulProbes++;
                     return newRecord;
                 }
             }
@@ -467,6 +470,7 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
                         this->log += newRecord->toString();
                     }
                     
+                    this->nbSuccessfulProbes++;
                     return newRecord;
                 }
             }
@@ -512,6 +516,7 @@ ProbeRecord *DirectICMPProber::basic_probe(const InetAddress &src,
                     this->log += newRecord->toString();
                 }
                 
+                this->nbSuccessfulProbes++;
                 return newRecord;
             }
             else

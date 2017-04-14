@@ -1,6 +1,6 @@
-# About TreeNET v3.0 "Forester" (treenet_forester)
+# About TreeNET v3.2 "Forester" (treenet_forester)
 
-*By Jean-François Grailet, January 10, 2017*
+*By Jean-François Grailet, April 14, 2017*
 
 ## Compilation
 
@@ -27,7 +27,7 @@ If you intent to use `TreeNET` "*Forester*" from the PlanetLab testbed, here is 
 
 ## Usage
 
-`TreeNET` v3.0 "*Forester*" will describe in details its options, flags and how you can use it by running the line:
+`TreeNET` v3.2 "*Forester*" will describe in details its options, flags and how you can use it by running the line:
 
 ```sh
 ./treenet_forester -h
@@ -57,9 +57,11 @@ If you intent to use `TreeNET` "*Forester*" from the PlanetLab testbed, here is 
 
 * **January 10, 2017:** minor update of *Forester*, fixing another light issue in the alias resolution part and updating a structure.
 
+* **April 14, 2017:** update to version v3.2. It essentially aligns *Forester* with the lattest changes (in alias resolution and route treatment) implemented in *Arborist* v3.2 and makes some minor changes to the parsing utilities to comply with them. It also times its different algorithmic steps and can also, like *Arborist*, moves console messages to text logs with a new flag (-k).
+
 ## Disclaimer
 
-`TreeNET` v3 and its different versions were written by Jean-François Grailet, currently Ph. D. student at the University of Liège (Belgium) in the Research Unit in Networking (RUN), using the sources of `ExploreNET` v2.1 as a basis.
+`TreeNET` v3.2 and its different versions were written by Jean-François Grailet, currently Ph. D. student at the University of Liège (Belgium) in the Research Unit in Networking (RUN), using the sources of `ExploreNET` v2.1 as a basis.
 
 `ExploreNET` v2.1 has been elaborated and written by Dr. Mehmet Engin Tozal, currently assistant teacher at the University of Louisiana at Lafayette (USA). The sources of this program can be downloaded at the following address:
 

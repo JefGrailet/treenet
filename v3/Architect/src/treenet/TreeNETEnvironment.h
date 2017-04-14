@@ -19,6 +19,8 @@
 
 #include <ostream>
 using std::ostream;
+#include <fstream>
+using std::ofstream;
 
 #include "../common/date/TimeVal.h"
 #include "../common/inet/InetAddress.h"
@@ -35,7 +37,7 @@ public:
     const static unsigned short DISPLAY_MODE_DEBUG = 2;
 
     // Constructor/destructor
-    TreeNETEnvironment(ostream *out, 
+    TreeNETEnvironment(ostream *consoleOut, 
                        bool usingMerging, 
                        unsigned short nbIPIDs, 
                        unsigned short maxRollovers, 
@@ -52,7 +54,9 @@ public:
     // Accessers
     inline IPLookUpTable *getIPTable() { return this->IPTable; }
     inline SubnetSiteSet *getSubnetSet() { return this->subnetSet; }
-    inline ostream *getOutputStream() { return this->out; }
+    
+    // Accesser to the output stream is not inline, because it depends of the settings
+    ostream *getOutputStream();
     
     inline bool usingMergingAtParsing() { return this->usingMerging; }
     
@@ -63,6 +67,17 @@ public:
     
     inline unsigned short getDisplayMode() { return this->displayMode; }
     inline bool debugMode() { return (this->displayMode == DISPLAY_MODE_DEBUG); }
+    
+    // Method to handle the output stream writing in an output file.
+    void openLogStream(string filename);
+    void closeLogStream();
+    
+    /*
+     * March 2017: special method to pass through the subnet set and copy all mentioned interfaces 
+     * into the IP dictionnary. The goal is to mitigate the absence of a valid .ip file.
+     */
+    
+    void fillIPDictionnary();
 
 private:
 
@@ -71,7 +86,9 @@ private:
     SubnetSiteSet *subnetSet;
     
     // Output stream
-    ostream *out;
+    ostream *consoleOut;
+    ofstream logStream;
+    bool isExternalLogOpened;
     
     // Various values which stay constant during execution
     bool usingMerging;

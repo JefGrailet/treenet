@@ -1,6 +1,7 @@
-# About TreeNET v3.0
+# About TreeNET v3
 
-*Last edited by Jean-François Grailet, January 31, 2017*
+*Last edited by Jean-François Grailet, April 14, 2017*
+
 ## Overview of the changes
 
 ### A full suite of software
@@ -25,6 +26,8 @@ On a side note, `TreeNET` *Arborist* now provides an option to write the (unrefi
 
 Previous directly inherited from `ExploreNET` v2.1, the debug mode of `TreeNET` has been reviewed in-depth. `TreeNET` now provides several verbosity modes, with the most verbose mode being equivalent to debug. Each verbosity mode adds additionnal algorithmic details to the console output, with the debug adding logs detailling the different probes and their respective results. Mutual exclusion is used to display coherently each console message or debug log.
 
+With version 3.2, `TreeNET` also offers the possibility to move the console messages to text logs via a new flag (-k), such that users can access the algorithmic details of each step separately. It also now times each algorithmic step and counts the amount of probes it used.
+
 ---
 
 ### Re-factored code
@@ -32,6 +35,12 @@ Previous directly inherited from `ExploreNET` v2.1, the debug mode of `TreeNET` 
 In addition to re-factoring some features which were neglected before, `TreeNET` v3.0 also comes with a re-organized source code which is specifically designed to add new ways of building and interpreting a *network tree* (i.e., the data structure used by `TreeNET` to model a target network after its subnets). These new algorithms will be released along updated versions of `TreeNET` when available.
 
 On a side note, the source code was also adapted to be able to make a emergency save of the data when a resource issue arises while probing.
+
+---
+
+### Improved alias resolution and route treatment
+
+From version 3.2 and onwards, `TreeNET` offers new improvements for the alias resolution and traceroute steps, such as a better probe scheduling (in alias resolution) and utilites in the traceroute module to detect traceroute anomalies (such as rate-limited hops) and mitigate them as much as possible.
 
 ---
 
@@ -43,7 +52,7 @@ A fourth sub-folder, *Measurements/*, provides datasets obtained by measuring AS
 
 ## Disclaimer
 
-`TreeNET` v3.0 was written by Jean-François Grailet, currently Ph. D. student at the University of Liège (Belgium) in the Research Unit in Networking (RUN). Previous versions of `TreeNET` were written using the sources of `ExploreNET` v2.1 as a basis.
+`TreeNET` v3.2 was written by Jean-François Grailet, currently Ph. D. student at the University of Liège (Belgium) in the Research Unit in Networking (RUN). Previous versions of `TreeNET` were written using the sources of `ExploreNET` v2.1 as a basis.
 
 `ExploreNET` v2.1 has been elaborated and written by Dr. Mehmet Engin Tozal, currently assistant teacher at the University of Louisiana at Lafayette (USA). The sources of this program can be downloaded at the following address:
 

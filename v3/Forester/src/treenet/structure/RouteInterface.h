@@ -25,18 +25,27 @@ public:
     enum InterfaceStates
     {
         NOT_MEASURED, // Not measured yet
-        MISSING, // Tried to get it via traceroute, without success
-        REPAIRED, // Repaired via TreeNET v2.0+ tree construction method
+        MISSING, // Tried to get it via traceroute, but replied with 0.0.0.0 as replying IP
+        ANONYMOUS, // Tried to get it via traceroute, but resulted in a timeout at any time
+        LIMITED, // Same, but got something when retrying later (because of rate-limitation or firewall)
+        REPAIRED_1, // Repaired at first offline fix
+        REPAIRED_2, // Repaired offline after re-covering a "limited" IP in another route
         VIA_TRACEROUTE, // Obtained through traceroute
-        PREDICTED // Predicted, i.e., after rewriting the route during a grafting process
+        PREDICTED, // Predicted after using a grafting process
+        STRETCHED, // This IP turned out to have been reachable with less hops
+        CYCLE // This IP is a duplicate in the route
     };
 
     RouteInterface(); // Creates a "NOT_MEASURED" interface
-    RouteInterface(InetAddress ip);
+    RouteInterface(InetAddress ip, bool timeout = false);
     ~RouteInterface();
     
     void update(InetAddress ip); // For when the interface is initially "NOT_MEASURED"
-    void repair(InetAddress ip); // Always sets state to "REPAIRED"
+    void anonymize(); // Same but for when there is a timeout (= anonymous router)
+    void repair(InetAddress ip); // Always sets state to "REPAIRED_1"
+    void repairBis(InetAddress ip); // Always sets state to "REPAIRED_2"
+    void deanonymize(InetAddress ip); // Always sets state to "LIMITED"
+    void predict(InetAddress ip); // Always sets state to "PREDICTED"
     
     // Overriden equality operator
     RouteInterface &operator=(const RouteInterface &other);

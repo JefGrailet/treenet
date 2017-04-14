@@ -130,6 +130,37 @@ string Router::toStringVerbose()
     return result.str();
 }
 
+string Router::toStringMinimalist()
+{
+    stringstream result;
+    result << "[";
+    bool first = true, shortened = false;
+    unsigned short i = 0;
+    for(list<RouterInterface*>::iterator it = interfaces.begin(); it != interfaces.end(); ++it)
+    {
+        if(first)
+            first = false;
+        else
+            result << ", ";
+        
+        if(i == 3)
+        {
+            shortened = true;
+            result << "...";
+            break;
+        }
+        else
+            result << (*it)->ip;
+        i++;
+    }
+    result << "]";
+    if(shortened)
+    {
+        result << " (" << interfaces.size() << " interfaces)";
+    }
+    return result.str();
+}
+
 bool Router::compare(Router *r1, Router *r2)
 {
     unsigned short size1 = r1->getNbInterfaces();

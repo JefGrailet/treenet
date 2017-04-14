@@ -41,9 +41,9 @@ void ClassicGrower::prepare()
 
 void ClassicGrower::grow()
 {
+    ostream *out = env->getOutputStream();
     SubnetSiteSet *subnets = env->getSubnetSet();
 
-    // subnets->removeArtifacts();
     subnets->sortByRoute();
     
     this->tree = new NetworkTree();
@@ -53,19 +53,18 @@ void ClassicGrower::grow()
     while(toInsert != NULL)
     {
         this->insert(toInsert);
-        
         toInsert = subnets->getValidSubnet();
     }
+    (*out) << "Subnets with complete route inserted." << endl;
     
-    // Then, subnets with an incomplete route after a repairment
+    // Then, subnets with an incomplete route even after a repairment
     toInsert = subnets->getValidSubnet(false);
     while(toInsert != NULL)
     {
-        this->repairRoute(toInsert);
         this->insert(toInsert);
-        
         toInsert = subnets->getValidSubnet(false);
     }
+    (*out) << "Subnets with incomplete route inserted." << endl;
     
     // Creates the new Soil object and adds the produced tree in it
     this->result = new Soil();
@@ -83,17 +82,17 @@ void ClassicGrower::insert(SubnetSite *subnet)
     NetworkTreeNode *rootNode = this->tree->getRoot();
     list<NetworkTreeNode*> *map = this->depthMap;
 
-    // Gets route information of the new subnet
-    RouteInterface *route = subnet->getRoute();
-    unsigned short routeSize = subnet->getRouteSize();
+    // Gets (final) route information of the new subnet
+    unsigned short routeSize;
+    RouteInterface *route = subnet->getFinalRoute(&routeSize);
     
     // Finds the deepest node which occurs in the route of current subnet
     NetworkTreeNode *insertionPoint = NULL;
     unsigned insertionPointDepth = 0;
     for(unsigned short d = routeSize; d > 0; d--)
     {
-        if(route[d - 1].ip == RouteInterface::MISSING)
-            continue;
+        // if(route[d - 1].state == RouteInterface::MISSING || route[d - 1].state == RouteInterface::ANONYMOUS)
+            // continue;
     
         for(list<NetworkTreeNode*>::iterator i = map[d - 1].begin(); i != map[d - 1].end(); ++i)
         {
@@ -312,90 +311,10 @@ void ClassicGrower::prune(NetworkTreeNode *cur, NetworkTreeNode *prev, unsigned 
     }
 }
 
-void ClassicGrower::repairRoute(SubnetSite *ss)
-{
-    list<NetworkTreeNode*> *map = this->depthMap;
-    RouteInterface *route = ss->getRoute();
-    unsigned short routeSize = ss->getRouteSize();
-
-    // Finds deepest match in the tree
-    NetworkTreeNode *insertionPoint = NULL;
-    unsigned insertionPointDepth = 0;
-    for(unsigned short d = routeSize; d > 0; d--)
-    {
-        if(route[d - 1].state == RouteInterface::MISSING)
-            continue;
-    
-        for(list<NetworkTreeNode*>::iterator i = map[d - 1].begin(); i != map[d - 1].end(); ++i)
-        {
-            if((*i)->hasLabel(route[d - 1].ip))
-            {
-                insertionPoint = (*i);
-                insertionPointDepth = d;
-                break;
-            }
-        }
-        
-        if(insertionPoint != NULL)
-            break;
-    }
-    
-    // If the insertion point could not be found, nothing can be done.
-    if(insertionPoint == NULL)
-    {
-        return;
-    }
-    
-    // Lists all subnets which belongs to the branch where insertion point is.
-    list<SubnetSite*> subnetList;
-    listSubnetsRecursive(&subnetList, insertionPoint);
-    
-    // Finds the route which is the most similar to the incomplete route
-    RouteInterface *similarRoute = NULL;
-    unsigned short maxSimilarities = 0;
-    for(list<SubnetSite*>::iterator i = subnetList.begin(); i != subnetList.end(); ++i)
-    {
-        SubnetSite *cur = (*i);
-        
-        if(!cur->hasCompleteRoute())
-            continue;
-        
-        RouteInterface *curRoute = cur->getRoute();
-        
-        unsigned short similarities = 0;
-        for(unsigned short j = 0; j < insertionPointDepth; ++j)
-        {
-            if(curRoute[j].ip == route[j].ip)
-                similarities++;
-        }
-        
-        if(similarities > maxSimilarities)
-        {
-            similarRoute = curRoute;
-            maxSimilarities = similarities;
-        }
-    }
-    
-    // If there was no subnet with a complete similar route, nothing can be done.
-    if(similarRoute == NULL)
-    {
-        return;
-    }
-    
-    // Completes the incomplete route
-    for(unsigned short i = 0; i < insertionPointDepth; ++i)
-    {
-        if(route[i].state == RouteInterface::MISSING)
-        {
-            route[i].repair(similarRoute[i].ip);
-        }
-    }
-}
-
 NetworkTreeNode *ClassicGrower::createBranch(SubnetSite *subnet, unsigned short depth)
 {
-    RouteInterface *route = subnet->getRoute();
-    unsigned short routeSize = subnet->getRouteSize();
+    unsigned short routeSize = 0;
+    RouteInterface *route = subnet->getFinalRoute(&routeSize);
     
     // If current depth minus 1 equals the route size, then we just have to create a leaf
     if((depth - 1) == routeSize)

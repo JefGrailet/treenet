@@ -223,3 +223,10 @@ string ProbeRecord::toString()
     
     return logStream.str();
 }
+
+bool ProbeRecord::isATimeout()
+{
+    if(rplyAddress == InetAddress(0) && (int) rplyICMPtype == 255 && (int) rplyICMPcode == 255 && (int) rplyTTL == 0)
+        return true;
+    return false;
+}

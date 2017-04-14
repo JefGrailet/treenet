@@ -97,7 +97,11 @@ subnet(ss)
 
 ParisTracerouteTask::~ParisTracerouteTask()
 {
-    delete prober;
+    if(prober != NULL)
+    {
+        env->updateProbeAmounts(prober);
+        delete prober;
+    }
 }
 
 ProbeRecord *ParisTracerouteTask::probe(const InetAddress &dst, unsigned char TTL)
@@ -186,7 +190,7 @@ void ParisTracerouteTask::run()
         }
         
         InetAddress rplyAddress = record->getRplyAddress();
-        if(rplyAddress == InetAddress("0.0.0.0"))
+        if(rplyAddress == InetAddress(0))
         {
             delete record;
             
@@ -212,38 +216,22 @@ void ParisTracerouteTask::run()
             
             rplyAddress = record->getRplyAddress();
             
-            // If still nothing different than 0.0.0.0, last try with 4 times the timeout
-            if(rplyAddress == InetAddress("0.0.0.0"))
-            {
-                delete record;
-                
-                // Debug message
-                if(debugMode)
-                {
-                    this->log += "Retrying at this TTL with 4 times the initial timeout...\n";
-                }
-                
-                prober->setTimeout(usedTimeout * 4);
-                
-                try
-                {
-                    record = this->probe(probeDst, probeTTL);
-                }
-                catch(SocketException &se)
-                {
-                    delete[] route;
-                    this->stop();
-                    return;
-                }
-                
-                rplyAddress = record->getRplyAddress();
-            }
+            /*
+             * N.B.: unlike early TreeNET v3 and previous versions, there is no third attempt 
+             * after a second timeout for now. Next steps, however, might reprobe the target 
+             * with the appropriate TTL after a delay to see if there is still a timeout. This is 
+             * motivated by the fact that some IPs seem to be anonymized, either by a firewall, 
+             * either by themselves, when they receive many probes.
+             */
             
             // Restores default timeout
             prober->setTimeout(usedTimeout);
         }
         
-        route[probeTTL - 1].update(rplyAddress);
+        if(record->isATimeout())
+            route[probeTTL - 1].anonymize();
+        else
+            route[probeTTL - 1].update(rplyAddress);
         
         delete record;
 
@@ -256,6 +244,7 @@ void ParisTracerouteTask::run()
         prober->setTimeout(initialTimeout);
     }
     
+    subnet->setRouteTarget(probeDst); // Might be useful during route repairment steps
     subnet->setRouteSize(sizeRoute);
     subnet->setRoute(route);
     
@@ -275,6 +264,8 @@ void ParisTracerouteTask::run()
         {
             if(route[i].state == RouteInterface::MISSING)
                 routeLog << "Missing\n";
+            else if(route[i].state == RouteInterface::ANONYMOUS)
+                routeLog << "Anonymous\n";
             else
                 routeLog << route[i].ip << "\n";
         }

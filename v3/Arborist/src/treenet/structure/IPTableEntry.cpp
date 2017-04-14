@@ -51,6 +51,36 @@ IPTableEntry::~IPTableEntry()
     delete[] delays;
 }
 
+bool IPTableEntry::hasHopCount(unsigned char hopCount)
+{
+    for(list<unsigned char>::iterator it = hopCounts.begin(); it != hopCounts.end(); it++)
+    {
+        if((*it) == hopCount)
+            return true;
+    }
+    return false;
+}
+
+void IPTableEntry::recordHopCount(unsigned char hopCount)
+{
+    if(hopCount != TTL)
+    {
+        if(hopCount < TTL)
+        {
+            if(hopCounts.size() == 0)
+                hopCounts.push_back(TTL);
+            hopCounts.push_front(hopCount);
+            TTL = hopCount;
+        }
+        else
+        {
+            if(hopCounts.size() == 0)
+                hopCounts.push_back(TTL);
+            hopCounts.push_back(hopCount);
+        }
+    }
+}
+
 bool IPTableEntry::compare(IPTableEntry *ip1, IPTableEntry *ip2)
 {
     if(ip1->getULongAddress() < ip2->getULongAddress())
@@ -153,11 +183,11 @@ string IPTableEntry::toString()
         ss << " | Yes";
         
         // ,[Unreachable port reply IP]
-        if(this->portUnreachableSrcIP != InetAddress("0"))
+        if(this->portUnreachableSrcIP != InetAddress(0))
             ss << "," << this->portUnreachableSrcIP;
     }
     // ... | [Unreachable port reply IP] (if available)
-    else if(this->portUnreachableSrcIP != InetAddress("0"))
+    else if(this->portUnreachableSrcIP != InetAddress(0))
         ss << " | " << this->portUnreachableSrcIP;
     
     return ss.str();
@@ -179,7 +209,7 @@ string IPTableEntry::toStringFingerprint()
     else
         ss << "*";
     ss << ",";
-    if(this->portUnreachableSrcIP != InetAddress("0"))
+    if(this->portUnreachableSrcIP != InetAddress(0))
         ss << this->portUnreachableSrcIP;
     else
         ss << "*";

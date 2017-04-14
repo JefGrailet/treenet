@@ -49,12 +49,17 @@ string SubnetSiteNode::subnetSiteNodeStatusToString(enum SubnetSiteNode::SubnetS
 
 }
 
-SubnetSiteNode::SubnetSiteNode(const InetAddress &i, unsigned char p, unsigned char T, enum SubnetSiteNode::AliasDiscoveryMethod as):
+SubnetSiteNode::SubnetSiteNode(const InetAddress &i, 
+                               unsigned char p, 
+                               unsigned char T, 
+                               enum SubnetSiteNode::AliasDiscoveryMethod as, 
+                               bool atFilling):
 ip(i),
 prefix(p),
 TTL(T),
 aliasStatus(as),
-nodeStatus(SubnetSiteNode::MARKED_AS_INSIDE_SUBNET_BOUNDARIES)
+nodeStatus(SubnetSiteNode::MARKED_AS_INSIDE_SUBNET_BOUNDARIES), 
+addedAtFilling(atFilling)
 {
 }
 

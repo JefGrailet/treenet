@@ -245,13 +245,35 @@ void Cat::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
         (*out) << endl;
         
         // Fingerprints
-        list<Fingerprint> fingerprints = cur->getFingerprints();
-        (*out) << "Fingerprints (sorted):\n";
-        for(list<Fingerprint>::iterator it = fingerprints.begin(); it != fingerprints.end(); ++it)
+        list<list<Fingerprint> > fingerprints = cur->getFingerprints();
+        if(cur->isHedera() && fingerprints.size() > 1)
         {
-            (*out) << (InetAddress) (*((*it).ipEntry)) << " - " << (*it) << "\n";
+            list<InetAddress> lastHops = cur->getLastHops();
+            (*out) << "Fingerprints (sorted, grouped by last hop towards interface):\n";
+            while(fingerprints.size() > 0)
+            {
+                list<Fingerprint> simpleList = fingerprints.front();
+                (*out) << "\nLast hop = " << lastHops.front() << ":\n";
+                for(list<Fingerprint>::iterator it = simpleList.begin(); it != simpleList.end(); ++it)
+                {
+                    (*out) << (InetAddress) (*((*it).ipEntry)) << " - " << (*it) << "\n";
+                }
+                
+                fingerprints.pop_front();
+                lastHops.pop_front();
+            }
+            (*out) << endl;
         }
-        (*out) << endl;
+        else
+        {
+            list<Fingerprint> simpleList = fingerprints.front();
+            (*out) << "Fingerprints (sorted):\n";
+            for(list<Fingerprint>::iterator it = simpleList.begin(); it != simpleList.end(); ++it)
+            {
+                (*out) << (InetAddress) (*((*it).ipEntry)) << " - " << (*it) << "\n";
+            }
+            (*out) << endl;
+        }
         
         // Routers
         list<Router*> *routers = cur->getInferredRouters();
@@ -265,58 +287,7 @@ void Cat::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
             
             for(list<Router*>::iterator i = routers->begin(); i != routers->end(); ++i)
             {
-                Router *cur = (*i);
-                stringstream aliasList;
-                list<RouterInterface*> *IPs = cur->getInterfacesList();
-                bool first = true;
-                
-                (*out) << "[";
-                for(list<RouterInterface*>::iterator j = IPs->begin(); j != IPs->end(); ++j)
-                {
-                    if(!first)
-                    {
-                        (*out) << ", ";
-                        aliasList << " ";
-                    }
-                    else
-                    {
-                        first = false;
-                    }
-                    (*out) << (*j)->ip;
-                    aliasList << (*j)->ip;
-                    
-                    // Precise alias resolution method
-                    switch((*j)->aliasMethod)
-                    {
-                        case RouterInterface::UDP_PORT_UNREACHABLE:
-                            (*out) << " (UDP unreachable port)";
-                            break;
-                        case RouterInterface::GROUP_ECHO:
-                            (*out) << " (Echo group)";
-                            break;
-                        case RouterInterface::GROUP_ECHO_DNS:
-                            (*out) << " (Echo group & DNS)";
-                            break;
-                        case RouterInterface::GROUP_RANDOM:
-                            (*out) << " (Random group)";
-                            break;
-                        case RouterInterface::GROUP_RANDOM_DNS:
-                            (*out) << " (Random group & DNS)";
-                            break;
-                        case RouterInterface::ALLY:
-                            (*out) << " (Ally)";
-                            break;
-                        case RouterInterface::IPID_VELOCITY:
-                            (*out) << " (Velocity)";
-                            break;
-                        case RouterInterface::REVERSE_DNS:
-                            (*out) << " (Reverse DNS)";
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                (*out) << "]" << endl;
+                (*out) << "[" << (*i)->toStringVerbose() << "]" << endl;
             }
         }
         else

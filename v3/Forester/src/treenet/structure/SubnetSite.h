@@ -22,7 +22,6 @@ using std::string;
 #include "SubnetSiteNode.h"
 #include "RouteInterface.h"
 #include "../../common/inet/NetworkAddress.h"
-// #include "../bipartite/BipartiteSubnet.h" TODO put this back
 
 class SubnetSite
 {
@@ -103,11 +102,25 @@ public:
     list<InetAddress> getContrapivotAddresses();
     
     // Methods for route manipulation (merged with v3.0)
+    inline void setRouteTarget(InetAddress rt) { this->routeTarget = rt; }
     inline void setRouteSize(unsigned short rs) { this->routeSize = rs; }
     inline void setRoute(RouteInterface *route) { this->route = route; }
+    inline InetAddress getRouteTarget() { return this->routeTarget; }
     inline unsigned short getRouteSize() { return this->routeSize; }
     inline RouteInterface *getRoute() { return this->route; }
-    bool hasCompleteRoute(); // Returns true if there is a route AND without "holes" (i.e. 0.0.0.0)
+    inline bool hasValidRoute() { return this->routeSize > 0 && this->route != NULL; }
+    bool hasCompleteRoute(); // Returns true if the route has no "holes" (i.e. 0.0.0.0)
+    bool hasIncompleteRoute(); // Dual operation (true if the route has 0.0.0.0's)
+    unsigned short countMissingHops(); // Returns amount of 0.0.0.0's
+    
+    // Additionnal and optional post-processed route than can be set in TreeNET v3.2
+    inline void setProcessedRouteSize(unsigned short prs) { this->processedRouteSize = prs; }
+    inline void setProcessedRoute(RouteInterface *pRoute) { this->processedRoute = pRoute; }
+    inline unsigned short getProcessedRouteSize() { return this->processedRouteSize; }
+    inline RouteInterface *getProcessedRoute() { return this->processedRoute; }
+    
+    // Method to get the final route (priority: processed then observed, NULL if nothing)
+    RouteInterface *getFinalRoute(unsigned short *finalRouteSize);
     
     // toString() method, only available for refined (odd/accurate) subnets, null otherwise 
     string toString();
@@ -126,12 +139,7 @@ public:
     
     // Method to obtain the capacity (i.e. max number of interfaces in this subnet)
     unsigned int getCapacity();
-    
-    // Accessor/setter to the bipartite element (+ test method) TODO: put this back
-    // inline bool hasBipEquivalent() { return this->bipSubnet != NULL; }
-    // inline void setBipEquivalent(BipartiteSubnet *bipSubnet) { this->bipSubnet = bipSubnet; }
-    // inline BipartiteSubnet *getBipEquivalent() { return this->bipSubnet; }
-    
+
     // Method to adapt the route for grafting (exclusive to Forester)
     bool matchRoutePrefix(unsigned short sPrefix, InetAddress *prefix);
     void adaptRoute(unsigned short offset, unsigned short sNew, InetAddress *newPrefix);
@@ -148,11 +156,9 @@ private:
     unsigned short status;
     InetAddress contrapivot;
     unsigned short TTL1, TTL2; // Shortest and greatest TTL for this subnet
-    unsigned short routeSize;
-    RouteInterface *route;
-    
-    // Corresponding bipartite element TODO: put this back
-    // BipartiteSubnet *bipSubnet;
+    InetAddress routeTarget; // To keep track of the target IP used during traceroute
+    unsigned short routeSize, processedRouteSize;
+    RouteInterface *route, *processedRoute;
     
 };
 

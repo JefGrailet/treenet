@@ -15,10 +15,13 @@
 
 #include <ostream>
 using std::ostream;
+#include <fstream>
+using std::ofstream;
 
 #include "../common/thread/Mutex.h"
 #include "../common/date/TimeVal.h"
 #include "../common/inet/InetAddress.h"
+#include "../prober/DirectProber.h"
 #include "scanning/explorenet/ExploreNETRecord.h"
 #include "utils/StopException.h" // Not used directly here, but provided to all classes that need it this way
 #include "structure/IPLookUpTable.h"
@@ -44,7 +47,8 @@ public:
     static Mutex emergencyStopMutex;
 
     // Constructor/destructor
-    TreeNETEnvironment(ostream *out, 
+    TreeNETEnvironment(ostream *consoleOut, 
+                       bool externalLogs, 
                        unsigned char startTTL, 
                        unsigned short probingProtocol, 
                        bool exploreLANExplicitly, 
@@ -52,6 +56,7 @@ public:
                        bool doubleProbe, 
                        bool useFixedFlowID, 
                        bool prescanExpand, 
+                       bool prescanThirdOpinion, 
                        bool saveExploreNETRecords, 
                        InetAddress &localIPAddress, 
                        NetworkAddress &LAN, 
@@ -76,7 +81,10 @@ public:
     inline IPLookUpTable *getIPTable() { return this->IPTable; }
     inline SubnetSiteSet *getSubnetSet() { return this->subnetSet; }
     inline SubnetSiteSet *getIPBlocksToAvoid() { return this->IPBlocksToAvoid; }
-    inline ostream *getOutputStream() { return this->out; }
+    
+    // Accesser to the output stream is not inline, because it depends of the settings
+    ostream *getOutputStream();
+    inline bool usingExternalLogs() { return this->externalLogs; }
     
     inline unsigned char getStartTTL() { return this->startTTL; }
     inline unsigned short getProbingProtocol() { return this->probingProtocol; }
@@ -85,6 +93,7 @@ public:
     inline bool usingDoubleProbe() { return this->doubleProbe; }
     inline bool usingFixedFlowID() { return this->useFixedFlowID; }
     inline bool expandingAtPrescanning() { return this->prescanExpand; }
+    inline bool usingPrescanningThirdOpinion() { return this->prescanThirdOpinion; }
     
     inline InetAddress &getLocalIPAddress() { return this->localIPAddress; }
     inline NetworkAddress &getLAN() { return this->LAN; }
@@ -110,6 +119,16 @@ public:
     inline void pushExploreNETRecord(ExploreNETRecord *r) { this->xnetRecords.push_back(r); }
     void outputExploreNETRecords(string filename);
     
+    // Methods to handle total amounts of (successful) probes
+    void updateProbeAmounts(DirectProber *proberObject);
+    void resetProbeAmounts();
+    inline unsigned int getTotalProbes() { return this->totalProbes; }
+    inline unsigned int getTotalSuccessfulProbes() { return this->totalSuccessfulProbes; }
+    
+    // Method to handle the output stream writing in an output file.
+    void openLogStream(string filename, bool message = true);
+    void closeLogStream();
+    
     /*
      * Method to trigger the (emergency) stop. It is a special method of TreeNETEnvironment which 
      * is meant to force the program to quit when it cannot fully benefit from the host's 
@@ -122,6 +141,16 @@ public:
     
     // Method to check if the flag for emergency stop is raised.
     inline bool isStopping() { return this->flagEmergencyStop; }
+    
+    /*
+     * (March 2017) Method to fill the IP dictionnary with IPs found in the routes to the subnets 
+     * (when they are missing). Originally, the fill would occur at the alias hints collection, 
+     * but it was moved here in the next method for two reasons:
+     * 1) Convenience (because access to both subnets and IP dictionnary here).
+     * 2) IPs exclusively in routes should recorded as soon as possible to study route stretching.
+     */
+    
+    void recordRouteStepsInDictionnary();
 
 private:
 
@@ -130,13 +159,22 @@ private:
     SubnetSiteSet *subnetSet;
     SubnetSiteSet *IPBlocksToAvoid; // Lists UNDEFINED /20 subnets where expansion should not be done
     
-    // Output stream
-    ostream *out;
+    /*
+     * Output streams (main console output and file stream for the external logs). Having both is 
+     * useful because the console output stream will still be used to advertise the creation of a 
+     * new log file and emergency stop if the user requested probing details to be written in 
+     * external logs.
+     */
+    
+    ostream *consoleOut;
+    ofstream logStream;
+    bool externalLogs, isExternalLogOpened;
     
     // Various values which stay constant during execution
     unsigned char startTTL;
     unsigned short probingProtocol;
-    bool exploreLANExplicitly, useLowerBorderAsWell, doubleProbe, useFixedFlowID, prescanExpand, saveExploreNETRecords;
+    bool exploreLANExplicitly, useLowerBorderAsWell, doubleProbe, useFixedFlowID;
+    bool prescanExpand, prescanThirdOpinion, saveExploreNETRecords;
     InetAddress &localIPAddress;
     NetworkAddress &LAN;
     string &probeAttentionMessage;
@@ -148,18 +186,18 @@ private:
     double baseTolerance;
     double maxError;
     
-    /*
-     * Value for maintaining display mode; setting it to DISPLAY_MODE_DEBUG (=3) is equivalent to 
-     * using the debug mode of ExploreNET. Display modes is a new feature brought by v3.0.
-     */
-    
+    // Field for maintaining display mode (max. value = 3, amounts to debug mode)
     unsigned short displayMode;
     
     // Maximum amount of threads involved during the probing steps
     unsigned short maxThreads;
     
-    // Bool value and list for registering the ExploreNET records (optional feature; Aug 29, 2016).
+    // List for registering the ExploreNET records (optional feature)
     list<ExploreNETRecord*> xnetRecords;
+    
+    // Fields to record the amount of (successful) probes used during some stage (can be reset)
+    unsigned int totalProbes;
+    unsigned int totalSuccessfulProbes;
     
     // Flag for emergency exit
     bool flagEmergencyStop;

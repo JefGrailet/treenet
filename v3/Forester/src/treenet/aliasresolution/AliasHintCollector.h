@@ -23,14 +23,21 @@
 
 #include <list>
 using std::list;
+#include <map>
+using std::map;
+using std::pair;
 
 #include "../TreeNETEnvironment.h"
 #include "../../prober/DirectProber.h"
 #include "../../prober/icmp/DirectICMPProber.h"
+#include "IPIDTuple.h"
 
 class AliasHintCollector
 {
 public:
+
+    // Threshold for assuming that 2 consecutives IDs after sorting by IDs are from a same device
+    static const unsigned short IPID_MAX_DIFF = 10;
 
     // Constructor, destructor
     AliasHintCollector(TreeNETEnvironment *env);
@@ -39,14 +46,13 @@ public:
     // Accesser to environment pointer
     inline TreeNETEnvironment *getEnvironment() { return this->env; }
     
-    // Setters for the list of IPs to probe/current TTL (depends on the internal tree node)
+    // Setters for the list of IPs to probe (depends on the internal tree node)
     inline void setIPsToProbe(std::list<InetAddress> IPsToProbe) { this->IPsToProbe = IPsToProbe; }
-    inline void setCurrentTTL(unsigned char newTTL) { this->currentTTL = newTTL; }
     
     // Method to start the probing (note: this empties the IPsToProbe list)
     void collect();
     
-    // Method to get a token (used by AliasHintCollectorUnit)
+    // Method to get a token (used by IPIDUnit objects)
     unsigned long int getProbeToken();
     
     /*
@@ -64,8 +70,10 @@ private:
 
     // Very own private fields
     std::list<InetAddress> IPsToProbe;
-    unsigned char currentTTL;
     unsigned long int tokenCounter;
+    
+    // Map to save collected IP-ID tuples before treating and storing them in the IP dictionnary
+    map<InetAddress, IPIDTuple*> IPIDTuples;
     
     // Debug stuff
     bool printSteps, debug;

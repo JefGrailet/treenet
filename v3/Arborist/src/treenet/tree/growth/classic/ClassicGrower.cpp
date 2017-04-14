@@ -14,6 +14,8 @@ using std::list;
 #include "../../../../common/thread/Thread.h"
 #include "ClassicGrower.h"
 #include "ParisTracerouteTask.h"
+#include "AnonymousChecker.h"
+#include "RoutePostProcessor.h"
 
 ClassicGrower::ClassicGrower(TreeNETEnvironment *env) : Grower(env)
 {
@@ -34,6 +36,116 @@ ClassicGrower::~ClassicGrower()
     delete[] depthMap;
 }
 
+unsigned int ClassicGrower::countIncompleteRoutes()
+{
+    list<SubnetSite*> *ssList = env->getSubnetSet()->getSubnetSiteList();
+    unsigned int nbIncompleteRoutes = 0;
+    for(list<SubnetSite*>::iterator it = ssList->begin(); it != ssList->end(); ++it)
+    {
+        SubnetSite *curSubnet = (*it);
+        if(curSubnet->getRoute() != NULL)
+        {
+            if(curSubnet->hasIncompleteRoute())
+                nbIncompleteRoutes++;
+        }
+    }
+    return nbIncompleteRoutes;
+}
+
+unsigned short ClassicGrower::repairRouteOffline(SubnetSite *ss)
+{
+    unsigned short routeSize = ss->getRouteSize();
+    RouteInterface *route = ss->getRoute();
+    list<SubnetSite*> *ssList = env->getSubnetSet()->getSubnetSiteList();
+    
+    /*
+     * Exceptional case: there is only one hop. In that case, we fix it only if there is a single 
+     * option among all routes (except when these routes are incomplete as well).
+     */
+    
+    if(routeSize == 1)
+    {
+        list<InetAddress> options;
+        for(list<SubnetSite*>::iterator it = ssList->begin(); it != ssList->end(); ++it)
+        {
+            SubnetSite *ss2 = (*it);
+            unsigned short routeSize2 = ss2->getRouteSize();
+            if(routeSize2 > 0)
+            {
+                RouteInterface *route2 = ss2->getRoute();
+                options.push_back(route2[0].ip);
+            }
+        }
+        
+        // Filtering out duplicates
+        options.sort(InetAddress::smaller);
+        InetAddress prev(0);
+        for(list<InetAddress>::iterator it = options.begin(); it != options.end(); ++it)
+        {
+            if((*it) == prev)
+                options.erase(it--);
+            else
+                prev = (*it);
+        }
+        
+        if(options.size() == 1)
+        {
+            route[0].repair(options.front());
+            return 1;
+        }
+    
+        return 0;
+    }
+    
+    unsigned short nbReplacements = 0;
+    for(unsigned short i = 0; i < routeSize - 1; i++) // We don't fix offline a last hop (risky)
+    {
+        if(route[i].ip != InetAddress(0))
+            continue;
+        
+        InetAddress hopBefore(0), hopAfter(0);
+        if(i > 0)
+            hopBefore = route[i - 1].ip;
+        hopAfter = route[i + 1].ip;
+        
+        // Lists the options
+        list<InetAddress> options;
+        for(list<SubnetSite*>::iterator it = ssList->begin(); it != ssList->end(); ++it)
+        {
+            SubnetSite *ss2 = (*it);
+            unsigned short routeSize2 = ss2->getRouteSize();
+            if(routeSize2 > i + 1)
+            {
+                RouteInterface *route2 = ss2->getRoute();
+                if(route2[i].ip == InetAddress(0))
+                    continue;
+                if((i == 0 || hopBefore == route2[i - 1].ip) && hopAfter == route2[i + 1].ip)
+                    options.push_back(route2[i].ip);
+            }
+        }
+        
+        // Filtering out duplicates
+        options.sort(InetAddress::smaller);
+        InetAddress prev(0);
+        for(list<InetAddress>::iterator it = options.begin(); it != options.end(); ++it)
+        {
+            if((*it) == prev)
+                options.erase(it--);
+            else
+                prev = (*it);
+        }
+        
+        // Replaces if and only if there is a single option.
+        if(options.size() == 1)
+        {
+            route[i].repair(options.front());
+            nbReplacements++;
+        }
+    }
+    
+    return nbReplacements;
+}
+
 void ClassicGrower::prepare()
 {
     /*
@@ -51,13 +163,13 @@ void ClassicGrower::prepare()
     unsigned short nbThreads = env->getMaxThreads();
     unsigned short displayMode = env->getDisplayMode();
     
-    list<SubnetSite*> *list = subnets->getSubnetSiteList();
+    list<SubnetSite*> *ssList = subnets->getSubnetSiteList();
 
-    (*out) << "Computing route to each subnet...\n" << endl;
+    (*out) << "Getting the route to each subnet...\n" << endl;
     
     // Lists subnets for which we would like a route
-    std::list<SubnetSite*> toSchedule;
-    for(std::list<SubnetSite*>::iterator it = list->begin(); it != list->end(); ++it)
+    list<SubnetSite*> toSchedule;
+    for(list<SubnetSite*>::iterator it = ssList->begin(); it != ssList->end(); ++it)
     {
         unsigned short status = (*it)->getStatus();
         if(status == SubnetSite::ACCURATE_SUBNET || 
@@ -177,7 +289,262 @@ void ClassicGrower::prepare()
         throw StopException();
     }
     
-    (*out) << "Finished computing routes.\n" << endl;
+    (*out) << "Finished probing to get routes." << endl;
+    
+    env->recordRouteStepsInDictionnary();
+    
+    /*
+     * ROUTE REPAIRMENT
+     * 
+     * Because of security policies, there are several possibilities of getting an incomplete 
+     * route. A route is said to be incomplete when one or several hops (consecutive or not) 
+     * could not be obtained because of a timeout (note: the code let also the possibility that 
+     * the reply gives 0.0.0.0 as replying interface, though this is unlikely). Timeouts in this 
+     * context can be caused by:
+     * -permanently "anonymous" routers (routers that route packets, but drop packets when TTL 
+     *  expires without a reply), 
+     * -a router already identified via previous traceroute and which stops replying after a 
+     *  certain rate of probes, 
+     * -a firewall which does the same, more or less.
+     *
+     * Before getting to the growth of the tree, one should mitigate these "holes" as much as 
+     * possible, because taking 0.0.0.0 in or out of the insertion point search can drastically 
+     * change the structure of the final tree. Therefore:
+     * 1) the code first checks if there are subnets with incomplete routes at all.
+     * 2) then, it checks if there are any "unavoidable" missing hop. For instance, if the third 
+     *    step of all routes (min. length = 9, for instance) is 0.0.0.0, this cannot be fixed.
+     *    These steps are then replaced by placeholders IPs from 0.0.0.0/24 to continue.
+     * 3) the code performs offline repairment, i.e., for each missing interface, it looks for a 
+     *    similar route (i.e., a route where the hops just before and after are identical) or 
+     *    checks what is the typical interface at the same amount of hops. When there is one and 
+     *    only one possibility, the missing hop is replaced by the typical interface.
+     * 4) if there remains missing interfaces, the code reprobes at the right TTL each route 
+     *    target for each incomplete route. A delay of one minute is left between each reprobing 
+     *    and the operation is carried out 3 times.
+     * 
+     * The process stops once there are no longer incomplete routes (besides unavoidable anonymous 
+     * hops, so not all steps mentioned above will necessarily be conducted. No matter when it 
+     * stops, all placeholder IPs are changed back to 0.0.0.0 and the route post-processing phase 
+     * is launched (i.e., detecting and mitigating last hop issue and route cycling/stretching).
+     */
+    
+    // Step 1
+    unsigned int nbIncomplete = countIncompleteRoutes();
+    if(nbIncomplete == 0)
+    {
+        (*out) << "All routes are complete.\n" << endl;
+        this->postProcessRoutes();
+        return;
+    }
+    
+    (*out) << "There are incomplete routes." << endl;
+    
+    // Step 2
+    unsigned short minLength = 255;
+    for(list<SubnetSite*>::iterator it = ssList->begin(); it != ssList->end(); ++it)
+        if((*it)->getRouteSize() > 0 && (*it)->getRouteSize() < minLength)
+            minLength = (*it)->getRouteSize();
+    
+    unsigned short permanentlyAnonymous = 0;
+    for(unsigned short i = 0; i < minLength; i++)
+    {
+        bool anonymous = true;
+        for(list<SubnetSite*>::iterator it = ssList->begin(); it != ssList->end(); ++it)
+        {
+            if((*it)->hasValidRoute())
+            {
+                RouteInterface *routeSs = (*it)->getRoute();
+                if(routeSs[i].ip != InetAddress(0))
+                {
+                    anonymous = false;
+                    break;
+                }
+            }
+        }
+        
+        if(anonymous)
+        {
+            permanentlyAnonymous++;
+            for(list<SubnetSite*>::iterator it = ssList->begin(); it != ssList->end(); ++it)
+            {
+                if((*it)->hasValidRoute())
+                {
+                    RouteInterface *routeSs = (*it)->getRoute();
+                    routeSs[i].ip = InetAddress(permanentlyAnonymous);
+                }
+            }
+        }
+    }
+    
+    if(permanentlyAnonymous > 0)
+    {
+        if(permanentlyAnonymous > 1)
+        {
+            (*out) << "Found " << permanentlyAnonymous << " unavoidable missing hops. ";
+            (*out) << "These hops will be considered as regular interfaces during repairment." << endl;
+        }
+        else
+        {
+            (*out) << "Found one unavoidable missing hop. This hop will be considered as a ";
+            (*out) << "regular interface during repairment." << endl;
+        }
+    }
+    
+    nbIncomplete = countIncompleteRoutes();
+    if(nbIncomplete == 0)
+    {
+        (*out) << "There is no other missing hop. No repairment will occur.\n" << endl;
+        this->postProcessRoutes();
+        return;
+    }
+    
+    // Step 3
+    if(nbIncomplete > 1)
+        (*out) << "Found " << nbIncomplete << " incomplete routes. Starting offline repairment..." << endl;
+    else
+        (*out) << "Found one incomplete route. Starting offline repairment..." << endl;
+    
+    unsigned int nbRepairments = 0; // Amount of 0.0.0.0's being replaced
+    unsigned int fullyRepaired = 0; // Amount of routes fully repaired
+    for(list<SubnetSite*>::iterator it = ssList->begin(); it != ssList->end(); ++it)
+    {
+        SubnetSite *curSubnet = (*it);
+        if(curSubnet->getRoute() != NULL)
+        {
+            if(curSubnet->hasIncompleteRoute())
+            {
+                nbRepairments += this->repairRouteOffline(curSubnet);
+                if(curSubnet->hasCompleteRoute())
+                    fullyRepaired++;
+            }
+        }
+    }
+     
+    if(nbRepairments == 0)
+    {
+        (*out) << "Could not fix incomplete routes with offline repairment." << endl;
+    }
+    else
+    {
+        if(nbRepairments > 1)
+            (*out) << "Repaired " << nbRepairments << " hops." << endl;
+        else
+            (*out) << "Repaired a single hop." << endl;
+        
+        if(fullyRepaired > 1)
+            (*out) << "Fully repaired " << fullyRepaired << " routes." << endl;
+        else if(fullyRepaired == 1)
+            (*out) << "Fully repaired one route." << endl;
+    
+        nbIncomplete = countIncompleteRoutes();
+        if(nbIncomplete == 0)
+        {
+            (*out) << "All routes are now complete.\n" << endl;
+            this->postProcessRoutes();
+            return;
+        }
+    }
+    
+    // Step 4
+    if(nbIncomplete > 1)
+        (*out) << "There remain " << nbIncomplete << " incomplete routes. Starting online repairment..." << endl;
+    else
+        (*out) << "There remains one incomplete route. Starting online repairment..." << endl;
+     
+    nbRepairments = 0;
+    fullyRepaired = 0;
+    AnonymousChecker *checker = NULL;
+    
+    Thread::invokeSleep(TimeVal(60, 0)); // Pause of 1 minute before probing again
+    
+    try
+    {
+        checker = new AnonymousChecker(env);
+        checker->probe();
+        
+        nbRepairments = checker->getTotalSolved();
+        fullyRepaired = checker->getTotalFullyRepaired();
+        
+        float ratioSolved = checker->getRatioSolvedHops();
+        
+        if(ratioSolved > 0.4)
+        {
+            (*out) << "Repaired " << (ratioSolved * 100) << "\% of missing hops. ";
+            (*out) << "Starting a second opinion..." << endl;
+            
+            Thread::invokeSleep(TimeVal(60, 0));
+            
+            checker->reload();
+            checker->probe();
+            
+            nbRepairments += checker->getTotalSolved();
+            fullyRepaired += checker->getTotalFullyRepaired();
+        }
+        
+        delete checker;
+        checker = NULL;
+    }
+    catch(StopException &se)
+    {
+        if(checker != NULL)
+        {
+            delete checker;
+            checker = NULL;
+        }
+        throw StopException();
+    }
+    
+    if(nbRepairments == 0)
+    {
+        (*out) << "Could not fix incomplete routes with online repairment." << endl;
+    }
+    else
+    {
+        if(nbRepairments > 1)
+            (*out) << "Repaired " << nbRepairments << " hops." << endl;
+        else
+            (*out) << "Repaired a single hop." << endl;
+        
+        if(fullyRepaired > 1)
+            (*out) << "Fully repaired " << fullyRepaired << " routes." << endl;
+        else if(fullyRepaired == 1)
+            (*out) << "Fully repaired one route." << endl;
+    
+        nbIncomplete = countIncompleteRoutes();
+        if(nbIncomplete == 0)
+        {
+            (*out) << "All routes are now complete.\n" << endl;
+            this->postProcessRoutes();
+            return;
+        }
+    }
+    
+    (*out) << endl; // Additionnal line break before analyzing route anomalies
+    this->postProcessRoutes();
+}
+
+void ClassicGrower::postProcessRoutes()
+{
+    // Before actual post-processing, changes placeholder IPs back to 0.0.0.0
+    SubnetSiteSet *subnets = env->getSubnetSet();
+    list<SubnetSite*> *ssList = subnets->getSubnetSiteList();
+    for(list<SubnetSite*>::iterator it = ssList->begin(); it != ssList->end(); ++it)
+    {
+        unsigned short routeSize = (*it)->getRouteSize();
+        if(routeSize > 0)
+        {
+            RouteInterface *routeSs = (*it)->getRoute();
+            for(unsigned short i = 0; i < routeSize; ++i)
+            {
+                if(routeSs[i].ip >= InetAddress(1) && routeSs[i].ip <= InetAddress(255))
+                    routeSs[i].ip = InetAddress(0);
+            }
+        }
+    }
+
+    RoutePostProcessor *postProcessor = new RoutePostProcessor(env);
+    postProcessor->process();
+    delete postProcessor;
 }
 
 void ClassicGrower::grow()
@@ -195,23 +562,18 @@ void ClassicGrower::grow()
     while(toInsert != NULL)
     {
         this->insert(toInsert);
-        
         toInsert = subnets->getValidSubnet();
     }
+    (*out) << "Subnets with complete route inserted." << endl;
     
-    // Always printed console messages
-    (*out) << "Subnets with complete route inserted.\n";
-    (*out) << "Now repairing incomplete routes to insert remaining subnets..." << endl;
-    
-    // Then, subnets with an incomplete route after a repairment
+    // Then, subnets with an incomplete route even after repairment/post-processing
     toInsert = subnets->getValidSubnet(false);
     while(toInsert != NULL)
     {
-        this->repairRoute(toInsert);
         this->insert(toInsert);
-        
         toInsert = subnets->getValidSubnet(false);
     }
+    (*out) << "Subnets with incomplete route inserted." << endl;
     
     // Creates the new Soil object and adds the produced tree in it
     this->result = new Soil();
@@ -229,17 +591,17 @@ void ClassicGrower::insert(SubnetSite *subnet)
     NetworkTreeNode *rootNode = this->tree->getRoot();
     list<NetworkTreeNode*> *map = this->depthMap;
 
-    // Gets route information of the new subnet
-    RouteInterface *route = subnet->getRoute();
-    unsigned short routeSize = subnet->getRouteSize();
+    // Gets (final) route information of the new subnet
+    unsigned short routeSize;
+    RouteInterface *route = subnet->getFinalRoute(&routeSize);
     
     // Finds the deepest node which occurs in the route of current subnet
     NetworkTreeNode *insertionPoint = NULL;
     unsigned insertionPointDepth = 0;
     for(unsigned short d = routeSize; d > 0; d--)
     {
-        if(route[d - 1].ip == RouteInterface::MISSING)
-            continue;
+        // if(route[d - 1].state == RouteInterface::MISSING || route[d - 1].state == RouteInterface::ANONYMOUS)
+            // continue;
     
         for(list<NetworkTreeNode*>::iterator i = map[d - 1].begin(); i != map[d - 1].end(); ++i)
         {
@@ -458,90 +820,10 @@ void ClassicGrower::prune(NetworkTreeNode *cur, NetworkTreeNode *prev, unsigned 
     }
 }
 
-void ClassicGrower::repairRoute(SubnetSite *ss)
-{
-    list<NetworkTreeNode*> *map = this->depthMap;
-    RouteInterface *route = ss->getRoute();
-    unsigned short routeSize = ss->getRouteSize();
-
-    // Finds deepest match in the tree
-    NetworkTreeNode *insertionPoint = NULL;
-    unsigned insertionPointDepth = 0;
-    for(unsigned short d = routeSize; d > 0; d--)
-    {
-        if(route[d - 1].state == RouteInterface::MISSING)
-            continue;
-    
-        for(list<NetworkTreeNode*>::iterator i = map[d - 1].begin(); i != map[d - 1].end(); ++i)
-        {
-            if((*i)->hasLabel(route[d - 1].ip))
-            {
-                insertionPoint = (*i);
-                insertionPointDepth = d;
-                break;
-            }
-        }
-        
-        if(insertionPoint != NULL)
-            break;
-    }
-    
-    // If the insertion point could not be found, nothing can be done.
-    if(insertionPoint == NULL)
-    {
-        return;
-    }
-    
-    // Lists all subnets which belongs to the branch where insertion point is.
-    list<SubnetSite*> subnetList;
-    listSubnetsRecursive(&subnetList, insertionPoint);
-    
-    // Finds the route which is the most similar to the incomplete route
-    RouteInterface *similarRoute = NULL;
-    unsigned short maxSimilarities = 0;
-    for(list<SubnetSite*>::iterator i = subnetList.begin(); i != subnetList.end(); ++i)
-    {
-        SubnetSite *cur = (*i);
-        
-        if(!cur->hasCompleteRoute())
-            continue;
-        
-        RouteInterface *curRoute = cur->getRoute();
-        
-        unsigned short similarities = 0;
-        for(unsigned short j = 0; j < insertionPointDepth; ++j)
-        {
-            if(curRoute[j].ip == route[j].ip)
-                similarities++;
-        }
-        
-        if(similarities > maxSimilarities)
-        {
-            similarRoute = curRoute;
-            maxSimilarities = similarities;
-        }
-    }
-    
-    // If there was no subnet with a complete similar route, nothing can be done.
-    if(similarRoute == NULL)
-    {
-        return;
-    }
-    
-    // Completes the incomplete route
-    for(unsigned short i = 0; i < insertionPointDepth; ++i)
-    {
-        if(route[i].state == RouteInterface::MISSING)
-        {
-            route[i].repair(similarRoute[i].ip);
-        }
-    }
-}
-
 NetworkTreeNode *ClassicGrower::createBranch(SubnetSite *subnet, unsigned short depth)
 {
-    RouteInterface *route = subnet->getRoute();
-    unsigned short routeSize = subnet->getRouteSize();
+    unsigned short routeSize = 0;
+    RouteInterface *route = subnet->getFinalRoute(&routeSize);
     
     // If current depth minus 1 equals the route size, then we just have to create a leaf
     if((depth - 1) == routeSize)

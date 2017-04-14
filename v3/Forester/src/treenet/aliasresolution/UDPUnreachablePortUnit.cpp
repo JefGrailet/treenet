@@ -65,7 +65,11 @@ IPToProbe(IP)
 
 UDPUnreachablePortUnit::~UDPUnreachablePortUnit()
 {
-    delete prober;
+    if(prober != NULL)
+    {
+        env->updateProbeAmounts(prober);
+        delete prober;
+    }
 }
 
 void UDPUnreachablePortUnit::stop()

@@ -25,10 +25,54 @@ NetworkScanner::~NetworkScanner()
 
 void NetworkScanner::scan(list<InetAddress> targets)
 {
+    // Retrieves output stream, display mode and subnet sets
     ostream *out = env->getOutputStream();
     unsigned short displayMode = env->getDisplayMode();
     SubnetSiteSet *subnetSet = env->getSubnetSet();
     SubnetSiteSet *zonesToAvoid = env->getIPBlocksToAvoid();
+    
+    /*
+     * TIMEOUT ADAPTATION
+     *
+     * Adapts the timeout value if the targets are close (as unsigned long int). When the 
+     * gap between addresses is small, it is preferrable to increase the timeout period 
+     * during the subnet inference/refinement in case it generated too much traffic at a 
+     * particular network location.
+     */
+    
+    TimeVal timeoutPeriod = env->getTimeoutPeriod();
+    unsigned long smallestGap = 0;
+    InetAddress previous(0);
+    for(list<InetAddress>::iterator it = targets.begin(); it != targets.end(); ++it)
+    {
+        InetAddress cur = (*it);
+        
+        if(previous.getULongAddress() == 0)
+        {
+            previous = cur;
+            continue;
+        }
+        
+        unsigned long curGap = 0;
+        if(cur.getULongAddress() > previous.getULongAddress())
+            curGap = cur.getULongAddress() - previous.getULongAddress();
+        else
+            curGap = previous.getULongAddress() - cur.getULongAddress();
+        
+        if(smallestGap == 0 || curGap < smallestGap)
+            smallestGap = curGap;
+        
+        previous = cur;
+    }
+    
+    bool editedTimeout = false;
+    if(smallestGap < 64)
+    {
+        env->setTimeoutPeriod(timeoutPeriod * 2);
+        editedTimeout = true;
+        (*out) << "Timeout adapted for network scanning: " << env->getTimeoutPeriod();
+        (*out) << "\n" << endl;
+    }
 
     // Size of threads vector
     unsigned short nbThreads = env->getMaxThreads();
@@ -274,10 +318,31 @@ void NetworkScanner::scan(list<InetAddress> targets)
     delete[] th;
     
     (*out) << "Scanning completed.\n" << endl;
+    
+    // Restores regular timeout
+    if(editedTimeout)
+    {
+        env->setTimeoutPeriod(timeoutPeriod);
+    }
 }
 
 void NetworkScanner::finalize()
 {
+    /*
+     * END OF SUBNET REFINEMENT
+     *
+     * After the scanning, subnets may still not contain all live interfaces in their list: a 
+     * filling method helps to fix this issue by adding unlisted responsive interfaces that are 
+     * within the boundaries of the subnet.
+     *
+     * Shadow subnets, if any, are also expanded so that their size (determined by their 
+     * prefix) is the maximum size for these subnets to not collide with other inferred 
+     * subnets that are incompatible for merging. In other words, TreeNET computes a lower 
+     * bound on the prefix length, therefore an upper bound on the size of the subnet.
+     *
+     * Note that this step, unlike scanning, is entirely passive.
+     */
+
     ostream *out = env->getOutputStream();
     unsigned short displayMode = env->getDisplayMode();
     SubnetSiteSet *subnetSet = env->getSubnetSet();

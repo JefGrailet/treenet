@@ -45,6 +45,7 @@ void Cuckoo::climb(Soil *fromSoil)
     else if(roots->size() == 1)
     {
         this->climbRecursive(roots->front()->getRoot(), 0);
+        (*out) << endl;
     }
 }
 
@@ -104,15 +105,58 @@ void Cuckoo::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
                     (*out) << endl;
             }
             
-            this->ahc->setIPsToProbe(interfacesToProbe);
-            this->ahc->setCurrentTTL((unsigned char) depth);
-            try
+            /*
+             * Added in February 2017: now, the hint collection for multi-label nodes (or 
+             * Hedera's) is scheduled such that alias candidates which share the same last hop in 
+             * the route to their respective subnet are probed together. A small delay is also 
+             * introduced before the next set to avoid an aggressive probing. The idea is 
+             * motivated by the fact that early hedera's in a tree sometimes gather an extensive 
+             * amount of subnets below them (sometimes, it is even worse because of anonymous 
+             * hops). This causes the alias resolution by IP-ID, especially the velocity-based 
+             * method, to produce too optimistic results.
+             */
+            
+            if(cur->isHedera())
             {
-                this->ahc->collect();
+                (*out) << endl;
+                
+                list<InetAddress> lastHops;
+                list<list<InetAddress> > sets = cur->listInterfacesByLastHop(&lastHops);
+                while(sets.size() > 0)
+                {
+                    list<InetAddress> curInterfaces = sets.front();
+                    sets.pop_front();
+                    
+                    InetAddress curHop = lastHops.front();
+                    lastHops.pop_front();
+                    
+                    (*out) << "Alias candidates which last hop is " << curHop << "..." << endl;
+                    
+                    this->ahc->setIPsToProbe(curInterfaces);
+                    try
+                    {
+                        this->ahc->collect();
+                    }
+                    catch(StopException e)
+                    {
+                        throw;
+                    }
+                    
+                    Thread::invokeSleep(env->getProbeThreadDelay());
+                }
             }
-            catch(StopException e)
+            // Simple internal: only one collection
+            else
             {
-                throw;
+                this->ahc->setIPsToProbe(interfacesToProbe);
+                try
+                {
+                    this->ahc->collect();
+                }
+                catch(StopException e)
+                {
+                    throw;
+                }
             }
             
             // Small delay before analyzing next internal (typically quarter of a second)

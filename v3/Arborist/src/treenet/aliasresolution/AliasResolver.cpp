@@ -33,15 +33,15 @@ bool AliasResolver::portUnreachableAliasing(IPTableEntry *ip1, IPTableEntry *ip2
         InetAddress srcIP2 = ip2->getPortUnreachableSrcIP();
         
         // Multiple cases for aliasing these IPs.
-        if(srcIP1 != InetAddress("0.0.0.0") && srcIP1 == srcIP2)
+        if(srcIP1 != InetAddress(0) && srcIP1 == srcIP2)
         {
             return true;
         }
-        else if(srcIP1 != InetAddress("0.0.0.0") && srcIP1 == (InetAddress) (*ip2))
+        else if(srcIP1 != InetAddress(0) && srcIP1 == (InetAddress) (*ip2))
         {
             return true;
         }
-        else if(srcIP2 != InetAddress("0.0.0.0") && srcIP2 == (InetAddress) (*ip1))
+        else if(srcIP2 != InetAddress(0) && srcIP2 == (InetAddress) (*ip1))
         {
             return true;
         }
@@ -154,18 +154,25 @@ unsigned short AliasResolver::groupAlly(Fingerprint isolatedIP,
                                         unsigned short maxDiff)
 {
     IPTableEntry *candidateIP = isolatedIP.ipEntry;
+    bool accepted = false;
     for(list<Fingerprint>::iterator it = group.begin(); it != group.end(); ++it)
     {
         IPTableEntry *curIP = (*it).ipEntry;
         
         unsigned short pairAllyRes = this->Ally(curIP, candidateIP, maxDiff);
         if(pairAllyRes == ALLY_ACCEPTED)
-            return ALLY_ACCEPTED;
+        {
+            accepted = true;
+        }
         else if(pairAllyRes == ALLY_REJECTED)
+        {
             return ALLY_REJECTED;
-        
-        // Continue normally otherwise, until reaching end of the list (included)
+        }
     }
+    
+    if(accepted)
+        return ALLY_ACCEPTED;
+    
     return ALLY_NO_SEQUENCE;
 }
 
@@ -388,11 +395,89 @@ bool AliasResolver::velocityOverlap(IPTableEntry *ip1, IPTableEntry *ip2)
         up2Bis = up2 + tolerance;
     }
     
-    // Test overlap with tolerance
+    // If overlaps with tolerance is OK...
     if(low1Bis <= up2Bis && up1Bis >= low2Bis)
-        return true;
-    
+    {
+        unsigned short nbIPIDs = env->getNbIPIDs();
+        
+        /*
+         * (Short validation added in March 2017)
+         *
+         * If we denote ip_1 as the first probed IP, and ip_2 the second, we validate the 
+         * association by checking if ip_2 first IP-ID belongs to the interval:
+         *
+         * [ip_1 last IP-ID, ip_1 last IP-ID + speed (inc./token) * 1,25 * (ip_2 first token - ip_1 last token)]
+         *
+         * The 1,25 ensures slight changes in speed do not disturb the final results. Overlaps 
+         * must also be considered in the process.
+         */
+        
+        IPTableEntry *ip_1, *ip_2;
+        unsigned long diffTokens = 0;
+        if(ip1->getProbeToken(nbIPIDs - 1) < ip2->getProbeToken(0))
+        {
+            ip_1 = ip1;
+            ip_2 = ip2;
+            diffTokens = ip2->getProbeToken(0) - ip1->getProbeToken(nbIPIDs - 1);
+        }
+        else
+        {
+            ip_1 = ip2;
+            ip_2 = ip1;
+            diffTokens = ip1->getProbeToken(0) - ip2->getProbeToken(nbIPIDs - 1);
+        }
+        
+        // We compute a new speed, as increase per tokens, from the first IP.
+        double speedPerToken = 0.0;
+        unsigned int totalDiff = 0;
+        for(unsigned short i = 0; i < nbIPIDs - 1; i++)
+        {
+            unsigned int ID1 = (unsigned int) ip_1->getIPIdentifier(i);
+            unsigned int ID2 = (unsigned int) ip_1->getIPIdentifier(i + 1);
+            
+            if(ID2 < ID1)
+                totalDiff += (ID2 + 65535 - ID1);
+            else
+                totalDiff += (ID2 - ID1);
+        }
+        speedPerToken = (double) totalDiff / (double) (ip_1->getProbeToken(nbIPIDs - 1) - ip_1->getProbeToken(0));
+        speedPerToken *= 2;
+        
+        bool validated = false;
+        unsigned short fIPID = ip_1->getIPIdentifier(nbIPIDs - 1);
+        unsigned short lIPID = ip_2->getIPIdentifier(0);
+        unsigned int prediction = (unsigned int) fIPID + (unsigned int) (speedPerToken * (double) diffTokens);
+        if(prediction > 65535)
+        {
+            unsigned short endIPID = (unsigned short) (prediction % 65535);
+            if((lIPID > fIPID) || (lIPID > 0 && lIPID <= endIPID))
+                validated = true;
+        }
+        else
+        {
+            unsigned short endIPID = (unsigned short) prediction;
+            if(lIPID > fIPID && lIPID <= endIPID)
+                validated = true;
+        }
+        
+        return validated;
+    }
     return false;
+}
+
+bool AliasResolver::groupVelocity(Fingerprint isolatedIP, list<Fingerprint> group)
+{
+    IPTableEntry *candidateIP = isolatedIP.ipEntry;
+    for(list<Fingerprint>::iterator it = group.begin(); it != group.end(); ++it)
+    {
+        IPTableEntry *curIP = (*it).ipEntry;
+        
+        if(!this->velocityOverlap(candidateIP, curIP))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool AliasResolver::reverseDNS(IPTableEntry *ip1, IPTableEntry *ip2)
@@ -449,8 +534,111 @@ bool AliasResolver::reverseDNS(IPTableEntry *ip1, IPTableEntry *ip2)
 
 void AliasResolver::resolve(NetworkTreeNode *internal)
 {
-    list<InetAddress> interfaces = internal->listInterfaces();
+    if(internal->isHedera())
+    {
+        list<InetAddress> lastHops;
+        list<list<InetAddress> > sets = internal->listInterfacesByLastHop(&lastHops);
+        while(sets.size() > 0)
+        {
+            list<InetAddress> curGroup = sets.front();
+            InetAddress curLastHop = lastHops.front();
+            this->resolveGroup(internal, curGroup); // Also does storage of fingerprints
+            internal->storeLastHop(curLastHop);
+            
+            lastHops.pop_front();
+            sets.pop_front();
+        }
+    }
+    else
+    {
+        this->resolveGroup(internal, internal->listInterfaces());
+    }
+    
+    list<Router*> *results = internal->getInferredRouters();
+
+    /*
+     * Some post-processing: removes the routers consisting of a single interface which happens 
+     * to be a candidate contra-pivot of an ODD subnet, except if it is among the labels of this 
+     * network tree node.
+     *
+     * N.B.: checking the interface appears in the subnet responsive IPs list is enough, as the 
+     * pivots were not listed at all in the potential interfaces.
+     */
+     
+    for(list<Router*>::iterator i = results->begin(); i != results->end(); ++i)
+    {
+        if((*i)->getNbInterfaces() == 1)
+        {
+            InetAddress singleInterface = (*i)->getInterfacesList()->front()->ip;
+            list<NetworkTreeNode*> *children = internal->getChildren();
+            for(list<NetworkTreeNode*>::iterator j = children->begin(); j != children->end(); ++j)
+            {
+                if((*j)->isLeaf())
+                {
+                    SubnetSite *ss = (*j)->getAssociatedSubnet();
+                    
+                    if(ss->getStatus() == SubnetSite::ODD_SUBNET && 
+                       ss->hasLiveInterface(singleInterface))
+                    {
+                        bool isALabel = false;
+                        list<InetAddress> *labels = internal->getLabels();
+                        for(list<InetAddress>::iterator k = labels->begin(); k != labels->end(); ++k)
+                        {
+                            if((*k) == singleInterface)
+                            {
+                                isALabel = true;
+                                break;
+                            }
+                        }
+                        
+                        if(!isALabel)
+                        {
+                            delete (*i);
+                            results->erase(i--);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /*
+     * Additionnal post-processing (January 2017): the list of routers is sorted and duplicates 
+     * are removed. Duplicates are a very rare occurrences but can occur when the contra-pivot of 
+     * a subnet and the last step on the route are the same IP (a consequence of a specific 
+     * routing policy OR a bad subnet measurement).
+     */
+    
+    results->sort(Router::compare);
+    Router *previousRouter = NULL;
+    for(list<Router*>::iterator i = results->begin(); i != results->end(); ++i)
+    {
+        Router *cur = (*i);
+        
+        if(previousRouter != NULL)
+        {
+            if(cur->equals(previousRouter))
+            {
+                delete cur;
+                results->erase(i--);
+            }
+            else
+            {
+                previousRouter = cur;
+            }
+        }
+        else
+        {
+            previousRouter = cur;
+        }
+    }
+}
+
+void AliasResolver::resolveGroup(NetworkTreeNode *neighborhood, list<InetAddress> interfaces)
+{
     IPLookUpTable *table = env->getIPTable();
+    list<Router*> *results = neighborhood->getInferredRouters();
     
     // Remove duplicata (possible because ingress interface of neighborhood can be a contra-pivot)
     InetAddress previous(0);
@@ -487,12 +675,11 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
     }
     fingerprints.sort(Fingerprint::compare);
     
-    // Makes a copy of the sorted fingerprints to store in the node "internal"
+    // Makes a copy of the sorted fingerprints to store in the neighborhood/internal node object
     list<Fingerprint> fingerprintsCp(fingerprints);
-    internal->storeFingerprints(fingerprintsCp);
+    neighborhood->storeFingerprints(fingerprintsCp);
     
     // Starts association...
-    list<Router*> *result = internal->getInferredRouters();
     while(fingerprints.size() > 0)
     {
         Fingerprint cur = fingerprints.front();
@@ -504,7 +691,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
             Router *curRouter = new Router();
             curRouter->addInterface(InetAddress((InetAddress) (*cur.ipEntry)), 
                                     RouterInterface::FIRST_IP);
-            result->push_back(curRouter);
+            results->push_back(curRouter);
             break;
         }
         
@@ -530,7 +717,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
          * list. Indeed, the fingerprinting of such IP does not always work, for some reason.
          */
         
-        if(cur.portUnreachableSrcIP != InetAddress("0.0.0.0"))
+        if(cur.portUnreachableSrcIP != InetAddress(0))
         {
             for(list<Fingerprint>::iterator i = fingerprints.begin(); i != fingerprints.end(); ++i)
             {
@@ -552,9 +739,9 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
              * in order to try other aliasing methods with this fingerprint.
              */
             
-            if(cur.portUnreachableSrcIP != InetAddress("0.0.0.0"))
+            if(cur.portUnreachableSrcIP != InetAddress(0))
             {
-                cur.portUnreachableSrcIP = InetAddress("0.0.0.0");
+                cur.portUnreachableSrcIP = InetAddress(0);
                 fingerprints.push_front(cur);
                 fingerprints.sort(Fingerprint::compare);
                 continue;
@@ -564,10 +751,10 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                 Router *curRouter = new Router();
                 curRouter->addInterface(InetAddress((InetAddress) (*cur.ipEntry)), 
                                         RouterInterface::FIRST_IP);
-                result->push_back(curRouter);
+                results->push_back(curRouter);
             }
         }
-        else if(cur.portUnreachableSrcIP != InetAddress("0.0.0.0"))
+        else if(cur.portUnreachableSrcIP != InetAddress(0))
         {
             /*
              * Case 2: similar fingerprints for which we have the data needed for the UDP 
@@ -590,7 +777,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                                         RouterInterface::UDP_PORT_UNREACHABLE);
             }
             
-            result->push_back(curRouter);
+            results->push_back(curRouter);
         }
         else if(cur.toGroupByDefault())
         {
@@ -658,7 +845,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                             curRouter->addInterface(curInterface, aliasMethod);
                         }
                         
-                        result->push_back(curRouter);
+                        results->push_back(curRouter);
                         
                         // Takes care of excluded IPs
                         if(excluded.size() > 0)
@@ -682,7 +869,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                                 Router *curRouter = new Router();
                                 curRouter->addInterface(InetAddress((InetAddress) (*ref.ipEntry)), 
                                                        RouterInterface::FIRST_IP);
-                                result->push_back(curRouter);
+                                results->push_back(curRouter);
                             }
                         }
                     }
@@ -708,7 +895,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                                             aliasMethod);
                 }
                 
-                result->push_back(curRouter);
+                results->push_back(curRouter);
             }
         }
         else if(cur.IPIDCounterType == IPTableEntry::HEALTHY_COUNTER)
@@ -742,7 +929,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                 // Tries velocity overlap only if Ally did NOT reject the association
                 else if(AllyResult == ALLY_NO_SEQUENCE)
                 {
-                    if(this->velocityOverlap(ref.ipEntry, subCur.ipEntry))
+                    if(this->groupVelocity(subCur, grouped))
                     {
                         grouped.push_back(subCur);
                         groupMethod.push_back(RouterInterface::IPID_VELOCITY);
@@ -763,7 +950,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                      */
                     
                     bool fusionOccurred = false;
-                    for(list<Router*>::iterator it = result->begin(); it != result->end(); ++it)
+                    for(list<Router*>::iterator it = results->begin(); it != results->end(); ++it)
                     {
                         Router *listed = (*it);
 
@@ -798,13 +985,13 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                          * loop: the "listed" variable disappears (because it is technically a 
                          * local variable), even if one use a pointer to it (with & operator), 
                          * causing the whole program to crash. We also have to delete "it" in the 
-                         * result list and push the modified "listed" afterwars (yup, it's 
+                         * results list and push the modified "listed" afterwars (yup, it's 
                          * twisted, but this is the limit of local variables in C++).
                          */
                         
                         if(fusionOccurred)
                         {
-                            result->erase(it--);
+                            results->erase(it--);
                             listed->addInterface(InetAddress((InetAddress) (*ref.ipEntry)), fusionAliasMethod);
                             
                             while(grouped.size() > 0)
@@ -817,7 +1004,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                                 listed->addInterface(InetAddress((InetAddress) (*h.ipEntry)), aliasMethod);
                             }
                             
-                            result->push_back(listed);
+                            results->push_back(listed);
                             break;
                         }
                     }
@@ -839,7 +1026,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                             curRouter->addInterface(InetAddress((InetAddress) (*head.ipEntry)), 
                                                     aliasMethod);
                         }
-                        result->push_back(curRouter);
+                        results->push_back(curRouter);
                     }
                     
                     // Takes care of excluded IPs
@@ -864,7 +1051,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                             Router *curRouter = new Router();
                             curRouter->addInterface(InetAddress((InetAddress) (*ref.ipEntry)), 
                                                     RouterInterface::FIRST_IP);
-                            result->push_back(curRouter);
+                            results->push_back(curRouter);
                         }
                     }
                 }
@@ -894,7 +1081,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                     Router *curRouter = new Router();
                     curRouter->addInterface(InetAddress((InetAddress) (*subCur.ipEntry)), 
                                             RouterInterface::FIRST_IP);
-                    result->push_back(curRouter);
+                    results->push_back(curRouter);
                 }
             }
             else
@@ -907,7 +1094,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                         Router *curRouter = new Router();
                         curRouter->addInterface(InetAddress((InetAddress) (*subCur.ipEntry)), 
                                                 RouterInterface::FIRST_IP);
-                        result->push_back(curRouter);
+                        results->push_back(curRouter);
                         
                         similar.erase(it--);
                     }
@@ -920,7 +1107,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                 Router *curRouter = new Router();
                 curRouter->addInterface(InetAddress((InetAddress) (*cur.ipEntry)), 
                                         RouterInterface::FIRST_IP);
-                result->push_back(curRouter);
+                results->push_back(curRouter);
                 continue;
             }
             
@@ -954,7 +1141,7 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                         curRouter->addInterface(InetAddress((InetAddress) (*head.ipEntry)), 
                                                 RouterInterface::REVERSE_DNS);
                     }
-                    result->push_back(curRouter);
+                    results->push_back(curRouter);
                     
                     // Takes care of excluded IPs
                     if(excluded.size() > 0)
@@ -978,89 +1165,11 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
                             Router *curRouter = new Router();
                             curRouter->addInterface(InetAddress((InetAddress) (*ref.ipEntry)), 
                                                     RouterInterface::FIRST_IP);
-                            result->push_back(curRouter);
+                            results->push_back(curRouter);
                         }
                     }
                 }
             }
-        }
-    }
-    
-    /*
-     * Some post-processing: removes the routers consisting of a single interface which happens 
-     * to be a candidate contra-pivot of an ODD subnet, except if it is among the labels of this 
-     * network tree node.
-     *
-     * N.B.: checking the interface appears in the subnet responsive IPs list is enough, as the 
-     * pivots were not listed at all in the potential interfaces.
-     */
-     
-    for(list<Router*>::iterator i = result->begin(); i != result->end(); ++i)
-    {
-        if((*i)->getNbInterfaces() == 1)
-        {
-            InetAddress singleInterface = (*i)->getInterfacesList()->front()->ip;
-            list<NetworkTreeNode*> *children = internal->getChildren();
-            for(list<NetworkTreeNode*>::iterator j = children->begin(); j != children->end(); ++j)
-            {
-                if((*j)->isLeaf())
-                {
-                    SubnetSite *ss = (*j)->getAssociatedSubnet();
-                    
-                    if(ss->getStatus() == SubnetSite::ODD_SUBNET && 
-                       ss->hasLiveInterface(singleInterface))
-                    {
-                        bool isALabel = false;
-                        list<InetAddress> *labels = internal->getLabels();
-                        for(list<InetAddress>::iterator k = labels->begin(); k != labels->end(); ++k)
-                        {
-                            if((*k) == singleInterface)
-                            {
-                                isALabel = true;
-                                break;
-                            }
-                        }
-                        
-                        if(!isALabel)
-                        {
-                            delete (*i);
-                            result->erase(i--);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    /*
-     * Additionnal post-processing (January 2017): the list of routers is sorted and duplicates 
-     * are removed. Duplicates are a very rare occurrences but can occur when the contra-pivot of 
-     * a subnet and the last step on the route are the same IP (a consequence of a specific 
-     * routing policy OR a bad subnet measurement).
-     */
-    
-    result->sort(Router::compare);
-    Router *previousRouter = NULL;
-    for(list<Router*>::iterator i = result->begin(); i != result->end(); ++i)
-    {
-        Router *cur = (*i);
-        
-        if(previousRouter != NULL)
-        {
-            if(cur->equals(previousRouter))
-            {
-                delete cur;
-                result->erase(i--);
-            }
-            else
-            {
-                previousRouter = cur;
-            }
-        }
-        else
-        {
-            previousRouter = cur;
         }
     }
 }

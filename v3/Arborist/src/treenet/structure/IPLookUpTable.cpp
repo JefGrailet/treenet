@@ -47,6 +47,17 @@ bool IPLookUpTable::isEmpty()
     return false;
 }
 
+unsigned int IPLookUpTable::getTotalIPs()
+{
+    unsigned int total = 0;
+    for(unsigned long i = 0; i < SIZE_TABLE; i++)
+    {
+        list<IPTableEntry*> IPList = this->haystack[i];
+        total += IPList.size();
+    }
+    return total;
+}
+
 IPTableEntry *IPLookUpTable::create(InetAddress needle)
 {
     unsigned long index = (needle.getULongAddress() >> 12);
@@ -92,8 +103,10 @@ void IPLookUpTable::outputDictionnary(string filename)
         for(list<IPTableEntry*>::iterator j = IPList.begin(); j != IPList.end(); ++j)
         {
             IPTableEntry *cur = (*j);
-            string curStr = cur->toString();
+            if(cur->getTTL() == IPTableEntry::NO_KNOWN_TTL)
+                continue;
             
+            string curStr = cur->toString();
             if(!curStr.empty())
                 output += curStr + "\n";
         }

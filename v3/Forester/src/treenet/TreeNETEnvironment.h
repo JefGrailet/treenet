@@ -18,11 +18,14 @@
 
 #include <ostream>
 using std::ostream;
+#include <fstream>
+using std::ofstream;
 
 #include "../common/thread/Thread.h"
 #include "../common/thread/Mutex.h"
 #include "../common/date/TimeVal.h"
 #include "../common/inet/InetAddress.h"
+#include "../prober/DirectProber.h"
 #include "utils/StopException.h" // Not used directly here, but provided to all classes that need it this way
 #include "structure/IPLookUpTable.h"
 #include "structure/SubnetSiteSet.h"
@@ -46,7 +49,8 @@ public:
     static Mutex emergencyStopMutex;
 
     // Constructor/destructor
-    TreeNETEnvironment(ostream *out, 
+    TreeNETEnvironment(ostream *consoleOut, 
+                       bool externalLogs, 
                        bool usingMerging, 
                        unsigned short probingProtocol, 
                        bool doubleProbe, 
@@ -72,7 +76,10 @@ public:
     // Accessers
     inline IPLookUpTable *getIPTable() { return this->IPTable; }
     inline SubnetSiteSet *getSubnetSet() { return this->subnetSet; }
-    inline ostream *getOutputStream() { return this->out; }
+    
+    // Accesser to the output stream is not inline, because it depends of the settings
+    ostream *getOutputStream();
+    inline bool usingExternalLogs() { return this->externalLogs; }
     
     inline unsigned short getProbingProtocol() { return this->probingProtocol; }
     inline bool usingMergingAtParsing() { return this->usingMerging; }
@@ -105,6 +112,16 @@ public:
     // Setter for timeout period
     inline void setTimeoutPeriod(TimeVal timeout) { this->timeoutPeriod = timeout; }
     
+    // Methods to handle total amounts of (successful) probes
+    void updateProbeAmounts(DirectProber *proberObject);
+    void resetProbeAmounts();
+    inline unsigned int getTotalProbes() { return this->totalProbes; }
+    inline unsigned int getTotalSuccessfulProbes() { return this->totalSuccessfulProbes; }
+    
+    // Method to handle the output stream writing in an output file.
+    void openLogStream(string filename, bool message = true);
+    void closeLogStream();
+    
     /*
      * Method to trigger the (emergency) stop. It is a special method of TreeNETEnvironment which 
      * is meant to force the program to quit when it cannot fully benefit from the host's 
@@ -117,6 +134,15 @@ public:
     
     // Method to check if the flag for emergency stop is raised.
     inline bool isStopping() { return this->flagEmergencyStop; }
+    
+    /*
+     * March/April 2017: additionnal methods to handle the IP dictionnary. One is to reset the 
+     * dictionnary after re-doing the traceroute phase, the other is to fill the dictionnary 
+     * either after that same phase or upon reading a .subnet dump with no associated .ip file.
+     */
+    
+    void resetIPDictionnary();
+    void fillIPDictionnary();
 
 private:
 
@@ -124,8 +150,16 @@ private:
     IPLookUpTable *IPTable;
     SubnetSiteSet *subnetSet;
     
-    // Output stream
-    ostream *out;
+    /*
+     * Output streams (main console output and file stream for the external logs). Having both is 
+     * useful because the console output stream will still be used to advertise the creation of a 
+     * new log file and emergency stop if the user requested probing details to be written in 
+     * external logs.
+     */
+    
+    ostream *consoleOut;
+    ofstream logStream;
+    bool externalLogs, isExternalLogOpened;
     
     // Various values which stay constant during execution
     bool usingMerging;
@@ -141,15 +175,15 @@ private:
     double baseTolerance;
     double maxError;
     
-    /*
-     * Value for maintaining display mode; setting it to DISPLAY_MODE_DEBUG (=3) is equivalent to 
-     * using the debug mode of ExploreNET. Display modes is a new feature brought by v3.0.
-     */
-    
+    // Field for maintaining display mode (max. value = 3, amounts to debug mode)
     unsigned short displayMode;
     
     // Maximum amount of threads involved during the probing steps
     unsigned short maxThreads;
+    
+    // Fields to record the amount of (successful) probes used during some stage (can be reset)
+    unsigned int totalProbes;
+    unsigned int totalSuccessfulProbes;
     
     // Flag for emergency exit
     bool flagEmergencyStop;

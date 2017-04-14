@@ -499,7 +499,7 @@ SubnetSite *SubnetSiteSet::getValidSubnet(bool completeRoute)
            ss->getStatus() == SubnetSite::ODD_SUBNET ||
            ss->getStatus() == SubnetSite::SHADOW_SUBNET)
         {
-            if(!completeRoute || ss->hasCompleteRoute())
+            if(ss->hasValidRoute() && (!completeRoute || ss->hasCompleteRoute()))
             {
                 siteList.erase(i--);
                 return ss;

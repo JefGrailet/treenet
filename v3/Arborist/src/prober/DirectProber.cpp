@@ -101,7 +101,9 @@ lowerBoundDstPortICMPseq(lowBoundDstPortICMPseq),
 upperBoundDstPortICMPseq(upBoundDstPortICMPseq),
 probeCountStatistic(0),
 verbose(v), 
-log("")
+log(""),
+nbProbes(0),
+nbSuccessfulProbes(0)
 {
     this->setAttentionMsg(attentionMessage);
 

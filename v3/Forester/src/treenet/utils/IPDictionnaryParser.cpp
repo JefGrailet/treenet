@@ -13,12 +13,24 @@
 using std::stringstream;
 #include <vector>
 using std::vector;
+#include <iomanip>
+using std::setprecision;
+#include <fstream>
+using std::ifstream;
+using std::ofstream;
+#include <iostream>
+using std::endl;
+using std::flush;
 
 #include "IPDictionnaryParser.h"
 
 IPDictionnaryParser::IPDictionnaryParser(TreeNETEnvironment *env)
 {
     this->env = env;
+    this->parsedLines = 0;
+    this->badLines = 0;
+    this->unusableLines = 0;
+    this->totalLines = 0;
 }
 
 IPDictionnaryParser::~IPDictionnaryParser()
@@ -37,10 +49,37 @@ list<string> IPDictionnaryParser::explode(string input, char delimiter)
     return result;
 }
 
-void IPDictionnaryParser::parse(string inputFileContent)
+bool IPDictionnaryParser::parse(string inputFileName)
 {
-    ostream *out = env->getOutputStream();
+    unsigned short displayMode = env->getDisplayMode();
     IPLookUpTable *dictionnary = env->getIPTable();
+    
+    ostream *out = env->getOutputStream();
+    (*out) << "Parsing " << inputFileName << "..." << endl;
+    
+    // Resetting count fields for next parsing.
+    this->parsedLines = 0;
+    this->badLines = 0;
+    this->unusableLines = 0;
+    this->totalLines = 0;
+    
+    string inputFileContent = "";
+    ifstream inFile;
+    inFile.open((inputFileName).c_str());
+    if(inFile.is_open())
+    {
+        inputFileContent.assign((std::istreambuf_iterator<char>(inFile)),
+                                (std::istreambuf_iterator<char>()));
+        
+        inFile.close();
+    }
+    else
+    {
+        (*out) << "File " << inputFileName << " does not exist.\n";
+        (*out) << "IP dictionnary will be filled with interfaces found in subnets or in their ";
+        (*out) << "respective routes.\n" << endl;
+        return false;
+    }
     
     stringstream ss(inputFileContent);
     string targetStr;
@@ -53,6 +92,8 @@ void IPDictionnaryParser::parse(string inputFileContent)
         // Empty lines are not parsed (should not occur, actually)
         if(targetStr.size() == 0)
             continue;
+        
+        this->totalLines++;
         
         // Values to parse
         InetAddress liveIP(0);
@@ -70,7 +111,9 @@ void IPDictionnaryParser::parse(string inputFileContent)
             size_t pos2 = targetStr.find('-');
             if(pos2 == std::string::npos)
             {
-                (*out) << "Line " << nbLine << " does not match any known syntax." << endl;
+                this->unusableLines++;
+                if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                    (*out) << "Line " << nbLine << " does not match any known syntax." << endl;
                 continue;
             }
             
@@ -83,8 +126,12 @@ void IPDictionnaryParser::parse(string inputFileContent)
             }
             catch (InetAddressException &e)
             {
-                (*out) << "Malformed/Unrecognized IP \"" + IPStr;
-                (*out) << "\" at line " << nbLine << "." << endl;
+                this->unusableLines++;
+                if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                {
+                    (*out) << "Malformed/Unrecognized IP \"" + IPStr;
+                    (*out) << "\" at line " << nbLine << "." << endl;
+                }
                 continue;
             }
             TTL = (unsigned char) std::atoi(TTLStr.c_str());
@@ -102,6 +149,7 @@ void IPDictionnaryParser::parse(string inputFileContent)
             
             newEntry->setTTL(TTL);
             
+            this->parsedLines++;
             continue;
         }
         
@@ -111,7 +159,9 @@ void IPDictionnaryParser::parse(string inputFileContent)
         size_t pos2 = IPAndTTLStr.find('-');
         if(pos2 == std::string::npos)
         {
-            (*out) << "Line " << nbLine << " does not match expected IP - TTL syntax." << endl;
+            this->badLines++;
+            if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                (*out) << "Line " << nbLine << " does not match expected IP - TTL syntax." << endl;
             continue;
         }
         
@@ -124,8 +174,12 @@ void IPDictionnaryParser::parse(string inputFileContent)
         }
         catch (InetAddressException &e)
         {
-            (*out) << "Malformed/Unrecognized IP \"" + IPStr;
-            (*out) << "\" at line " << nbLine << "." << endl;
+            this->badLines++;
+            if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+            {
+                (*out) << "Malformed/Unrecognized IP \"" + IPStr;
+                (*out) << "\" at line " << nbLine << "." << endl;
+            }
             continue;
         }
         TTL = (unsigned char) std::atoi(TTLStr.c_str());
@@ -139,7 +193,10 @@ void IPDictionnaryParser::parse(string inputFileContent)
         
         // Skips if entry previously existed
         if(newEntry == NULL)
-            continue;    
+        {
+            this->totalLines--;
+            continue;
+        }
         
         newEntry->setTTL(TTL);
 
@@ -182,9 +239,13 @@ void IPDictionnaryParser::parse(string inputFileContent)
                 }
                 catch (InetAddressException &e)
                 {
-                    (*out) << "Malformed/Unrecognized IP (source IP of ICMP Port ";
-                    (*out) << "Unreachable) \"" + replyingSrcIPStr;
-                    (*out) << "\" at line " << nbLine << "." << endl;
+                    this->badLines++;
+                    if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                    {
+                        (*out) << "Malformed/Unrecognized IP (source IP of ICMP Port ";
+                        (*out) << "Unreachable) \"" + replyingSrcIPStr;
+                        (*out) << "\" at line " << nbLine << "." << endl;
+                    }
                     continue;
                 }
             }
@@ -207,9 +268,13 @@ void IPDictionnaryParser::parse(string inputFileContent)
                     }
                     catch (InetAddressException &e)
                     {
-                        (*out) << "Malformed/Unrecognized IP (source IP of ICMP Port ";
-                        (*out) << "Unreachable) \"" + complianceStr;
-                        (*out) << "\" at line " << nbLine << "." << endl;
+                        this->badLines++;
+                        if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                        {
+                            (*out) << "Malformed/Unrecognized IP (source IP of ICMP Port ";
+                            (*out) << "Unreachable) \"" + complianceStr;
+                            (*out) << "\" at line " << nbLine << "." << endl;
+                        }
                         continue;
                     }
                 }
@@ -232,6 +297,7 @@ void IPDictionnaryParser::parse(string inputFileContent)
             {
                 newEntry->setHostName(ARHintsStr);
             }
+            this->parsedLines++;
             continue;
         }
         
@@ -258,6 +324,7 @@ void IPDictionnaryParser::parse(string inputFileContent)
         if(hints.size() == 0)
         {
             // No token/IP ID pair, just DNS: goes to next iteration without any print out
+            this->parsedLines++;
             continue;
         }
         
@@ -269,6 +336,7 @@ void IPDictionnaryParser::parse(string inputFileContent)
         
             newEntry->setCounterType(IPTableEntry::ECHO_COUNTER);
             newEntry->raiseFlagProcessed();
+            this->parsedLines++;
             continue;
         }
         
@@ -284,8 +352,12 @@ void IPDictionnaryParser::parse(string inputFileContent)
         unsigned short amountIPIDs = (hints.size() + 1) / 2;
         if(amountIPIDs < env->getNbIPIDs())
         {
-            (*out) << "Too few IP-IDs at line " << nbLine << ": expected " << env->getNbIPIDs();
-            (*out) << ", only got " << amountIPIDs << "." << endl;
+            this->badLines++;
+            if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+            {
+                (*out) << "Too few IP-IDs at line " << nbLine << ": expected ";
+                (*out) << env->getNbIPIDs() << ", only got " << amountIPIDs << "." << endl;
+            }
             continue;
         }
         
@@ -339,8 +411,12 @@ void IPDictionnaryParser::parse(string inputFileContent)
         
         if(fail)
         {
-            (*out) << "Badly formatted IP-IDs at line " << nbLine << ". They will not be ";
-            (*out) << "parsed." << endl;
+            this->badLines++;
+            if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+            {
+                (*out) << "Badly formatted IP-IDs at line " << nbLine << ". They will not be ";
+                (*out) << "parsed." << endl;
+            }
             continue;
         }
         
@@ -362,6 +438,35 @@ void IPDictionnaryParser::parse(string inputFileContent)
             }
         }
         
-        // We're done here.
+        this->parsedLines++;
     }
+    
+    // Summary of parsing
+    if(this->totalLines > 0)
+        (*out) << "Total of parsed lines: " << this->totalLines << endl;
+    if(this->parsedLines > 0)
+    {
+        float ratio = ((float) this->parsedLines / (float) this->totalLines) * 100;
+        (*out) << "Fully parsed lines (correct format): " << this->parsedLines << " (";
+        (*out) << setprecision(3) << ratio << "%)" << endl;
+    }
+    if(this->badLines > 0)
+    {
+        float ratio = ((float) this->badLines / (float) this->totalLines) * 100;
+        (*out) << "Partially formatted lines (formatting errors): " << this->badLines << " (";
+        (*out) << setprecision(3) << ratio << "%)" << endl;
+    }
+    if(this->unusableLines > 0)
+    {
+        float ratio = ((float) this->unusableLines / (float) this->totalLines) * 100;
+        (*out) << "Unusable lines (bad format): " << this->unusableLines << " (";
+        (*out) << setprecision(3) << ratio << "%)" << endl;
+    }
+    
+    (*out) << "Parsing of " << inputFileName << " completed.\n" << flush;
+    if(this->parsedLines == 0)
+        (*out) << "No correct line was parsed. This might worsen subsequent tasks.\n";
+    (*out) << endl;
+    
+    return true;
 }

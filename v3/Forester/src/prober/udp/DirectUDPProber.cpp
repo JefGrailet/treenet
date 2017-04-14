@@ -66,6 +66,8 @@ ProbeRecord *DirectUDPProber::basic_probe(const InetAddress &src,
     uint16_t srcPort_16 = (uint16_t) srcPort;
     uint16_t dstPort_16 = (uint16_t) dstPort;
 
+    this->nbProbes++;
+
     // 1) Prepares packet to send
     uint32_t IPHeaderLength = DirectProber::MINIMUM_IP_HEADER_LENGTH;
     struct ip *ip = (struct ip*) buffer;
@@ -130,7 +132,7 @@ ProbeRecord *DirectUDPProber::basic_probe(const InetAddress &src,
 
     udp->check = DirectProber::calculateInternetChecksum((uint16_t*) pseudoBuffer, pseudoBufferLength);
 
-    // 2) Send the request packet
+    // 2) Sends the request packet
     struct sockaddr_in to;
     memset(&to, 0, sizeof(to));
     to.sin_family = AF_INET;
@@ -369,6 +371,7 @@ ProbeRecord *DirectUDPProber::basic_probe(const InetAddress &src,
                         this->log += newRecord->toString();
                     }
                     
+                    this->nbSuccessfulProbes++;
                     return newRecord;
                 }
             }

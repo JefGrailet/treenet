@@ -42,7 +42,7 @@ public:
     // Constructor
     NetworkPrescanningUnit(TreeNETEnvironment *env, 
                            NetworkPrescanner *parent, 
-                           std::list<InetAddress> IPsToProbe, 
+                           list<InetAddress> IPsToProbe, 
                            unsigned short lowerBoundICMPid = DirectICMPProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID, 
                            unsigned short upperBoundICMPid = DirectICMPProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID, 
                            unsigned short lowerBoundICMPseq = DirectICMPProber::DEFAULT_LOWER_DST_PORT_ICMP_SEQ, 
@@ -59,7 +59,7 @@ private:
     
     // Private fields
     NetworkPrescanner *parent;
-    std::list<InetAddress> IPsToProbe;
+    list<InetAddress> IPsToProbe;
 
     // Prober object and probing methods (no TTL asked, since it is here virtually infinite)
     DirectProber *prober;

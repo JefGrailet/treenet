@@ -20,8 +20,9 @@ contrapivot(0),
 TTL1(0), 
 TTL2(0), 
 routeSize(0), 
-route(0)//, 
-// bipSubnet(NULL) TODO: put this back
+processedRouteSize(0), 
+route(NULL), 
+processedRoute(NULL)
 {
 
 }
@@ -29,8 +30,10 @@ route(0)//,
 SubnetSite::~SubnetSite()
 {
     clearIPlist();
-    if(route != 0)
+    if(route != NULL)
         delete[] route;
+    if(processedRoute != NULL)
+        delete[] processedRoute;
 }
 
 void SubnetSite::clearIPlist()
@@ -316,14 +319,42 @@ list<InetAddress> SubnetSite::getContrapivotAddresses()
 bool SubnetSite::hasCompleteRoute()
 {
     for(unsigned short i = 0; i < this->routeSize; ++i)
-    {
-        unsigned short s = this->route[i].state;
-        if(s == RouteInterface::NOT_MEASURED || s == RouteInterface::MISSING)
-        {
+        if(this->route[i].ip == InetAddress(0))
             return false;
-        }
-    }
     return true;
+}
+
+bool SubnetSite::hasIncompleteRoute()
+{
+    for(unsigned short i = 0; i < this->routeSize; ++i)
+        if(this->route[i].ip == InetAddress(0))
+            return true;
+    return false;
+}
+
+unsigned short SubnetSite::countMissingHops()
+{
+    unsigned short res = 0;
+    for(unsigned short i = 0; i < this->routeSize; ++i)
+        if(this->route[i].ip == InetAddress(0))
+            res++;
+    return res;
+}
+
+RouteInterface* SubnetSite::getFinalRoute(unsigned short *finalRouteSize)
+{
+    if(processedRouteSize > 0 && processedRoute != NULL)
+    {
+        (*finalRouteSize) = processedRouteSize;
+        return processedRoute;
+    }
+    if(routeSize > 0 && route != NULL)
+    {
+        (*finalRouteSize) = routeSize;
+        return route;
+    }
+    (*finalRouteSize) = 0;
+    return NULL;
 }
 
 string SubnetSite::toString()
@@ -368,7 +399,7 @@ string SubnetSite::toString()
         }
         ss << "\n";
         
-        // Writes route
+        // Writes (observed) route
         if(this->routeSize > 0 && this->route != NULL)
         {
             guardian = false;
@@ -380,17 +411,27 @@ string SubnetSite::toString()
                     guardian = true;
                 
                 unsigned short curState = this->route[i].state;
-                if(curState != RouteInterface::NOT_MEASURED && curState != RouteInterface::MISSING)
+                if(this->route[i].ip != InetAddress(0))
                 {
                     ss << this->route[i].ip;
-                    if(curState == RouteInterface::REPAIRED)
-                        ss << " [Repaired]";
+                    if(curState == RouteInterface::REPAIRED_1)
+                        ss << " [Repaired-1]";
+                    else if(curState == RouteInterface::REPAIRED_2)
+                        ss << " [Repaired-2]";
+                    else if(curState == RouteInterface::LIMITED)
+                        ss << " [Limited]";
+                    else if(curState == RouteInterface::STRETCHED)
+                        ss << " [Stretched]";
+                    else if(curState == RouteInterface::CYCLE)
+                        ss << " [Cycle]";
                     else if(curState == RouteInterface::PREDICTED)
                         ss << " [Predicted]";
                 }
                 else
                 {
-                    if(curState == RouteInterface::MISSING)
+                    if(curState == RouteInterface::ANONYMOUS)
+                        ss << "Anonymous";
+                    else if(curState == RouteInterface::MISSING)
                         ss << "Missing";
                     else
                         ss << "Skipped";
@@ -401,6 +442,26 @@ string SubnetSite::toString()
         else
         {
             ss << "No route\n";
+        }
+        
+        // Writes post-processed route if existing (otherwise, regular display)
+        if(processedRouteSize > 0 && processedRoute != NULL)
+        {
+            guardian = false;
+            ss << "Post-processed: ";
+            for(unsigned int i = 0; i < processedRouteSize; i++)
+            {
+                if(guardian)
+                    ss << ", ";
+                else
+                    guardian = true;
+                
+                if(processedRoute[i].ip != InetAddress(0))
+                    ss << processedRoute[i].ip;
+                else
+                    ss << "Anonymous";
+            }
+            ss << "\n";
         }
     }
     
@@ -477,82 +538,4 @@ unsigned int SubnetSite::getCapacity()
         return 1;
     
     return (unsigned int) pow(2, power);
-}
-
-bool SubnetSite::matchRoutePrefix(unsigned short sPrefix, InetAddress *prefix)
-{
-    // Equality rejected as well (at least one interface must remain untouched)
-    if(sPrefix >= this->routeSize)
-        return false;
-
-    for(unsigned short i = 0; i < sPrefix; i++)
-    {
-        if(this->route[i].ip != prefix[i])
-            return false;
-    }
-
-    return true;
-}
-
-void SubnetSite::adaptRoute(unsigned short offset, 
-                            unsigned short sNew, 
-                            InetAddress *newPrefix)
-{
-    // First lists interfaces beyond offset (included)
-    list<InetAddress> lastInterfaces;
-    for(unsigned short i = offset; i < this->routeSize; i++)
-        lastInterfaces.push_back(this->route[i].ip);
-    
-    // Then creates the new route
-    unsigned short newRouteSize = sNew + (unsigned short) lastInterfaces.size();
-    RouteInterface *newRoute = new RouteInterface[newRouteSize];
-    
-    // Inserts the new prefix of the route
-    for(unsigned short i = 0; i < sNew; i++)
-    {
-        newRoute[i].ip = newPrefix[i];
-        newRoute[i].state = RouteInterface::PREDICTED;
-    }
-    
-    // Then inserts the last interfaces
-    for(unsigned short i = sNew; i < newRouteSize; i++)
-    {
-        InetAddress cur = lastInterfaces.front();
-        lastInterfaces.pop_front();
-        
-        newRoute[i].ip = cur;
-        newRoute[i].state = RouteInterface::VIA_TRACEROUTE;
-    }
-    
-    // Computes the difference in TTL, and modifies it in subnet nodes in consequence
-    bool shorterTTL = true;
-    unsigned short diffTTL = 0;
-    if(newRouteSize > this->routeSize)
-    {
-        shorterTTL = false;
-        diffTTL = newRouteSize - this->routeSize;
-        this->TTL1 += diffTTL;
-        this->TTL2 += diffTTL;
-    }
-    else
-    {
-        diffTTL = this->routeSize - newRouteSize;
-        this->TTL1 -= diffTTL;
-        this->TTL2 -= diffTTL;
-    }
-    
-    for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
-    {
-        SubnetSiteNode *cur = (*i);
-        
-        if(shorterTTL)
-            cur->TTL -= diffTTL;
-        else
-            cur->TTL += diffTTL;
-    }
-    
-    // Updates the route details and delete the previous
-    delete[] this->route;
-    this->route = newRoute;
-    this->routeSize = newRouteSize;
 }

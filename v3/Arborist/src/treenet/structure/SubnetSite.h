@@ -12,6 +12,8 @@
  * -Sept 8, 2016: slight refactoring of the class to benefit from the addition of the class 
  *  RouteInterface. There is now a single route array, and no longer two (one for the IPs along 
  *  the route, and a second for the repairment mask).
+ * -Mar 27, 2017: addition of a second route for post-processing. It replaces the observed route 
+ *  when available.
  */
 
 #ifndef SUBNETSITE_H_
@@ -127,15 +129,28 @@ public:
     // Method to obtain a pivot address of this subnet after refinement
     InetAddress getPivot();
     
-    /*
-     * Methods related to route manipulation.
-     */
-    
+    // Basic methods for route manipulation.
+    inline void setRouteTarget(InetAddress rt) { this->routeTarget = rt; }
     inline void setRouteSize(unsigned short rs) { this->routeSize = rs; }
     inline void setRoute(RouteInterface *route) { this->route = route; }
+    inline InetAddress getRouteTarget() { return this->routeTarget; }
     inline unsigned short getRouteSize() { return this->routeSize; }
     inline RouteInterface *getRoute() { return this->route; }
-    bool hasCompleteRoute(); // Returns true if there is a route AND without "holes" (i.e. 0.0.0.0)
+    inline bool hasValidRoute() { return (this->routeSize > 0 && this->route != NULL); }
+    
+    // Next methods assume the user previously checked there is a valid route.
+    bool hasCompleteRoute(); // Returns true if the route has no "holes" (i.e. 0.0.0.0)
+    bool hasIncompleteRoute(); // Dual operation (true if the route has 0.0.0.0's)
+    unsigned short countMissingHops(); // Returns amount of 0.0.0.0's
+    
+    // Additionnal and optional post-processed route than can be set in TreeNET v3.2
+    inline void setProcessedRouteSize(unsigned short prs) { this->processedRouteSize = prs; }
+    inline void setProcessedRoute(RouteInterface *pRoute) { this->processedRoute = pRoute; }
+    inline unsigned short getProcessedRouteSize() { return this->processedRouteSize; }
+    inline RouteInterface *getProcessedRoute() { return this->processedRoute; }
+
+    // Method to get the final route (priority: processed then observed, NULL if nothing)
+    RouteInterface *getFinalRoute(unsigned short *finalRouteSize);
     
     /*
      * Method to test if the subnet is an "artifact", i.e., a subnet which was inferred as a /32 
@@ -196,9 +211,10 @@ private:
     InetAddress refinementContrapivot;
     unsigned short refinementTTL1, refinementTTL2; // Shortest and greatest TTL for this subnet
     
-    // Route fields
-    unsigned short routeSize;
-    RouteInterface *route;
+    // Route fields (observed + post-processed)
+    InetAddress routeTarget; // To keep track of the target IP used during traceroute
+    unsigned short routeSize, processedRouteSize;
+    RouteInterface *route, *processedRoute;
 };
 
 #endif /* SUBNETSITE_H_ */

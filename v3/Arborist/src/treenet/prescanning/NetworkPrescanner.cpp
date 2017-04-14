@@ -206,3 +206,38 @@ void NetworkPrescanner::probe()
         throw StopException();
     }
 }
+
+void NetworkPrescanner::run(list<InetAddress> targets)
+{
+    ostream *out = env->getOutputStream();
+    bool prescanThirdOpinion = env->usingPrescanningThirdOpinion();
+        
+    (*out) << "Prescanning with initial timeout..." << endl;
+    this->targets = targets;
+    this->probe();
+    (*out) << endl;
+    
+    if(this->hasUnresponsiveTargets())
+    {
+        TimeVal timeout2 = env->getTimeoutPeriod() * 2;
+        (*out) << "Second opinion with twice the timeout (" << timeout2 << ")..." << endl;
+        this->setTimeoutPeriod(timeout2);
+        this->reloadUnresponsiveTargets();
+        this->probe();
+        (*out) << endl;
+        
+        if(this->hasUnresponsiveTargets() && prescanThirdOpinion)
+        {
+            TimeVal timeout3 = env->getTimeoutPeriod() * 4;
+            (*out) << "Third opinion with 4 times the timeout (" << timeout3 << ")..." << endl;
+            this->setTimeoutPeriod(timeout3);
+            this->reloadUnresponsiveTargets();
+            this->probe();
+            (*out) << endl;
+        }
+    }
+    else
+    {
+        (*out) << "All probed IPs were responsive.\n" << endl;
+    }
+}

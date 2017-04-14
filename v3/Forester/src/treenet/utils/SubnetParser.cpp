@@ -12,21 +12,78 @@
 using std::stringstream;
 #include <vector>
 using std::vector;
+#include <iomanip>
+using std::setprecision;
+#include <fstream>
+using std::ifstream;
+using std::ofstream;
+#include <iostream>
+using std::endl;
+using std::flush;
 
 #include "SubnetParser.h"
 
 SubnetParser::SubnetParser(TreeNETEnvironment *env)
 {
     this->env = env;
+    this->parsedSubnets = 0;
+    this->credibleSubnets = 0;
+    this->mergedSubnets = 0;
+    this->duplicateSubnets = 0;
+    this->badSubnets = 0;
 }
 
 SubnetParser::~SubnetParser()
 {
 }
 
-void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool storeInIPDict)
+bool SubnetParser::parse(string inputFileName)
+{
+    return this->parse(inputFileName, env->getSubnetSet());
+}
+
+bool SubnetParser::parse(string inputFileName, SubnetSiteSet *dest)
 {
     ostream *out = env->getOutputStream();
+    (*out) << "Parsing " << inputFileName << "..." << endl;
+    
+    // Resetting count fields for next parsing.
+    this->parsedSubnets = 0;
+    this->credibleSubnets = 0;
+    this->mergedSubnets = 0;
+    this->duplicateSubnets = 0;
+    this->badSubnets = 0;
+
+    string inputFileContent = "";
+    ifstream inFile;
+    inFile.open((inputFileName).c_str());
+    if(inFile.is_open())
+    {
+        inputFileContent.assign((std::istreambuf_iterator<char>(inFile)),
+                                (std::istreambuf_iterator<char>()));
+        
+        inFile.close();
+    }
+    else
+    {
+        (*out) << "File " << inputFileName << " does not exist.\n" << endl;
+        return false;
+    }
+    
+    this->parse(dest, inputFileContent);
+    
+    (*out) << "Parsing of " << inputFileName << " completed.\n" << flush;
+    if(this->parsedSubnets == 0)
+        (*out) << "No subnet was parsed. Associated .ip file will not be parsed.\n";
+    (*out) << endl;
+    
+    return true;
+}
+
+void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent)
+{
+    ostream *out = env->getOutputStream();
+    unsigned short displayMode = env->getDisplayMode();
     bool useMerging = env->usingMergingAtParsing();
     
     std::stringstream ss(inputFileContent);
@@ -40,7 +97,7 @@ void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool stor
         if(targetStr.size() == 0)
         {
             // Parsing went well: insertion can occur
-            if(nbLine == 3 && !ignoreTillBlankLine)
+            if((nbLine == 4 || nbLine == 5) && !ignoreTillBlankLine)
             {
                 temp->completeRefinedData();
                 
@@ -49,10 +106,19 @@ void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool stor
                     string subnetStr = temp->getInferredNetworkAddressString();
                     
                     dest->addSiteNoMerging(temp);
-                    (*out) << "New subnet: " << subnetStr;
-                    if (temp->isCredible())
-                        (*out) << " (credible) ";
-                    (*out) << endl;
+                    
+                    bool credibleSubnet = temp->isCredible();
+                    this->parsedSubnets++;
+                    if(credibleSubnet)
+                        this->credibleSubnets++;
+                    
+                    if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                    {
+                        (*out) << "New subnet: " << subnetStr;
+                        if (credibleSubnet)
+                            (*out) << " (credible) ";
+                        (*out) << endl;
+                    }
                 }
                 else
                 {
@@ -61,23 +127,50 @@ void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool stor
                     
                     if(result == SubnetSiteSet::NEW_SUBNET)
                     {
-                        (*out) << "New subnet: " << subnetStr;
-                        if (temp->isCredible())
-                            (*out) << " (credible) ";
-                        (*out) << endl;
+                        bool credibleSubnet = temp->isCredible();
+                        this->parsedSubnets++;
+                        if(credibleSubnet)
+                            this->credibleSubnets++;
+                        
+                        /*
+                        if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                        {
+                            (*out) << "New subnet: " << subnetStr;
+                            if (credibleSubnet)
+                                (*out) << " (credible) ";
+                            (*out) << endl;
+                        }
+                        */
+                        
+                        // TreeNET (any version) no longer displays new correctly parsed subnets.
                     }
                     else if(result == SubnetSiteSet::KNOWN_SUBNET)
                     {
-                        (*out) << "Known subnet: " << subnetStr << endl;
-                        delete temp;
+                        this->duplicateSubnets++;
+                        
+                        if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                        {
+                            (*out) << "Duplicate subnet: " << subnetStr << endl;
+                            delete temp;
+                        }
                     }
                     else if(result == SubnetSiteSet::SMALLER_SUBNET)
                     {
-                        (*out) << "Merged with equivalent/larger subnet: " << subnetStr << endl;
-                        delete temp;
+                        this->mergedSubnets++;
+                        
+                        if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                        {
+                            (*out) << "Merged with equivalent/larger subnet: " << subnetStr << endl;
+                            delete temp;
+                        }
                     }
                     else if(result == SubnetSiteSet::BIGGER_SUBNET)
-                        (*out) << "Merged with smaller subnet(s): " << subnetStr << endl;
+                    {
+                        this->mergedSubnets++;
+                        
+                        if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                            (*out) << "Merged with smaller subnet(s): " << subnetStr << endl;
+                    }
                 }
                 
                 temp = new SubnetSite();
@@ -113,7 +206,9 @@ void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool stor
                 
                 if((unsigned short) prefixLength > 32)
                 {
-                    (*out) << "Malformed/Unrecognized subnet \"" + targetStr + "\"" << endl;
+                    this->badSubnets++;
+                    if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                        (*out) << "Malformed/Unrecognized subnet \"" + targetStr + "\"" << endl;
                     ignoreTillBlankLine = true;
                     continue;
                 }
@@ -125,7 +220,9 @@ void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool stor
                 }
                 catch (InetAddressException &e)
                 {
-                    (*out) << "Malformed/Unrecognized subnet \"" + targetStr + "\"" << endl;
+                    this->badSubnets++;
+                    if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                        (*out) << "Malformed/Unrecognized subnet \"" + targetStr + "\"" << endl;
                     ignoreTillBlankLine = true;
                     continue;
                 }
@@ -145,8 +242,13 @@ void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool stor
                     temp->setStatus(SubnetSite::SHADOW_SUBNET);
                 else
                 {
-                    string subnetStr = temp->getInferredNetworkAddressString();
-                    (*out) << "Unrecognized status \"" + targetStr + "\" for subnet " << subnetStr << endl;
+                    this->badSubnets++;
+                    if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                    {
+                        string subnetStr = temp->getInferredNetworkAddressString();
+                        (*out) << "Unrecognized status \"" + targetStr + "\" for subnet ";
+                        (*out) << subnetStr << endl;
+                    }
                     ignoreTillBlankLine = true;
                     continue;
                 }
@@ -171,11 +273,15 @@ void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool stor
                     }
                     catch (InetAddressException &e)
                     {
-                        string subnetStr = temp->getInferredNetworkAddressString();
-                        (*out) << "Malformed/Unrecognized interface \"" + targetStr;
-                        (*out) << "\" in subnet " << subnetStr << "." << endl << "As ";
-                        (*out) << "it is the only listed interface, this subnet will ";
-                        (*out) << "not be further parsed." << endl;
+                        this->badSubnets++;
+                        if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                        {
+                            string subnetStr = temp->getInferredNetworkAddressString();
+                            (*out) << "Malformed/Unrecognized interface \"" + targetStr;
+                            (*out) << "\" in subnet " << subnetStr << "." << endl << "As ";
+                            (*out) << "it is the only listed interface, this subnet will ";
+                            (*out) << "not be further parsed." << endl;
+                        }
                         ignoreTillBlankLine = true;
                         continue;
                     }
@@ -183,14 +289,6 @@ void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool stor
                     unsigned char TTL = (unsigned char) std::atoi(TTLStr.c_str());
                     SubnetSiteNode *newNode = new SubnetSiteNode(liveIP, TTL);
                     temp->insert(newNode);
-                    
-                    if(storeInIPDict)
-                    {
-                        IPTableEntry *entry = env->getIPTable()->create(liveIP);
-                        if(entry != NULL)
-                            entry->setTTL(TTL);
-                    }
-                    
                     nbLine++;
                     continue;
                 }
@@ -219,44 +317,61 @@ void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool stor
                     }
                     catch (InetAddressException &e)
                     {
-                        string subnetStr = temp->getInferredNetworkAddressString();
-                        (*out) << "Malformed/Unrecognized interface \"" + nodeStr;
-                        (*out) << "\" in subnet " << subnetStr << endl;
+                        if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                        {
+                            string subnetStr = temp->getInferredNetworkAddressString();
+                            (*out) << "Malformed/Unrecognized interface \"" + nodeStr;
+                            (*out) << "\" in subnet " << subnetStr << endl;
+                        }
                         continue;
                     }
                     
                     unsigned char TTL = (unsigned char) std::atoi(TTLStr.c_str());
                     SubnetSiteNode *newNode = new SubnetSiteNode(liveIP, TTL);
                     temp->insert(newNode);
-                    
-                    if(storeInIPDict)
-                    {
-                        IPTableEntry *entry = env->getIPTable()->create(liveIP);
-                        if(entry != NULL)
-                            entry->setTTL(TTL);
-                    }
-                    
                     atLeastOne = true;
                 }
                 
                 if(!atLeastOne)
                 {
-                    (*out) << "No correct interface was listed. This subnet will not ";
-                    (*out) << "be further parsed." << endl;
+                    this->badSubnets++;
+                    if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                    {
+                        (*out) << "No correct interface was listed. This subnet will not ";
+                        (*out) << "be further parsed." << endl;
+                    }
                     ignoreTillBlankLine = true;
                     continue;
                 }
             
                 nbLine++;
             }
-            else if(nbLine == 3)
+            // (post-processed) Route
+            else if(nbLine == 3 || nbLine == 4)
             {
                 if(targetStr.compare("No route") == 0)
                 {
                     ignoreTillBlankLine = true;
                     continue;
                 }
-            
+                
+                // Case of line 4; it must be post-processed (starting with: "Post-processed: ")
+                bool isPostProcessed = false;
+                if(nbLine == 4)
+                {
+                    isPostProcessed = true;
+                    string startStr = targetStr.substr(0, 16);
+                    if(startStr.compare("Post-processed: ") == 0)
+                    {
+                        targetStr = targetStr.substr(16);
+                    }
+                    else
+                    {
+                        ignoreTillBlankLine = true;
+                        continue;
+                    }
+                }
+                
                 size_t pos = targetStr.find(',');
                 
                 // Case where there is a single interface listed
@@ -274,7 +389,7 @@ void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool stor
                     }
                 
                     InetAddress liveIP(0);
-                    if(IPStr.compare("Missing") != 0)
+                    if(IPStr.compare("Missing") != 0 && IPStr.compare("Anonymous") != 0 && IPStr.compare("Skipped") != 0)
                     {
                         try
                         {
@@ -282,24 +397,55 @@ void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool stor
                         }
                         catch (InetAddressException &e)
                         {
-                            string subnetStr = temp->getInferredNetworkAddressString();
-                            (*out) << "Malformed/Unrecognized interface \"" + targetStr;
-                            (*out) << "\" in the route of subnet " << subnetStr << ".";
+                            this->badSubnets++;
+                            if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                            {
+                                string subnetStr = temp->getInferredNetworkAddressString();
+                                (*out) << "Malformed/Unrecognized interface \"" + targetStr;
+                                (*out) << "\" in the route of subnet " << subnetStr << ". ";
+                                (*out) << "As this is the only interface, it will not be ";
+                                (*out) << "listed." << endl;
+                            }
                             ignoreTillBlankLine = true;
                             continue;
                         }
                     }
                     
                     RouteInterface *route = new RouteInterface[1];
-                    if(infoStr.compare("Repaired") == 0 || infoStr.compare("R") == 0)
-                        route[0].repair(liveIP);
-                    //else if(infoStr.compare("P") == 0) TODO: put this back
-                    //    route[0].predicts(liveIP);
+                    
+                    /*
+                     * N.B.: "Repaired-1", "Repaired" and "R" all denote the same operation. The 
+                     * different names simply comes from different versions of TreeNET. The goal 
+                     * is to allow parsing of old datasets.
+                     */
+                    
+                    if(infoStr.length() > 0)
+                    {
+                        if(infoStr.compare("Repaired-1") == 0 || infoStr.compare("Repaired") == 0 || infoStr.compare("R") == 0)
+                            route[0].repair(liveIP);
+                        else if(infoStr.compare("Repaired-2") == 0)
+                            route[0].repairBis(liveIP);
+                        else if(infoStr.compare("Limited") == 0)
+                            route[0].deanonymize(liveIP);
+                        else if(infoStr.compare("Predicted") == 0 || infoStr.compare("P") == 0)
+                            route[0].predict(liveIP);
+                        else
+                            route[0].update(liveIP);
+                    }
                     else
                         route[0].update(liveIP);
-                    temp->setRouteSize(1);
-                    temp->setRoute(route);
                     
+                    if(isPostProcessed)
+                    {
+                        temp->setProcessedRouteSize(1);
+                        temp->setProcessedRoute(route);
+                    }
+                    else
+                    {
+                        temp->setRouteSize(1);
+                        temp->setRoute(route);
+                    }
+                    nbLine++;
                     continue;
                 }
                 
@@ -329,7 +475,7 @@ void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool stor
                     }
 
                     InetAddress liveIP(0);
-                    if(IPStr.compare("Missing") != 0)
+                    if(IPStr.compare("Missing") != 0 && IPStr.compare("Anonymous") != 0 && IPStr.compare("Skipped") != 0)
                     {
                         try
                         {
@@ -337,34 +483,41 @@ void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool stor
                         }
                         catch (InetAddressException &e)
                         {
-                            string subnetStr = temp->getInferredNetworkAddressString();
-                            (*out) << "Malformed/Unrecognized interface \"" + routeStr;
-                            (*out) << "\" in route to subnet " << subnetStr << endl;
+                            if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                            {
+                                string subnetStr = temp->getInferredNetworkAddressString();
+                                (*out) << "Malformed/Unrecognized interface \"" + routeStr;
+                                (*out) << "\" in route to subnet " << subnetStr << endl;
+                            }
                             routeOK = false;
                             break;
                         }
                     }
                     
                     RouteInterface newHop;
-                    if(infoStr.compare("Repaired") == 0 || infoStr.compare("R") == 0)
-                        newHop.repair(liveIP);
+                    if(infoStr.length() > 0)
+                    {
+                        if(infoStr.compare("Repaired-1") == 0 || infoStr.compare("Repaired") == 0 || infoStr.compare("R") == 0)
+                            newHop.repair(liveIP);
+                        else if(infoStr.compare("Repaired-2") == 0)
+                            newHop.repairBis(liveIP);
+                        else if(infoStr.compare("Limited") == 0)
+                            newHop.deanonymize(liveIP);
+                        else if(infoStr.compare("Predicted") == 0 || infoStr.compare("P") == 0)
+                            newHop.predict(liveIP);
+                        else
+                            newHop.update(liveIP);
+                    }
                     else
                         newHop.update(liveIP);
                     routeLs.push_back(newHop);
-                    
-                    /*
-                    TODO: put this back later
-                    else if(infoStr.compare("P") == 0)
-                    {
-                        editMaskLs.push_back(SubnetSite::PREDICTED_INTERFACE);
-                        hasEditedRoute = true;
-                    }
-                    */
                 }
                 
                 if(!routeOK)
                 {
-                    (*out) << "Malformed route. This subnet will not be listed." << endl;
+                    this->badSubnets++;
+                    if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                        (*out) << "Malformed route. This subnet will not be listed." << endl;
                     ignoreTillBlankLine = true;
                     continue;
                 }
@@ -378,10 +531,37 @@ void SubnetParser::parse(SubnetSiteSet *dest, string inputFileContent, bool stor
                     routeLs.pop_front();
                 }
                 
-                temp->setRouteSize(routeSize);
-                temp->setRoute(route);
+                if(isPostProcessed)
+                {
+                    temp->setProcessedRouteSize(routeSize);
+                    temp->setProcessedRoute(route);
+                }
+                else
+                {
+                    temp->setRouteSize(routeSize);
+                    temp->setRoute(route);
+                }
+                nbLine++;
             }
         }
     }
     delete temp;
+    
+    // Summary of parsing
+    if(this->parsedSubnets > 0)
+    {
+        (*out) << "Parsed subnets: " << this->parsedSubnets << endl;
+        if(this->credibleSubnets > 0)
+        {
+            float ratio = ((float) this->credibleSubnets / (float) this->parsedSubnets) * 100;
+            (*out) << "Credible subnets: " << this->credibleSubnets << " (";
+            (*out) << setprecision(3) << ratio << "%)" << endl;
+        }
+    }
+    if(this->duplicateSubnets > 0)
+        (*out) << "Duplicate subnets: " << this->duplicateSubnets << endl;
+    if(this->mergedSubnets > 0)
+        (*out) << "Merged subnets: " << this->duplicateSubnets << endl;
+    if(this->badSubnets > 0)
+        (*out) << "Badly formatted subnets: " << this->badSubnets << endl;
 }

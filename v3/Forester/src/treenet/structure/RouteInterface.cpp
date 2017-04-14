@@ -16,12 +16,15 @@ RouteInterface::RouteInterface()
     this->state = NOT_MEASURED;
 }
 
-RouteInterface::RouteInterface(InetAddress ip)
+RouteInterface::RouteInterface(InetAddress ip, bool timeout)
 {
     this->ip = ip;
-    if(ip == InetAddress("0.0.0.0"))
+    if(ip == InetAddress(0))
     {
-        this->state = MISSING;
+        if(timeout)
+            this->state = ANONYMOUS;
+        else
+            this->state = MISSING;
     }
     else
     {
@@ -29,17 +32,51 @@ RouteInterface::RouteInterface(InetAddress ip)
     }
 }
 
+RouteInterface::~RouteInterface()
+{
+}
+
 void RouteInterface::update(InetAddress ip)
 {
     this->ip = ip;
-    if(ip == InetAddress("0.0.0.0"))
+    if(ip == InetAddress(0))
     {
-        this->state = MISSING;
+        this->state = ANONYMOUS;
     }
     else
     {
         this->state = VIA_TRACEROUTE;
     }
+}
+
+void RouteInterface::anonymize()
+{
+    this->ip = InetAddress(0);
+    this->state = ANONYMOUS;
+}
+
+void RouteInterface::repair(InetAddress ip)
+{
+    this->ip = ip;
+    this->state = REPAIRED_1;
+}
+
+void RouteInterface::repairBis(InetAddress ip)
+{
+    this->ip = ip;
+    this->state = REPAIRED_2;
+}
+
+void RouteInterface::deanonymize(InetAddress ip)
+{
+    this->ip = ip;
+    this->state = LIMITED;
+}
+
+void RouteInterface::predict(InetAddress ip)
+{
+    this->ip = ip;
+    this->state = PREDICTED;
 }
 
 RouteInterface &RouteInterface::operator=(const RouteInterface &other)
@@ -47,14 +84,4 @@ RouteInterface &RouteInterface::operator=(const RouteInterface &other)
     this->ip = other.ip;
     this->state = other.state;
     return *this;
-}
-
-void RouteInterface::repair(InetAddress ip)
-{
-    this->ip = ip;
-    this->state = REPAIRED;
-}
-
-RouteInterface::~RouteInterface()
-{
 }

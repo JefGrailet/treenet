@@ -98,7 +98,11 @@ subnet(ss)
 
 ParisTracerouteTask::~ParisTracerouteTask()
 {
-    delete prober;
+    if(prober != NULL)
+    {
+        env->updateProbeAmounts(prober);
+        delete prober;
+    }
 }
 
 ProbeRecord *ParisTracerouteTask::probe(const InetAddress &dst, unsigned char TTL)
@@ -355,6 +359,7 @@ void ParisTracerouteTask::run()
         index++;
     }
     
+    subnet->setRouteTarget(probeDst);
     subnet->setRouteSize(sizeRoute);
     subnet->setRoute(route);
     

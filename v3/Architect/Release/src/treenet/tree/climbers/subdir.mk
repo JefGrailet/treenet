@@ -8,21 +8,24 @@ CPP_SRCS += \
 ../src/treenet/tree/climbers/Robin.cpp \
 ../src/treenet/tree/climbers/Crow.cpp \
 ../src/treenet/tree/climbers/Cat.cpp \
-../src/treenet/tree/climbers/Ant.cpp
+../src/treenet/tree/climbers/Ant.cpp \
+../src/treenet/tree/climbers/Termite.cpp
 
 OBJS += \
 ./src/treenet/tree/climbers/Climber.o \
 ./src/treenet/tree/climbers/Robin.o \
 ./src/treenet/tree/climbers/Crow.o \
 ./src/treenet/tree/climbers/Cat.o \
-./src/treenet/tree/climbers/Ant.o
+./src/treenet/tree/climbers/Ant.o \
+./src/treenet/tree/climbers/Termite.o
 
 CPP_DEPS += \
 ./src/treenet/tree/climbers/Climber.d \
 ./src/treenet/tree/climbers/Robin.d \
 ./src/treenet/tree/climbers/Crow.d \
 ./src/treenet/tree/climbers/Cat.d \
-./src/treenet/tree/climbers/Ant.d
+./src/treenet/tree/climbers/Ant.d \
+./src/treenet/tree/climbers/Termite.d
 
 
 # Each subdirectory must supply rules for building sources it contributes

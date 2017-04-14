@@ -8,9 +8,7 @@
  * on the goals of such class.
  */
 
-#include <fstream>
 #include <sys/stat.h> // For CHMOD edition
-using std::ofstream;
 #include <iomanip> // For header lines in the output file displaying ExploreNET records
 using std::left;
 using std::setw;
@@ -20,7 +18,8 @@ using std::setw;
 Mutex TreeNETEnvironment::consoleMessagesMutex(Mutex::ERROR_CHECKING_MUTEX);
 Mutex TreeNETEnvironment::emergencyStopMutex(Mutex::ERROR_CHECKING_MUTEX);
 
-TreeNETEnvironment::TreeNETEnvironment(ostream *o, 
+TreeNETEnvironment::TreeNETEnvironment(ostream *cOut, 
+                                       bool extLogs, 
                                        unsigned char sTTL, 
                                        unsigned short protocol, 
                                        bool exploreLAN, 
@@ -28,6 +27,7 @@ TreeNETEnvironment::TreeNETEnvironment(ostream *o,
                                        bool dP, 
                                        bool useFFID, 
                                        bool prescanExp, 
+                                       bool prescan3rdOp, 
                                        bool saveXnetRec, 
                                        InetAddress &localIP, 
                                        NetworkAddress &lan, 
@@ -41,7 +41,9 @@ TreeNETEnvironment::TreeNETEnvironment(ostream *o,
                                        double mError, 
                                        unsigned short dMode, 
                                        unsigned short mT):
-out(o), 
+consoleOut(cOut), 
+externalLogs(extLogs), 
+isExternalLogOpened(false), 
 startTTL(sTTL), 
 probingProtocol(protocol), 
 exploreLANExplicitly(exploreLAN), 
@@ -49,6 +51,7 @@ useLowerBorderAsWell(useLowerB),
 doubleProbe(dP),
 useFixedFlowID(useFFID), 
 prescanExpand(prescanExp), 
+prescanThirdOpinion(prescan3rdOp), 
 saveExploreNETRecords(saveXnetRec), 
 localIPAddress(localIP), 
 LAN(lan), 
@@ -62,6 +65,8 @@ baseTolerance(bTol),
 maxError(mError), 
 displayMode(dMode), 
 maxThreads(mT), 
+totalProbes(0), 
+totalSuccessfulProbes(0), 
 flagEmergencyStop(false)
 {
     this->IPTable = new IPLookUpTable(nIDs);
@@ -79,6 +84,13 @@ TreeNETEnvironment::~TreeNETEnvironment()
     {
         delete (*it);
     }
+}
+
+ostream* TreeNETEnvironment::getOutputStream()
+{
+    if(this->externalLogs || this->isExternalLogOpened)
+        return &this->logStream;
+    return this->consoleOut;
 }
 
 void TreeNETEnvironment::outputExploreNETRecords(string filename)
@@ -115,6 +127,38 @@ void TreeNETEnvironment::outputExploreNETRecords(string filename)
     chmod(path.c_str(), 0766);
 }
 
+void TreeNETEnvironment::updateProbeAmounts(DirectProber *proberObject)
+{
+    totalProbes += proberObject->getNbProbes();
+    totalSuccessfulProbes += proberObject->getNbSuccessfulProbes();
+}
+
+void TreeNETEnvironment::resetProbeAmounts()
+{
+    totalProbes = 0;
+    totalSuccessfulProbes = 0;
+}
+
+void TreeNETEnvironment::openLogStream(string filename, bool message)
+{
+    this->logStream.open(filename.c_str());
+    this->isExternalLogOpened = true;
+    
+    // File must be accessible to all
+    string path = "./" + filename;
+    chmod(path.c_str(), 0766);
+    
+    if(message)
+        (*consoleOut) << "Log of current phase is being written in " << filename << ".\n" << endl;
+}
+
+void TreeNETEnvironment::closeLogStream()
+{
+    this->logStream.close();
+    this->logStream.clear();
+    this->isExternalLogOpened = false;
+}
+
 bool TreeNETEnvironment::triggerStop()
 {
     /*
@@ -131,10 +175,42 @@ bool TreeNETEnvironment::triggerStop()
     flagEmergencyStop = true;
     
     consoleMessagesMutex.lock();
-    (*out) << "\nWARNING: emergency stop has been triggered because of connectivity issues.\n";
-    (*out) << "TreeNET will wait for all remaining threads to complete before exiting without ";
-    (*out) << "carrying out remaining probing tasks.\n" << endl;
+    (*consoleOut) << "\nWARNING: emergency stop has been triggered because of connectivity ";
+    (*consoleOut) << "issues.\nTreeNET will wait for all remaining threads to complete before ";
+    (*consoleOut) << "exiting without carrying out remaining probing tasks.\n" << endl;
     consoleMessagesMutex.unlock();
     
     return true;
+}
+
+void TreeNETEnvironment::recordRouteStepsInDictionnary()
+{
+    list<SubnetSite*> *ssList = subnetSet->getSubnetSiteList();
+    for(list<SubnetSite*>::iterator it = ssList->begin(); it != ssList->end(); ++it)
+    {
+        SubnetSite *cur = (*it);
+        if(!cur->hasValidRoute())
+            continue;
+        
+        unsigned short routeSize = cur->getRouteSize();
+        RouteInterface *route = cur->getRoute();
+        for(unsigned short i = 0; i < routeSize; ++i)
+        {
+            unsigned char TTL = (unsigned char) i + 1;
+            InetAddress curIP = route[i].ip;
+            if(curIP == InetAddress(0))
+                continue;
+            
+            IPTableEntry *entry = IPTable->lookUp(curIP);
+            if(entry == NULL)
+            {
+                entry = IPTable->create(curIP);
+                entry->setTTL(TTL);
+            }
+            else if(!entry->sameTTL(TTL) && !entry->hasHopCount(TTL))
+            {
+                entry->recordHopCount(TTL);
+            }
+        }
+    }
 }
