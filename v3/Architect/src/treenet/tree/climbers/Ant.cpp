@@ -85,9 +85,13 @@ void Ant::climbRecursive(NetworkTreeNode *cur)
     {
         this->nbNeighborhoods++;
         
-        unsigned int curSizeFingerprintList = (unsigned int) cur->getFingerprints().size();
-        if(curSizeFingerprintList > this->sizeBiggestFingerprintList)
-            this->sizeBiggestFingerprintList = curSizeFingerprintList;
+        list<list<Fingerprint> > fList = cur->getFingerprints();
+        for(list<list<Fingerprint> >::iterator it = fList.begin(); it != fList.end(); ++it)
+        {
+            unsigned int curSizeFingerprintList = (unsigned int) (*it).size();
+            if(curSizeFingerprintList > this->sizeBiggestFingerprintList)
+                this->sizeBiggestFingerprintList = curSizeFingerprintList;
+        }
         
         if(cur->hasOnlyLeavesAsChildren())
         {
