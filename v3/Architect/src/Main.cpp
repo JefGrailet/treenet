@@ -682,7 +682,7 @@ int main(int argc, char *argv[])
     
     // Some checks to see if Architect as actually anything to do.
     if(!outputTree && !outputNeighborhoods && !outputL2 && !createBipERS && !createBipNS && 
-       !createNGraph && !createRGraph && createSGraph == SUBNET_GRAPH_NONE)
+       !createNGraph && !computeStatistics && !createRGraph && createSGraph == SUBNET_GRAPH_NONE)
     {
         cout << "No particular output was requested. Use -h or --help to get more details on how ";
         cout << "to use TreeNET \"Architect\"." << endl;
