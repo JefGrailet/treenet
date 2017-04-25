@@ -1,0 +1,3276 @@
+Neighborhood of internal node 200.143.253.37:
+No neighboring subnets, but inferred a total of 3 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 200.143.253.37 does not belong to any registered subnet 
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 64.57.28.61:
+206.196.177.78/31 (ACCURATE, credible), on the way to 206.196.177.78
+206.196.177.104/30 (ACCURATE, credible)
+Inferred a total 10 interfaces.
+
+Label analysis:
+Label 64.57.28.61 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+64.57.28.61 - <64,*,Healthy,Yes,No>
+206.196.177.79 - <64,*,Healthy,Yes,No>
+206.196.177.106 - <64,*,Healthy,Yes,No>
+
+Inferred router: 
+[64.57.28.61, 206.196.177.79 (Ally), 206.196.177.106 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 162.252.70.50:
+206.196.177.4/31 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 162.252.70.50 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+162.252.70.50 - <64,*,Healthy,Yes,No>
+206.196.177.5 - <64,*,Healthy,Yes,No>
+
+Inferred router: 
+[162.252.70.50, 206.196.177.5 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 162.252.70.77:
+206.196.177.2/31 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 162.252.70.77 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+162.252.70.77 - <64,*,Healthy,Yes,No>
+206.196.177.3 - <64,*,Healthy,Yes,No>
+
+Inferred router: 
+[162.252.70.77, 206.196.177.3 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 162.252.70.102:
+206.196.177.50/31 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 162.252.70.102 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+162.252.70.102 - <64,*,Healthy,Yes,No>
+206.196.177.51 - <64,*,Healthy,Yes,No>
+
+Inferred router: 
+[162.252.70.102, 206.196.177.51 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 162.252.70.124:
+206.196.177.76/31 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 162.252.70.124 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+162.252.70.124 - <64,*,Healthy,Yes,No>
+206.196.177.77 - <64,*,Healthy,Yes,No>
+
+Inferred router: 
+[162.252.70.124, 206.196.177.77 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 206.196.176.193:
+206.196.176.192/28 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 206.196.176.193 belongs to registered subnet 206.196.176.192/28
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+206.196.176.193 - <*,*,*,No,No>
+
+Inferred router: 
+[206.196.176.193]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 206.196.176.225:
+206.196.176.224/28 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 206.196.176.225 belongs to registered subnet 206.196.176.224/28
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+206.196.176.225 - <*,*,*,No,No>
+
+Inferred router: 
+[206.196.176.225]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 206.196.177.78:
+206.196.176.106/31 (ACCURATE, credible)
+206.196.176.120/29 (ACCURATE, credible)
+206.196.177.34/31 (ACCURATE, credible)
+206.196.177.42/31 (ACCURATE, credible)
+206.196.177.90/31 (ACCURATE, credible)
+206.196.177.96/31 (ACCURATE, credible)
+206.196.177.124/31 (ACCURATE, credible)
+206.196.177.136/30 (ACCURATE, credible)
+206.196.177.150/31 (ACCURATE, credible)
+206.196.177.194/31 (ACCURATE, credible)
+206.196.177.196/31 (ACCURATE, credible)
+206.196.177.198/31 (ACCURATE, credible)
+206.196.177.200/29 (ACCURATE, credible)
+206.196.177.232/31 (ACCURATE, credible)
+206.196.177.240/30 (ACCURATE, credible)
+206.196.178.0/30 (ACCURATE, credible)
+206.196.178.16/30 (ACCURATE, credible)
+206.196.178.24/30 (ACCURATE, credible)
+206.196.178.72/29 (ACCURATE, credible)
+206.196.178.80/29 (ACCURATE, credible), on the way to 206.196.178.81
+206.196.178.140/31 (ACCURATE, credible)
+206.196.178.142/31 (ACCURATE, credible)
+Inferred a total 25 interfaces.
+
+Label analysis:
+Label 206.196.177.78 belongs to registered subnet 206.196.177.78/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+206.196.177.34 - <64,*,Healthy,Yes,No>
+206.196.177.42 - <64,*,Healthy,Yes,No>
+206.196.177.78 - <64,*,Healthy,Yes,No>
+206.196.177.90 - <64,*,Healthy,Yes,No>
+206.196.177.96 - <64,*,Healthy,Yes,No>
+206.196.177.137 - <64,*,Healthy,Yes,No>
+206.196.177.150 - <64,*,Healthy,Yes,No>
+206.196.177.194 - <64,*,Healthy,Yes,No>
+206.196.177.196 - <64,*,Healthy,Yes,No>
+206.196.177.198 - <64,*,Healthy,Yes,No>
+206.196.177.202 - <64,*,Healthy,Yes,No>
+206.196.177.241 - <64,*,Healthy,Yes,No>
+206.196.178.2 - <64,*,Healthy,Yes,No>
+206.196.178.18 - <64,*,Healthy,Yes,No>
+206.196.178.26 - <64,*,Healthy,Yes,No>
+206.196.178.76 - <64,*,Healthy,Yes,No>
+206.196.178.80 - <64,*,Healthy,Yes,No>
+206.196.176.107 - <64,*,Healthy,Yes,Yes>
+206.196.176.121 - <64,*,Healthy,No,No>
+206.196.177.124 - <64,*,Healthy,No,No>
+206.196.177.232 - <64,*,Healthy,No,No>
+206.196.178.140 - <64,*,Healthy,No,No>
+206.196.178.142 - <64,*,Healthy,No,No>
+
+Inferred routers: 
+[206.196.176.107]
+[206.196.176.121, 206.196.177.124 (Ally), 206.196.177.232 (Ally), 206.196.178.140 (Ally), 206.196.178.142 (Ally)]
+[206.196.177.34, 206.196.177.42 (Ally), 206.196.177.78 (Ally), 206.196.177.90 (Ally), 206.196.177.96 (Ally), 206.196.177.137 (Ally), 206.196.177.150 (Ally), 206.196.177.194 (Ally), 206.196.177.196 (Ally), 206.196.177.198 (Ally), 206.196.177.202 (Ally), 206.196.177.241 (Ally), 206.196.178.2 (Ally), 206.196.178.18 (Ally), 206.196.178.26 (Ally), 206.196.178.76 (Ally), 206.196.178.80 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.229:
+128.8.0.84/30 (ACCURATE, credible)
+128.8.7.192/29 (ODD)
+128.8.7.204/30 (ACCURATE, credible)
+128.8.7.232/29 (ACCURATE, credible)
+128.8.23.64/30 (ACCURATE, credible)
+129.2.0.84/30 (ACCURATE, credible)
+206.196.177.148/31 (ACCURATE, credible)
+Inferred a total 8 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.0.229 belongs to registered subnet 129.2.0.228/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+129.2.0.86 - <255,*,Echo,Yes,No>
+129.2.0.229 - <255,*,Echo,Yes,No>
+128.8.0.86 - <255,*,Echo,Yes,Yes>
+128.8.7.197 - <255,*,Echo,No,No>
+128.8.7.205 - <255,*,Echo,No,No>
+128.8.7.238 - <255,*,Echo,No,No>
+128.8.23.65 - <255,*,Echo,No,No>
+206.196.177.148 - <64,*,Healthy,Yes,No>
+
+Inferred routers: 
+[128.8.0.86]
+[206.196.177.148]
+[129.2.0.86, 129.2.0.229 (Echo group & DNS)]
+[128.8.7.197, 128.8.7.205 (Echo group), 128.8.7.238 (Echo group), 128.8.23.65 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 206.196.178.81:
+206.196.176.0/27 (ACCURATE, credible)
+206.196.176.32/27 (ACCURATE, credible)
+206.196.176.104/31 (ACCURATE, credible)
+206.196.176.128/26 (ACCURATE, credible)
+206.196.176.208/29 (ACCURATE, credible)
+206.196.176.240/28 (ODD)
+206.196.177.16/30 (ACCURATE, credible)
+206.196.177.24/31 (ACCURATE, credible)
+206.196.177.26/31 (ACCURATE, credible)
+206.196.177.28/30 (ACCURATE, credible)
+206.196.177.32/31 (ACCURATE, credible)
+206.196.177.36/31 (ACCURATE, credible)
+206.196.177.38/31 (ACCURATE, credible)
+206.196.177.40/31 (ACCURATE, credible)
+206.196.177.44/30 (ACCURATE, credible)
+206.196.177.48/31 (ACCURATE, credible)
+206.196.177.52/31 (ACCURATE, credible)
+206.196.177.54/31 (ACCURATE, credible)
+206.196.177.60/31 (ACCURATE, credible)
+206.196.177.68/30 (ACCURATE, credible)
+206.196.177.72/30 (ACCURATE, credible)
+206.196.177.84/31 (ACCURATE, credible)
+206.196.177.86/31 (ACCURATE, credible)
+206.196.177.88/31 (ACCURATE, credible)
+206.196.177.92/31 (ACCURATE, credible)
+206.196.177.94/31 (ACCURATE, credible)
+206.196.177.98/31 (ACCURATE, credible), on the way to 206.196.177.99
+206.196.177.100/31 (ACCURATE, credible)
+206.196.177.126/31 (ACCURATE, credible)
+206.196.177.134/31 (ACCURATE, credible)
+206.196.177.144/30 (ACCURATE, credible)
+206.196.177.154/31 (ACCURATE, credible)
+206.196.177.166/31 (ACCURATE, credible)
+206.196.177.172/30 (ACCURATE, credible)
+206.196.177.176/31 (ACCURATE, credible)
+206.196.177.180/31 (ACCURATE, credible)
+206.196.177.182/31 (ACCURATE, credible)
+206.196.177.184/31 (ACCURATE, credible)
+206.196.177.188/31 (ACCURATE, credible)
+206.196.177.190/31 (ACCURATE, credible)
+206.196.177.192/31 (ACCURATE, credible)
+206.196.177.216/31 (ACCURATE, credible)
+206.196.177.228/31 (ACCURATE, credible)
+206.196.177.230/31 (ACCURATE, credible)
+206.196.177.236/30 (ACCURATE, credible)
+206.196.178.8/31 (ACCURATE, credible)
+206.196.178.48/28 (ACCURATE, credible)
+206.196.178.64/29 (ACCURATE, credible)
+206.196.179.224/27 (ACCURATE, credible)
+206.196.180.128/28 (ODD)
+206.196.180.144/28 (ACCURATE, credible)
+206.196.180.192/28 (ACCURATE, credible), on the way to 206.196.180.201
+Inferred a total 54 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 206.196.178.81 belongs to registered subnet 206.196.178.80/29
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+206.196.176.34 - <64,*,Healthy,Yes,No>
+206.196.176.105 - <64,*,Healthy,Yes,No>
+206.196.176.129 - <64,*,Healthy,Yes,No>
+206.196.176.209 - <64,*,Healthy,Yes,No>
+206.196.176.241 - <64,*,Healthy,Yes,No>
+206.196.176.242 - <64,*,Healthy,Yes,No>
+206.196.177.17 - <64,*,Healthy,Yes,No>
+206.196.177.24 - <64,*,Healthy,Yes,No>
+206.196.177.26 - <64,*,Healthy,Yes,No>
+206.196.177.29 - <64,*,Healthy,Yes,No>
+206.196.177.38 - <64,*,Healthy,Yes,No>
+206.196.177.45 - <64,*,Healthy,Yes,No>
+206.196.177.54 - <64,*,Healthy,Yes,No>
+206.196.177.60 - <64,*,Healthy,Yes,No>
+206.196.177.69 - <64,*,Healthy,Yes,No>
+206.196.177.73 - <64,*,Healthy,Yes,No>
+206.196.177.84 - <64,*,Healthy,Yes,No>
+206.196.177.86 - <64,*,Healthy,Yes,No>
+206.196.177.94 - <64,*,Healthy,Yes,No>
+206.196.177.134 - <64,*,Healthy,Yes,No>
+206.196.177.145 - <64,*,Healthy,Yes,No>
+206.196.177.154 - <64,*,Healthy,Yes,No>
+206.196.177.166 - <64,*,Healthy,Yes,No>
+206.196.177.173 - <64,*,Healthy,Yes,No>
+206.196.177.180 - <64,*,Healthy,Yes,No>
+206.196.177.182 - <64,*,Healthy,Yes,No>
+206.196.177.184 - <64,*,Healthy,Yes,No>
+206.196.177.188 - <64,*,Healthy,Yes,No>
+206.196.177.190 - <64,*,Healthy,Yes,No>
+206.196.177.192 - <64,*,Healthy,Yes,No>
+206.196.177.237 - <64,*,Healthy,Yes,No>
+206.196.178.81 - <64,*,Healthy,Yes,No>
+206.196.179.225 - <64,*,Healthy,Yes,No>
+206.196.180.129 - <64,*,Healthy,Yes,No>
+206.196.180.130 - <64,*,Healthy,Yes,No>
+206.196.180.134 - <64,*,Healthy,Yes,No>
+206.196.180.156 - <64,*,Healthy,Yes,No>
+206.196.176.1 - <64,*,Healthy,Yes,Yes>
+206.196.177.32 - <64,*,Healthy,No,No>
+206.196.177.36 - <64,*,Healthy,No,No>
+206.196.177.40 - <64,*,Healthy,No,No>
+206.196.177.48 - <64,*,Healthy,No,No>
+206.196.177.52 - <64,*,Healthy,No,No>
+206.196.177.88 - <64,*,Healthy,No,No>
+206.196.177.92 - <64,*,Healthy,No,No>
+206.196.177.98 - <64,*,Healthy,No,No>
+206.196.177.100 - <64,*,Healthy,No,No>
+206.196.177.126 - <64,*,Healthy,No,No>
+206.196.177.176 - <64,*,Healthy,No,No>
+206.196.177.216 - <64,*,Healthy,No,No>
+206.196.177.228 - <64,*,Healthy,No,No>
+206.196.177.230 - <64,*,Healthy,No,No>
+206.196.178.8 - <64,*,Healthy,No,No>
+206.196.178.49 - <64,*,Healthy,No,No>
+206.196.178.65 - <64,*,Healthy,No,No>
+206.196.180.193 - <64,*,Healthy,No,No>
+
+Inferred routers: 
+[206.196.176.1]
+[206.196.180.130, 206.196.180.156 (Ally)]
+[206.196.177.32, 206.196.177.36 (Ally), 206.196.177.40 (Ally), 206.196.177.48 (Ally), 206.196.177.52 (Ally), 206.196.177.88 (Ally), 206.196.177.92 (Ally), 206.196.177.98 (Ally), 206.196.177.100 (Ally), 206.196.177.126 (Ally), 206.196.177.176 (Ally), 206.196.177.216 (Ally), 206.196.177.228 (Ally), 206.196.177.230 (Ally), 206.196.178.8 (Ally), 206.196.178.49 (Ally), 206.196.178.65 (Ally), 206.196.180.193 (Ally)]
+[206.196.176.34, 206.196.176.105 (Ally), 206.196.176.129 (Ally), 206.196.176.209 (Ally), 206.196.176.241 (Ally), 206.196.177.17 (Ally), 206.196.177.24 (Ally), 206.196.177.26 (Ally), 206.196.177.29 (Ally), 206.196.177.38 (Ally), 206.196.177.45 (Ally), 206.196.177.54 (Ally), 206.196.177.60 (Ally), 206.196.177.69 (Ally), 206.196.177.73 (Ally), 206.196.177.84 (Ally), 206.196.177.86 (Ally), 206.196.177.94 (Ally), 206.196.177.134 (Ally), 206.196.177.145 (Ally), 206.196.177.154 (Ally), 206.196.177.166 (Ally), 206.196.177.173 (Ally), 206.196.177.180 (Ally), 206.196.177.182 (Ally), 206.196.177.184 (Ally), 206.196.177.188 (Ally), 206.196.177.190 (Ally), 206.196.177.192 (Ally), 206.196.177.237 (Ally), 206.196.178.81 (Ally), 206.196.179.225 (Ally), 206.196.180.129 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.245:
+206.196.177.152/31 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.0.245 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+206.196.177.152 - <64,*,Healthy,Yes,Yes>
+129.2.0.245 - <32,*,*,Yes,No>
+
+Inferred routers: 
+[129.2.0.245]
+[206.196.177.152]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 206.196.177.99:
+206.196.179.128/28 (ACCURATE, credible)
+206.196.179.144/28 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 206.196.177.99 belongs to registered subnet 206.196.177.98/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+206.196.179.129 - <64,*,Healthy,Yes,No>
+206.196.179.145 - <64,*,Healthy,Yes,No>
+206.196.177.99 - <64,*,Healthy,No,No>
+
+Inferred router: 
+[206.196.177.99 (Ally), 206.196.179.129, 206.196.179.145 (Ally)]
+
+------------------------------------------
+
+Neighborhood of internal node 206.196.180.201:
+No neighboring subnets, but inferred a total of 3 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 206.196.180.201 belongs to registered subnet 206.196.180.192/28
+All labels belong to subnets appearing in the tree.
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 206.196.180.220:
+206.196.180.208/28 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 206.196.180.220 belongs to registered subnet 206.196.180.208/28
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+206.196.180.220 - <*,*,*,No,No>
+
+Inferred router: 
+[206.196.180.220]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 206.196.180.232:
+206.196.180.224/27 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 206.196.180.232 belongs to registered subnet 206.196.180.224/27
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+206.196.180.232 - <*,*,*,No,No>
+
+Inferred router: 
+[206.196.180.232]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 206.196.180.161:
+206.196.180.160/27 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 206.196.180.161 belongs to registered subnet 206.196.180.160/27
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+206.196.180.161 - <*,*,*,No,No>
+
+Inferred router: 
+[206.196.180.161]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 206.196.177.247:
+206.196.177.244/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 206.196.177.247 belongs to registered subnet 206.196.177.244/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+206.196.177.247 - <*,*,*,No,No>
+
+Inferred router: 
+[206.196.177.247]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 172.85.52.94:
+129.2.0.228/30 (ACCURATE, credible)
+Inferred a total 4 interfaces.
+
+Label analysis:
+Label 172.85.52.94 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+172.85.52.94 - <255,*,Echo,Yes,No>
+129.2.0.230 - <255,*,Echo,Yes,Yes>
+
+Inferred routers: 
+[129.2.0.230]
+[172.85.52.94]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.229:
+128.8.0.80/30 (ACCURATE, credible)
+128.8.0.224/27 (ODD)
+128.8.7.228/30 (ACCURATE, credible)
+128.8.23.80/30 (ACCURATE, credible)
+129.2.0.80/30 (ACCURATE, credible), on the way to 129.2.0.81
+Inferred a total 8 interfaces.
+
+Label analysis:
+Label 128.8.0.229 belongs to registered subnet 128.8.0.224/27
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.0.225 - <255,*,Echo,Yes,No>
+128.8.0.229 - <255,*,Echo,Yes,No>
+128.8.0.230 - <255,*,Echo,Yes,No>
+129.2.0.82 - <255,*,Echo,Yes,No>
+128.8.0.82 - <255,*,Echo,Yes,Yes>
+128.8.7.230 - <255,*,Echo,No,No>
+128.8.23.81 - <255,*,Echo,No,No>
+
+Inferred routers: 
+[128.8.0.82]
+[128.8.7.230, 128.8.23.81 (Echo group)]
+[128.8.0.225, 128.8.0.229 (Echo group & DNS), 129.2.0.82 (Echo group & DNS)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.7.198:
+192.54.103.0/29 (ACCURATE, credible), on the way to 192.54.103.1
+192.54.103.48/30 (ACCURATE, credible)
+192.54.103.56/29 (ODD, credible)
+192.54.103.64/28 (ACCURATE, credible)
+Inferred a total 5 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.7.198 belongs to registered subnet 128.8.7.192/29
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+192.54.103.2 - <255,*,Echo,No,No>
+192.54.103.49 - <255,*,Echo,No,No>
+192.54.103.74 - <255,*,Echo,No,No>
+128.8.7.198 - <255,*,Echo,No,Yes>
+192.54.103.57 - <*,*,*,No,No>
+
+Inferred routers: 
+[128.8.7.198]
+[192.54.103.2, 192.54.103.49 (Echo group), 192.54.103.74 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 192.54.103.1:
+192.54.102.0/24 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 192.54.103.1 belongs to registered subnet 192.54.103.0/29
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+192.54.102.1 - <255,*,Echo,No,Yes>
+192.54.103.1 - <32,*,*,No,No>
+
+Inferred routers: 
+[192.54.102.1]
+[192.54.103.1]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.239.73:
+206.196.191.0/26 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.239.73 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+206.196.191.1 - <255,*,Echo,Yes,Yes>
+128.8.239.73 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.239.73]
+[206.196.191.1]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.81:
+128.8.2.0/26 (ODD, credible)
+128.8.2.128/25 (ODD, credible)
+128.8.37.192/27 (ACCURATE, credible)
+129.2.0.4/30 (ACCURATE, credible), on the way to 129.2.0.5
+129.2.0.24/30 (ACCURATE, credible)
+129.2.0.28/30 (ACCURATE, credible)
+129.2.0.42/31 (ACCURATE, credible)
+129.2.0.44/31 (ACCURATE, credible), on the way to 129.2.0.45
+129.2.0.48/30 (ACCURATE, credible)
+129.2.0.52/30 (ACCURATE, credible)
+129.2.0.56/30 (ACCURATE, credible)
+129.2.0.64/30 (ACCURATE, credible)
+129.2.0.72/30 (ACCURATE, credible)
+129.2.0.88/31 (ACCURATE, credible), on the way to 129.2.0.89
+129.2.0.90/31 (ACCURATE, credible)
+129.2.0.112/30 (ACCURATE, credible), on the way to 129.2.0.114
+129.2.0.150/31 (ACCURATE, credible), on the way to 129.2.0.151
+129.2.0.154/31 (ACCURATE, credible), on the way to 129.2.0.155
+129.2.0.156/31 (ACCURATE, credible), on the way to 129.2.0.157
+129.2.0.158/31 (ACCURATE, credible), on the way to 129.2.0.159
+129.2.0.160/31 (ACCURATE, credible), on the way to 129.2.0.161
+129.2.0.162/31 (ACCURATE, credible), on the way to 129.2.0.163
+129.2.0.164/31 (ACCURATE, credible), on the way to 129.2.0.165
+129.2.0.202/31 (ACCURATE, credible), on the way to 129.2.0.203
+129.2.0.204/31 (ACCURATE, credible), on the way to 129.2.0.205
+129.2.0.206/31 (ACCURATE, credible), on the way to 129.2.0.207
+129.2.0.208/31 (ACCURATE, credible)
+129.2.0.210/31 (ACCURATE, credible)
+129.2.0.216/31 (ACCURATE, credible)
+129.2.0.218/31 (ACCURATE, credible)
+129.2.0.220/31 (ACCURATE, credible), on the way to 129.2.0.221
+129.2.0.222/31 (ACCURATE, credible)
+Inferred a total 48 interfaces.
+
+Label analysis:
+Label 129.2.0.81 belongs to registered subnet 129.2.0.80/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.2.11 - <255,*,Echo,Yes,No>
+128.8.2.15 - <255,*,Echo,Yes,No>
+128.8.2.221 - <255,*,Echo,Yes,No>
+128.8.2.232 - <255,*,Echo,Yes,No>
+129.2.0.25 - <255,*,Echo,Yes,No>
+129.2.0.29 - <255,*,Echo,Yes,No>
+129.2.0.49 - <255,*,Echo,Yes,No>
+129.2.0.53 - <255,*,Echo,Yes,No>
+129.2.0.57 - <255,*,Echo,Yes,No>
+129.2.0.65 - <255,*,Echo,Yes,No>
+129.2.0.73 - <255,*,Echo,Yes,No>
+129.2.0.81 - <255,*,Echo,Yes,No>
+129.2.0.113 - <255,*,Echo,Yes,No>
+129.2.0.202 - <255,*,Echo,Yes,No>
+129.2.0.204 - <255,*,Echo,Yes,No>
+129.2.0.206 - <255,*,Echo,Yes,No>
+129.2.0.208 - <255,*,Echo,Yes,No>
+129.2.0.217 - <255,*,Echo,Yes,No>
+129.2.0.218 - <255,*,Echo,Yes,No>
+129.2.0.220 - <255,*,Echo,Yes,No>
+129.2.0.222 - <255,*,Echo,Yes,No>
+128.8.37.193 - <255,*,Echo,No,No>
+129.2.0.6 - <255,*,Echo,No,No>
+129.2.0.42 - <255,*,Echo,No,No>
+129.2.0.44 - <255,*,Echo,No,No>
+129.2.0.88 - <255,*,Echo,No,No>
+129.2.0.90 - <255,*,Echo,No,No>
+129.2.0.150 - <255,*,Echo,No,No>
+129.2.0.154 - <255,*,Echo,No,No>
+129.2.0.156 - <255,*,Echo,No,No>
+129.2.0.158 - <255,*,Echo,No,No>
+129.2.0.160 - <255,*,Echo,No,No>
+129.2.0.162 - <255,*,Echo,No,No>
+129.2.0.164 - <255,*,Echo,No,No>
+129.2.0.210 - <255,*,Echo,No,No>
+128.8.2.2 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[129.2.0.217]
+[129.2.0.25, 129.2.0.29 (Echo group & DNS), 129.2.0.49 (Echo group & DNS), 129.2.0.53 (Echo group & DNS), 129.2.0.57 (Echo group & DNS), 129.2.0.65 (Echo group & DNS), 129.2.0.73 (Echo group & DNS), 129.2.0.81 (Echo group & DNS), 129.2.0.113 (Echo group & DNS), 129.2.0.202 (Echo group & DNS), 129.2.0.204 (Echo group & DNS), 129.2.0.206 (Echo group & DNS), 129.2.0.208 (Echo group & DNS), 129.2.0.218 (Echo group & DNS), 129.2.0.220 (Echo group & DNS), 129.2.0.222 (Echo group & DNS)]
+[128.8.2.11, 128.8.2.15 (Echo group & DNS), 128.8.2.221 (Echo group & DNS), 128.8.2.232 (Echo group & DNS), 128.8.37.193 (Echo group), 129.2.0.6 (Echo group), 129.2.0.42 (Echo group), 129.2.0.44 (Echo group), 129.2.0.88 (Echo group), 129.2.0.90 (Echo group), 129.2.0.150 (Echo group), 129.2.0.154 (Echo group), 129.2.0.156 (Echo group), 129.2.0.158 (Echo group), 129.2.0.160 (Echo group), 129.2.0.162 (Echo group), 129.2.0.164 (Echo group), 129.2.0.210 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.7.121:
+128.8.7.120/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.7.121 belongs to registered subnet 128.8.7.120/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.7.121 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.7.121]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.12.65:
+128.8.12.64/28 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.12.65 belongs to registered subnet 128.8.12.64/28
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.12.65 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.12.65]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.19.97:
+128.8.19.96/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.19.97 belongs to registered subnet 128.8.19.96/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.19.97 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.19.97]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.30.193:
+128.8.30.0/24 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.30.193 belongs to registered subnet 128.8.30.0/24
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.30.193 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.30.193]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.31.129:
+128.8.31.128/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.31.129 belongs to registered subnet 128.8.31.128/29
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.31.129 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.31.129]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.47.243:
+128.8.47.224/27 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.47.243 belongs to registered subnet 128.8.47.224/27
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.47.243 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.47.243]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.157.220:
+128.8.157.192/26 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.157.220 belongs to registered subnet 128.8.157.192/26
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.157.220 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.157.220]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.165.129:
+128.8.165.128/27 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.165.129 belongs to registered subnet 128.8.165.128/27
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.165.129 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.165.129]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.170.1:
+128.8.170.0/25 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.170.1 belongs to registered subnet 128.8.170.0/25
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.170.1 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.170.1]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.191.129:
+128.8.191.0/24 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.191.129 belongs to registered subnet 128.8.191.0/24
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.191.129 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.191.129]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.203.252:
+128.8.203.192/26 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.203.252 belongs to registered subnet 128.8.203.192/26
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.203.252 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.203.252]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.250.209:
+128.8.250.208/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.250.209 belongs to registered subnet 128.8.250.208/29
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.250.209 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.250.209]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.5:
+128.8.0.160/29 (ODD, credible)
+128.8.0.24/29 (ODD)
+128.8.0.32/30 (ACCURATE, credible)
+128.8.0.42/31 (ACCURATE, credible)
+128.8.0.44/31 (ACCURATE, credible)
+128.8.0.56/30 (ACCURATE, credible)
+128.8.0.64/30 (ACCURATE, credible)
+128.8.0.72/29 (ACCURATE, credible), on the way to 128.8.0.74
+128.8.0.90/31 (ACCURATE, credible), on the way to 128.8.0.91
+128.8.0.116/30 (ACCURATE, credible)
+128.8.0.148/30 (ACCURATE, credible)
+128.8.0.152/31 (ACCURATE, credible)
+128.8.0.154/31 (ACCURATE, credible)
+128.8.0.156/30 (ACCURATE, credible)
+128.8.0.202/31 (ACCURATE, credible)
+128.8.0.204/31 (ACCURATE, credible)
+128.8.0.208/31 (ACCURATE, credible)
+128.8.0.210/31 (ACCURATE, credible)
+128.8.0.216/31 (ACCURATE, credible)
+128.8.0.218/31 (ACCURATE, credible)
+128.8.0.220/31 (ACCURATE, credible)
+128.8.0.222/31 (ACCURATE, credible)
+128.8.31.64/26 (ACCURATE, credible)
+Inferred a total 24 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.0.5 belongs to registered subnet 129.2.0.4/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.0.29 - <255,*,Echo,Yes,No>
+128.8.0.33 - <255,*,Echo,Yes,No>
+128.8.0.57 - <255,*,Echo,Yes,No>
+128.8.0.65 - <255,*,Echo,Yes,No>
+128.8.0.73 - <255,*,Echo,Yes,No>
+128.8.0.117 - <255,*,Echo,Yes,No>
+128.8.0.202 - <255,*,Echo,Yes,No>
+128.8.0.204 - <255,*,Echo,Yes,No>
+128.8.0.208 - <255,*,Echo,Yes,No>
+128.8.0.210 - <255,*,Echo,Yes,No>
+128.8.0.218 - <255,*,Echo,Yes,No>
+128.8.0.220 - <255,*,Echo,Yes,No>
+128.8.0.222 - <255,*,Echo,Yes,No>
+128.8.0.42 - <255,*,Echo,No,No>
+128.8.0.44 - <255,*,Echo,No,No>
+128.8.0.90 - <255,*,Echo,No,No>
+128.8.0.148 - <255,*,Echo,No,No>
+128.8.0.152 - <255,*,Echo,No,No>
+128.8.0.154 - <255,*,Echo,No,No>
+128.8.0.158 - <255,*,Echo,No,No>
+128.8.0.160 - <255,*,Echo,No,No>
+128.8.0.164 - <255,*,Echo,No,No>
+128.8.0.217 - <255,*,Echo,No,No>
+128.8.31.65 - <255,*,Echo,No,No>
+129.2.0.5 - <255,*,Echo,No,No>
+
+Inferred routers: 
+[128.8.0.222]
+[128.8.0.29, 128.8.0.33 (Echo group & DNS), 128.8.0.42 (Echo group), 128.8.0.44 (Echo group), 128.8.0.57 (Echo group & DNS), 128.8.0.65 (Echo group & DNS), 128.8.0.73 (Echo group & DNS), 128.8.0.90 (Echo group), 128.8.0.117 (Echo group & DNS), 128.8.0.148 (Echo group), 128.8.0.152 (Echo group), 128.8.0.154 (Echo group), 128.8.0.158 (Echo group), 128.8.0.160 (Echo group), 128.8.0.164 (Echo group), 128.8.0.202 (Echo group & DNS), 128.8.0.204 (Echo group & DNS), 128.8.0.208 (Echo group & DNS), 128.8.0.210 (Echo group & DNS), 128.8.0.217 (Echo group), 128.8.0.218 (Echo group & DNS), 128.8.0.220 (Echo group & DNS), 128.8.31.65 (Echo group), 129.2.0.5 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.74:
+128.8.239.96/29 (ACCURATE, credible), on the way to 128.8.239.99
+206.196.172.128/25 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.0.74 belongs to registered subnet 128.8.0.72/29
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.239.97 - <255,*,Echo,Yes,No>
+128.8.0.74 - <255,*,Echo,Yes,Yes>
+206.196.172.241 - <64,*,Healthy,No,No>
+
+Inferred routers: 
+[128.8.0.74]
+[128.8.239.97]
+[206.196.172.241]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.239.99:
+128.8.42.96/27 (ACCURATE, credible)
+128.8.250.0/26 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.239.99 belongs to registered subnet 128.8.239.96/29
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.239.99 - <255,*,Echo,Yes,No>
+128.8.42.97 - <255,*,Echo,Yes,Yes>
+128.8.250.1 - <255,*,Echo,No,No>
+
+Inferred routers: 
+[128.8.42.97]
+[128.8.239.99]
+[128.8.250.1]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.91:
+128.8.5.16/28 (ACCURATE, credible)
+128.8.5.64/26 (ACCURATE, credible)
+128.8.74.0/28 (ACCURATE, credible)
+Inferred a total 4 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.0.91 belongs to registered subnet 128.8.0.90/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.74.1 - <255,*,Echo,Yes,No>
+128.8.5.65 - <255,*,Echo,No,No>
+128.8.0.91 - <255,*,Echo,No,Yes>
+128.8.5.22 - <64,*,Healthy,Yes,No>
+
+Inferred routers: 
+[128.8.0.91]
+[128.8.5.22]
+[128.8.5.65 (Echo group), 128.8.74.1]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.34:
+128.8.236.224/28 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.0.34 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+129.2.0.34 - <255,*,Echo,Yes,No>
+128.8.236.225 - <255,*,Echo,Yes,Yes>
+
+Inferred routers: 
+[128.8.236.225]
+[129.2.0.34]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.45:
+129.2.128.224/28 (ACCURATE, credible)
+129.2.182.0/23 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.0.45 belongs to registered subnet 129.2.0.44/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+129.2.182.1 - <255,*,Echo,Yes,No>
+129.2.128.233 - <255,*,Echo,No,No>
+129.2.0.45 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[129.2.0.45]
+[129.2.128.233 (Echo group), 129.2.182.1]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.89:
+128.8.0.88/31 (ACCURATE, credible)
+128.8.22.0/29 (ACCURATE, credible)
+128.8.76.0/28 (ACCURATE, credible)
+128.8.250.224/28 (ACCURATE, credible)
+Inferred a total 6 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 129.2.0.89 belongs to registered subnet 129.2.0.88/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.22.1 - <255,*,Echo,Yes,No>
+128.8.250.225 - <255,*,Echo,No,No>
+129.2.0.89 - <255,*,Echo,No,No>
+128.8.0.89 - <255,*,Echo,No,Yes>
+128.8.76.1 - <*,*,*,No,No>
+
+Inferred routers: 
+[128.8.0.89]
+[128.8.76.1]
+[128.8.22.1, 128.8.250.225 (Echo group), 129.2.0.89 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.19.66:
+128.8.19.64/27 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.19.66 belongs to registered subnet 128.8.19.64/27
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.19.66 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.19.66]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.114:
+128.8.17.16/28 (ACCURATE, credible)
+128.8.17.128/26 (ODD, credible)
+128.8.20.0/27 (ACCURATE, credible)
+128.8.20.32/27 (ACCURATE, credible)
+128.8.20.128/26 (ACCURATE, credible)
+128.8.20.192/26 (ACCURATE, credible)
+128.8.34.0/25 (ACCURATE, credible)
+128.8.34.192/27 (ACCURATE, credible)
+128.8.35.128/27 (ACCURATE, credible)
+128.8.35.224/28 (ACCURATE, credible)
+128.8.37.224/29 (ACCURATE, credible)
+128.8.38.0/24 (ACCURATE, credible)
+128.8.42.128/26 (ACCURATE, credible)
+128.8.48.0/23 (ACCURATE, credible)
+128.8.53.144/28 (ACCURATE, credible)
+128.8.57.0/25 (ACCURATE, credible)
+128.8.57.128/25 (ACCURATE, credible)
+128.8.58.0/24 (ACCURATE, credible)
+128.8.66.0/27 (ACCURATE, credible)
+128.8.75.0/25 (ACCURATE, credible)
+128.8.81.0/24 (ACCURATE, credible)
+128.8.82.0/24 (ACCURATE, credible)
+128.8.83.0/25 (ACCURATE, credible)
+128.8.86.0/25 (ACCURATE, credible)
+128.8.86.128/25 (ACCURATE, credible)
+128.8.89.128/26 (ACCURATE, credible)
+128.8.92.0/25 (ACCURATE, credible)
+128.8.92.128/25 (ACCURATE, credible)
+128.8.93.0/25 (ACCURATE, credible)
+128.8.93.128/25 (ACCURATE, credible)
+128.8.98.64/28 (ACCURATE, credible)
+128.8.98.80/28 (ACCURATE, credible)
+128.8.99.0/29 (ACCURATE, credible)
+128.8.99.64/26 (ACCURATE, credible)
+128.8.107.192/28 (ACCURATE, credible)
+128.8.134.0/25 (ACCURATE, credible)
+128.8.134.128/25 (ACCURATE, credible)
+128.8.152.0/25 (ACCURATE, credible)
+128.8.152.128/25 (ACCURATE, credible)
+128.8.154.0/24 (ACCURATE, credible)
+128.8.155.0/25 (ACCURATE, credible)
+128.8.155.128/25 (ACCURATE, credible)
+128.8.156.0/26 (ACCURATE, credible)
+128.8.157.128/29 (ACCURATE, credible)
+128.8.157.160/28 (ACCURATE, credible)
+128.8.158.0/24 (ACCURATE, credible)
+128.8.172.0/24 (ACCURATE, credible)
+128.8.173.0/24 (ACCURATE, credible)
+128.8.174.0/25 (ACCURATE, credible)
+128.8.174.128/25 (ODD, credible)
+128.8.175.128/29 (ACCURATE, credible)
+128.8.180.0/24 (ACCURATE, credible)
+128.8.181.0/24 (ACCURATE, credible)
+128.8.184.0/24 (ACCURATE, credible)
+128.8.185.0/24 (ACCURATE, credible)
+128.8.189.0/25 (ACCURATE, credible)
+128.8.189.128/25 (ACCURATE, credible)
+128.8.198.0/24 (ACCURATE, credible)
+128.8.199.0/24 (ACCURATE, credible)
+128.8.202.0/25 (ACCURATE, credible)
+128.8.202.128/25 (ACCURATE, credible)
+128.8.220.0/24 (ACCURATE, credible)
+128.8.221.0/24 (ODD, credible)
+128.8.223.0/25 (ACCURATE, credible)
+128.8.226.64/26 (ACCURATE, credible)
+128.8.227.64/27 (ACCURATE, credible)
+128.8.227.96/27 (ACCURATE, credible)
+128.8.227.192/28 (ACCURATE, credible)
+128.8.228.0/24 (ACCURATE, credible)
+128.8.229.0/24 (ACCURATE, credible)
+128.8.238.128/26 (ACCURATE, credible)
+128.8.238.192/26 (ACCURATE, credible)
+128.8.239.64/30 (ACCURATE, credible)
+128.8.239.68/30 (ACCURATE, credible), on the way to 128.8.239.70
+128.8.241.0/25 (ACCURATE, credible)
+128.8.243.128/27 (ACCURATE, credible)
+128.8.244.160/27 (ACCURATE, credible)
+128.8.245.128/27 (ACCURATE, credible)
+128.8.246.0/26 (ACCURATE, credible)
+128.8.246.64/26 (ACCURATE, credible)
+128.8.247.128/25 (ACCURATE, credible)
+129.2.0.166/31 (ACCURATE, credible)
+129.2.0.178/31 (ACCURATE, credible)
+129.2.20.0/24 (ACCURATE, credible)
+129.2.21.0/24 (ACCURATE, credible)
+129.2.22.0/24 (ACCURATE, credible)
+129.2.23.0/24 (ACCURATE, credible)
+129.2.30.128/27 (ACCURATE, credible)
+129.2.30.192/28 (ACCURATE, credible)
+129.2.30.240/29 (ACCURATE, credible)
+129.2.32.0/24 (ACCURATE, credible)
+129.2.33.0/24 (ACCURATE, credible)
+129.2.35.0/24 (ACCURATE, credible)
+129.2.40.0/23 (ACCURATE, credible)
+129.2.42.0/23 (ACCURATE, credible)
+129.2.52.0/24 (ACCURATE, credible)
+129.2.53.0/24 (ACCURATE, credible)
+129.2.56.0/23 (ACCURATE, credible)
+129.2.60.0/24 (ACCURATE, credible)
+129.2.61.0/24 (ACCURATE, credible)
+129.2.64.0/23 (ACCURATE, credible)
+129.2.66.0/27 (ACCURATE, credible)
+129.2.66.32/27 (ACCURATE, credible)
+129.2.66.192/27 (ACCURATE, credible)
+129.2.72.128/29 (ACCURATE, credible)
+129.2.82.0/26 (ACCURATE, credible)
+129.2.86.0/24 (ACCURATE, credible)
+129.2.92.0/24 (ACCURATE, credible)
+129.2.96.0/24 (ACCURATE, credible)
+129.2.99.128/25 (ACCURATE, credible)
+129.2.116.0/24 (ACCURATE, credible)
+129.2.126.0/24 (ACCURATE, credible)
+129.2.164.0/25 (ACCURATE, credible)
+129.2.164.128/25 (ACCURATE, credible)
+129.2.165.0/25 (ACCURATE, credible)
+129.2.165.128/25 (ACCURATE, credible)
+129.2.166.0/25 (ACCURATE, credible)
+129.2.167.0/25 (ACCURATE, credible)
+129.2.167.128/27 (ACCURATE, credible)
+129.2.167.160/28 (ACCURATE, credible)
+129.2.167.192/27 (ACCURATE, credible)
+129.2.170.64/26 (ACCURATE, credible)
+129.2.170.128/26 (ACCURATE, credible)
+129.2.170.192/26 (ACCURATE, credible)
+129.2.171.0/27 (ACCURATE, credible)
+129.2.192.0/23 (ACCURATE, credible)
+129.2.194.0/23 (ACCURATE, credible)
+129.2.196.0/23 (ACCURATE, credible)
+129.2.198.0/23 (ACCURATE, credible)
+129.2.200.0/23 (ACCURATE, credible)
+129.2.206.0/23 (ACCURATE, credible)
+129.2.214.0/24 (ACCURATE, credible)
+129.2.215.0/24 (ACCURATE, credible)
+129.2.216.0/24 (ACCURATE, credible)
+129.2.217.0/24 (ACCURATE, credible)
+129.2.224.0/24 (ACCURATE, credible)
+129.2.228.64/26 (ACCURATE, credible)
+129.2.233.0/27 (ACCURATE, credible)
+129.2.233.32/28 (ACCURATE, credible)
+129.2.233.224/27 (ACCURATE, credible)
+129.2.234.0/29 (ACCURATE, credible)
+Inferred a total 144 interfaces.
+
+Label analysis:
+Label 129.2.0.114 belongs to registered subnet 129.2.0.112/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.17.189 - <255,*,Echo,Yes,No>
+128.8.20.129 - <255,*,Echo,Yes,No>
+128.8.83.1 - <255,*,Echo,Yes,No>
+128.8.92.253 - <255,*,Echo,Yes,No>
+128.8.152.253 - <255,*,Echo,Yes,No>
+128.8.155.253 - <255,*,Echo,Yes,No>
+128.8.181.253 - <255,*,Echo,Yes,No>
+128.8.185.253 - <255,*,Echo,Yes,No>
+128.8.189.253 - <255,*,Echo,Yes,No>
+128.8.202.253 - <255,*,Echo,Yes,No>
+128.8.221.253 - <255,*,Echo,Yes,No>
+128.8.223.125 - <255,*,Echo,Yes,No>
+128.8.226.65 - <255,*,Echo,Yes,No>
+128.8.227.125 - <255,*,Echo,Yes,No>
+128.8.229.253 - <255,*,Echo,Yes,No>
+128.8.238.253 - <255,*,Echo,Yes,No>
+128.8.246.125 - <255,*,Echo,Yes,No>
+129.2.0.114 - <255,*,Echo,Yes,No>
+129.2.21.253 - <255,*,Echo,Yes,No>
+129.2.43.253 - <255,*,Echo,Yes,No>
+129.2.53.253 - <255,*,Echo,Yes,No>
+128.8.17.17 - <255,*,Echo,No,No>
+128.8.17.161 - <255,*,Echo,No,No>
+128.8.20.1 - <255,*,Echo,No,No>
+128.8.20.62 - <255,*,Echo,No,No>
+128.8.20.253 - <255,*,Echo,No,No>
+128.8.34.1 - <255,*,Echo,No,No>
+128.8.35.129 - <255,*,Echo,No,No>
+128.8.35.225 - <255,*,Echo,No,No>
+128.8.37.225 - <255,*,Echo,No,No>
+128.8.38.1 - <255,*,Echo,No,No>
+128.8.42.129 - <255,*,Echo,No,No>
+128.8.48.1 - <255,*,Echo,No,No>
+128.8.53.145 - <255,*,Echo,No,No>
+128.8.57.1 - <255,*,Echo,No,No>
+128.8.57.253 - <255,*,Echo,No,No>
+128.8.58.1 - <255,*,Echo,No,No>
+128.8.66.1 - <255,*,Echo,No,No>
+128.8.75.1 - <255,*,Echo,No,No>
+128.8.81.1 - <255,*,Echo,No,No>
+128.8.82.1 - <255,*,Echo,No,No>
+128.8.86.1 - <255,*,Echo,No,No>
+128.8.89.129 - <255,*,Echo,No,No>
+128.8.92.1 - <255,*,Echo,No,No>
+128.8.93.1 - <255,*,Echo,No,No>
+128.8.93.253 - <255,*,Echo,No,No>
+128.8.98.65 - <255,*,Echo,No,No>
+128.8.98.93 - <255,*,Echo,No,No>
+128.8.99.1 - <255,*,Echo,No,No>
+128.8.99.65 - <255,*,Echo,No,No>
+128.8.107.193 - <255,*,Echo,No,No>
+128.8.134.1 - <255,*,Echo,No,No>
+128.8.134.253 - <255,*,Echo,No,No>
+128.8.152.1 - <255,*,Echo,No,No>
+128.8.154.1 - <255,*,Echo,No,No>
+128.8.155.1 - <255,*,Echo,No,No>
+128.8.156.1 - <255,*,Echo,No,No>
+128.8.157.129 - <255,*,Echo,No,No>
+128.8.157.161 - <255,*,Echo,No,No>
+128.8.158.1 - <255,*,Echo,No,No>
+128.8.172.1 - <255,*,Echo,No,No>
+128.8.173.253 - <255,*,Echo,No,No>
+128.8.174.1 - <255,*,Echo,No,No>
+128.8.175.129 - <255,*,Echo,No,No>
+128.8.180.1 - <255,*,Echo,No,No>
+128.8.184.1 - <255,*,Echo,No,No>
+128.8.189.1 - <255,*,Echo,No,No>
+128.8.198.1 - <255,*,Echo,No,No>
+128.8.199.253 - <255,*,Echo,No,No>
+128.8.202.1 - <255,*,Echo,No,No>
+128.8.220.1 - <255,*,Echo,No,No>
+128.8.227.65 - <255,*,Echo,No,No>
+128.8.227.193 - <255,*,Echo,No,No>
+128.8.228.1 - <255,*,Echo,No,No>
+128.8.238.129 - <255,*,Echo,No,No>
+128.8.239.65 - <255,*,Echo,No,No>
+128.8.239.69 - <255,*,Echo,No,No>
+128.8.241.1 - <255,*,Echo,No,No>
+128.8.243.129 - <255,*,Echo,No,No>
+128.8.244.161 - <255,*,Echo,No,No>
+128.8.245.129 - <255,*,Echo,No,No>
+128.8.246.1 - <255,*,Echo,No,No>
+128.8.247.129 - <255,*,Echo,No,No>
+129.2.0.167 - <255,*,Echo,No,No>
+129.2.0.179 - <255,*,Echo,No,No>
+129.2.20.1 - <255,*,Echo,No,No>
+129.2.22.1 - <255,*,Echo,No,No>
+129.2.23.253 - <255,*,Echo,No,No>
+129.2.30.129 - <255,*,Echo,No,No>
+129.2.30.193 - <255,*,Echo,No,No>
+129.2.33.253 - <255,*,Echo,No,No>
+129.2.35.97 - <255,*,Echo,No,No>
+129.2.40.1 - <255,*,Echo,No,No>
+129.2.52.1 - <255,*,Echo,No,No>
+129.2.56.1 - <255,*,Echo,No,No>
+129.2.60.1 - <255,*,Echo,No,No>
+129.2.61.253 - <255,*,Echo,No,No>
+129.2.64.1 - <255,*,Echo,No,No>
+129.2.66.1 - <255,*,Echo,No,No>
+129.2.66.61 - <255,*,Echo,No,No>
+129.2.66.221 - <255,*,Echo,No,No>
+129.2.82.1 - <255,*,Echo,No,No>
+129.2.86.1 - <255,*,Echo,No,No>
+129.2.92.1 - <255,*,Echo,No,No>
+129.2.96.1 - <255,*,Echo,No,No>
+129.2.99.253 - <255,*,Echo,No,No>
+129.2.116.1 - <255,*,Echo,No,No>
+129.2.126.1 - <255,*,Echo,No,No>
+129.2.164.1 - <255,*,Echo,No,No>
+129.2.164.129 - <255,*,Echo,No,No>
+129.2.165.1 - <255,*,Echo,No,No>
+129.2.165.129 - <255,*,Echo,No,No>
+129.2.166.1 - <255,*,Echo,No,No>
+129.2.167.1 - <255,*,Echo,No,No>
+129.2.167.129 - <255,*,Echo,No,No>
+129.2.167.161 - <255,*,Echo,No,No>
+129.2.167.193 - <255,*,Echo,No,No>
+129.2.170.65 - <255,*,Echo,No,No>
+129.2.170.129 - <255,*,Echo,No,No>
+129.2.170.193 - <255,*,Echo,No,No>
+129.2.171.1 - <255,*,Echo,No,No>
+129.2.192.1 - <255,*,Echo,No,No>
+129.2.194.1 - <255,*,Echo,No,No>
+129.2.196.1 - <255,*,Echo,No,No>
+129.2.198.1 - <255,*,Echo,No,No>
+129.2.200.1 - <255,*,Echo,No,No>
+129.2.206.1 - <255,*,Echo,No,No>
+129.2.214.1 - <255,*,Echo,No,No>
+129.2.215.1 - <255,*,Echo,No,No>
+129.2.216.1 - <255,*,Echo,No,No>
+129.2.217.1 - <255,*,Echo,No,No>
+129.2.224.129 - <255,*,Echo,No,No>
+129.2.228.65 - <255,*,Echo,No,No>
+129.2.233.1 - <255,*,Echo,No,No>
+129.2.233.33 - <255,*,Echo,No,No>
+129.2.233.225 - <255,*,Echo,No,No>
+129.2.234.1 - <255,*,Echo,No,No>
+128.8.34.216 - <64,*,Healthy,Yes,No>
+128.8.86.253 - <*,*,*,Yes,No>
+128.8.174.253 - <*,*,*,No,No>
+129.2.30.241 - <*,*,*,No,No>
+129.2.32.1 - <*,*,*,No,No>
+129.2.72.129 - <*,*,*,No,No>
+
+Inferred routers: 
+[128.8.20.129]
+[128.8.34.216]
+[128.8.86.253]
+[129.2.30.241]
+[129.2.32.1]
+[129.2.72.129]
+[128.8.83.1, 128.8.226.65 (Echo group & DNS)]
+[128.8.17.17 (Echo group), 128.8.17.161 (Echo group), 128.8.17.189, 128.8.20.1 (Echo group), 128.8.20.62 (Echo group), 128.8.20.253 (Echo group), 128.8.34.1 (Echo group), 128.8.35.129 (Echo group), 128.8.35.225 (Echo group), 128.8.37.225 (Echo group), 128.8.38.1 (Echo group), 128.8.42.129 (Echo group), 128.8.48.1 (Echo group), 128.8.53.145 (Echo group), 128.8.57.1 (Echo group), 128.8.57.253 (Echo group), 128.8.58.1 (Echo group), 128.8.66.1 (Echo group), 128.8.75.1 (Echo group), 128.8.81.1 (Echo group), 128.8.82.1 (Echo group), 128.8.86.1 (Echo group), 128.8.89.129 (Echo group), 128.8.92.1 (Echo group), 128.8.92.253 (Echo group & DNS), 128.8.93.1 (Echo group), 128.8.93.253 (Echo group), 128.8.98.65 (Echo group), 128.8.98.93 (Echo group), 128.8.99.1 (Echo group), 128.8.99.65 (Echo group), 128.8.107.193 (Echo group), 128.8.134.1 (Echo group), 128.8.134.253 (Echo group), 128.8.152.1 (Echo group), 128.8.152.253 (Echo group & DNS), 128.8.154.1 (Echo group), 128.8.155.1 (Echo group), 128.8.155.253 (Echo group & DNS), 128.8.156.1 (Echo group), 128.8.157.129 (Echo group), 128.8.157.161 (Echo group), 128.8.158.1 (Echo group), 128.8.172.1 (Echo group), 128.8.173.253 (Echo group), 128.8.174.1 (Echo group), 128.8.175.129 (Echo group), 128.8.180.1 (Echo group), 128.8.181.253 (Echo group & DNS), 128.8.184.1 (Echo group), 128.8.185.253 (Echo group & DNS), 128.8.189.1 (Echo group), 128.8.189.253 (Echo group & DNS), 128.8.198.1 (Echo group), 128.8.199.253 (Echo group), 128.8.202.1 (Echo group), 128.8.202.253 (Echo group & DNS), 128.8.220.1 (Echo group), 128.8.221.253 (Echo group & DNS), 128.8.223.125 (Echo group & DNS), 128.8.227.65 (Echo group), 128.8.227.125 (Echo group & DNS), 128.8.227.193 (Echo group), 128.8.228.1 (Echo group), 128.8.229.253 (Echo group & DNS), 128.8.238.129 (Echo group), 128.8.238.253 (Echo group & DNS), 128.8.239.65 (Echo group), 128.8.239.69 (Echo group), 128.8.241.1 (Echo group), 128.8.243.129 (Echo group), 128.8.244.161 (Echo group), 128.8.245.129 (Echo group), 128.8.246.1 (Echo group), 128.8.246.125 (Echo group & DNS), 128.8.247.129 (Echo group), 129.2.0.114 (Echo group & DNS), 129.2.0.167 (Echo group), 129.2.0.179 (Echo group), 129.2.20.1 (Echo group), 129.2.21.253 (Echo group & DNS), 129.2.22.1 (Echo group), 129.2.23.253 (Echo group), 129.2.30.129 (Echo group), 129.2.30.193 (Echo group), 129.2.33.253 (Echo group), 129.2.35.97 (Echo group), 129.2.40.1 (Echo group), 129.2.43.253 (Echo group & DNS), 129.2.52.1 (Echo group), 129.2.53.253 (Echo group & DNS), 129.2.56.1 (Echo group), 129.2.60.1 (Echo group), 129.2.61.253 (Echo group), 129.2.64.1 (Echo group), 129.2.66.1 (Echo group), 129.2.66.61 (Echo group), 129.2.66.221 (Echo group), 129.2.82.1 (Echo group), 129.2.86.1 (Echo group), 129.2.92.1 (Echo group), 129.2.96.1 (Echo group), 129.2.99.253 (Echo group), 129.2.116.1 (Echo group), 129.2.126.1 (Echo group), 129.2.164.1 (Echo group), 129.2.164.129 (Echo group), 129.2.165.1 (Echo group), 129.2.165.129 (Echo group), 129.2.166.1 (Echo group), 129.2.167.1 (Echo group), 129.2.167.129 (Echo group), 129.2.167.161 (Echo group), 129.2.167.193 (Echo group), 129.2.170.65 (Echo group), 129.2.170.129 (Echo group), 129.2.170.193 (Echo group), 129.2.171.1 (Echo group), 129.2.192.1 (Echo group), 129.2.194.1 (Echo group), 129.2.196.1 (Echo group), 129.2.198.1 (Echo group), 129.2.200.1 (Echo group), 129.2.206.1 (Echo group), 129.2.214.1 (Echo group), 129.2.215.1 (Echo group), 129.2.216.1 (Echo group), 129.2.217.1 (Echo group), 129.2.224.129 (Echo group), 129.2.228.65 (Echo group), 129.2.233.1 (Echo group), 129.2.233.33 (Echo group), 129.2.233.225 (Echo group), 129.2.234.1 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 0.0.0.0:
+129.2.166.128/25 (ODD)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 0.0.0.0 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+129.2.166.168 - <32,*,*,Yes,No>
+129.2.166.129 - <32,*,*,No,No>
+129.2.166.164 - <32,*,*,No,No>
+
+Data is lacking for credible router inference.
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.183.2:
+128.8.183.0/28 (ODD)
+128.8.183.16/28 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.183.2 belongs to registered subnet 128.8.183.0/28
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.183.2 - <32,*,*,Yes,No>
+128.8.183.29 - <32,*,*,Yes,No>
+128.8.183.1 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.183.2]
+[128.8.183.29]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.239.70:
+128.8.126.0/26 (ACCURATE, credible)
+128.8.126.64/26 (ACCURATE, credible)
+128.8.126.128/25 (ACCURATE, credible)
+128.8.127.0/26 (ACCURATE, credible)
+128.8.127.64/26 (ACCURATE, credible)
+128.8.127.128/26 (ACCURATE, credible)
+128.8.127.252/30 (ACCURATE, credible)
+128.8.128.0/24 (ACCURATE, credible)
+128.8.129.0/24 (ACCURATE, credible)
+128.8.130.0/25 (ACCURATE, credible)
+128.8.130.252/30 (ACCURATE, credible)
+Inferred a total 12 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.239.70 belongs to registered subnet 128.8.239.68/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.126.1 - <32,*,*,Yes,No>
+128.8.126.116 - <32,*,*,Yes,No>
+128.8.126.157 - <32,*,*,Yes,No>
+128.8.127.1 - <32,*,*,Yes,No>
+128.8.127.65 - <32,*,*,Yes,No>
+128.8.128.1 - <32,*,*,Yes,No>
+128.8.129.253 - <32,*,*,Yes,No>
+128.8.130.1 - <32,*,*,Yes,No>
+128.8.130.254 - <32,*,*,Yes,No>
+128.8.127.189 - <32,*,*,No,No>
+128.8.127.253 - <32,*,*,No,No>
+128.8.239.70 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.127.189]
+[128.8.127.253]
+[128.8.130.254]
+[128.8.239.70]
+[128.8.126.1, 128.8.126.116 (Reverse DNS), 128.8.126.157 (Reverse DNS), 128.8.127.1 (Reverse DNS), 128.8.127.65 (Reverse DNS), 128.8.128.1 (Reverse DNS), 128.8.129.253 (Reverse DNS), 128.8.130.1 (Reverse DNS)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.149:
+128.8.0.184/31 (ACCURATE, credible)
+129.2.0.176/31 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.0.149 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+128.8.0.184 - <32,*,*,No,No>
+129.2.0.149 - <32,*,*,No,No>
+129.2.0.176 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.0.184]
+[129.2.0.149]
+[129.2.0.176]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.151:
+128.8.0.130/31 (ACCURATE, credible)
+128.8.0.186/31 (ACCURATE, credible)
+129.2.0.172/31 (ACCURATE, credible)
+Inferred a total 5 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 129.2.0.151 belongs to registered subnet 129.2.0.150/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.0.130 - <32,*,*,No,No>
+128.8.0.186 - <32,*,*,No,No>
+129.2.0.151 - <32,*,*,No,No>
+129.2.0.172 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.0.130]
+[128.8.0.186]
+[129.2.0.151]
+[129.2.0.172]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.169:
+128.8.20.88/29 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.0.169 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+128.8.0.169 - <32,*,*,No,No>
+128.8.20.89 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.0.169]
+[128.8.20.89]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.153:
+128.8.0.94/31 (ACCURATE, credible)
+128.8.0.170/31 (ACCURATE, credible)
+128.8.0.188/31 (ACCURATE, credible)
+128.8.2.64/26 (ACCURATE, credible)
+129.2.0.174/31 (ACCURATE, credible)
+Inferred a total 6 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.0.153 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+128.8.0.94 - <32,*,*,No,No>
+128.8.0.170 - <32,*,*,No,No>
+128.8.0.188 - <32,*,*,No,No>
+128.8.2.120 - <32,*,*,No,No>
+129.2.0.153 - <32,*,*,No,No>
+129.2.0.174 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.0.94]
+[128.8.0.170]
+[128.8.0.188]
+[128.8.2.120]
+[129.2.0.153]
+[129.2.0.174]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.155:
+128.8.0.96/31 (ACCURATE, credible), on the way to 128.8.0.97
+128.8.0.190/31 (ACCURATE, credible)
+128.8.17.192/26 (ODD)
+Inferred a total 4 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.0.155 belongs to registered subnet 129.2.0.154/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.17.201 - <32,*,*,Yes,No>
+128.8.17.220 - <32,*,*,Yes,No>
+128.8.0.96 - <32,*,*,No,No>
+128.8.0.190 - <32,*,*,No,No>
+128.8.17.252 - <32,*,*,No,No>
+129.2.0.155 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.0.96]
+[128.8.0.190]
+[129.2.0.155]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.97:
+128.8.7.0/30 (ACCURATE, credible), on the way to 128.8.7.2
+128.8.7.136/30 (ACCURATE, credible)
+128.8.7.168/30 (ACCURATE, credible), on the way to 128.8.7.170
+128.8.19.32/29 (ACCURATE, credible)
+128.8.26.192/30 (ACCURATE, credible)
+128.8.27.0/24 (ACCURATE, credible)
+128.8.29.128/26 (ACCURATE, credible)
+128.8.39.64/28 (ACCURATE, credible)
+128.8.39.168/29 (ACCURATE, credible)
+128.8.46.0/24 (ACCURATE, credible)
+128.8.47.128/27 (ACCURATE, credible)
+128.8.55.0/24 (ACCURATE, credible)
+128.8.60.40/29 (ACCURATE, credible)
+128.8.78.0/24 (ACCURATE, credible)
+128.8.79.64/27 (ACCURATE, credible)
+128.8.80.0/26 (ACCURATE, credible)
+128.8.80.128/25 (ACCURATE, credible)
+128.8.87.0/25 (ACCURATE, credible)
+128.8.88.0/24 (ACCURATE, credible)
+128.8.96.0/23 (ACCURATE, credible)
+128.8.98.0/28 (ACCURATE, credible)
+128.8.98.16/28 (ACCURATE, credible)
+128.8.98.96/27 (ACCURATE, credible)
+128.8.101.16/28 (ACCURATE, credible)
+128.8.102.0/24 (ACCURATE, credible)
+128.8.103.0/25 (ACCURATE, credible)
+128.8.103.128/26 (ACCURATE, credible)
+128.8.107.176/29 (ACCURATE, credible)
+128.8.107.184/29 (ACCURATE, credible)
+128.8.109.32/27 (ACCURATE, credible)
+128.8.111.0/24 (ACCURATE, credible)
+128.8.136.0/22 (ACCURATE, credible)
+128.8.140.0/23 (ODD, credible)
+128.8.142.0/24 (ODD, credible)
+128.8.143.0/24 (ACCURATE, credible)
+128.8.157.64/27 (ACCURATE, credible)
+128.8.167.192/26 (ACCURATE, credible)
+128.8.182.128/27 (ACCURATE, credible)
+128.8.193.0/24 (ACCURATE, credible)
+128.8.194.128/29 (ACCURATE, credible)
+128.8.195.0/24 (ACCURATE, credible)
+128.8.200.0/23 (ACCURATE, credible)
+128.8.204.0/24 (ACCURATE, credible)
+128.8.218.0/24 (ACCURATE, credible)
+128.8.219.0/29 (ACCURATE, credible)
+128.8.223.128/30 (ACCURATE, credible), on the way to 128.8.223.130
+128.8.224.0/23 (ACCURATE, credible)
+128.8.226.0/26 (ACCURATE, credible)
+128.8.233.96/28 (ACCURATE, credible)
+128.8.236.128/26 (ACCURATE, credible)
+128.8.244.192/26 (ACCURATE, credible)
+128.8.245.0/26 (ACCURATE, credible)
+128.8.247.0/25 (ACCURATE, credible)
+129.2.4.0/23 (ACCURATE, credible)
+129.2.6.0/24 (ACCURATE, credible)
+129.2.8.0/23 (ACCURATE, credible)
+129.2.14.0/23 (ACCURATE, credible)
+129.2.24.0/23 (ACCURATE, credible)
+129.2.36.0/23 (ACCURATE, credible)
+129.2.38.0/23 (ACCURATE, credible)
+129.2.44.0/23 (ACCURATE, credible)
+129.2.50.0/23 (ACCURATE, credible)
+129.2.58.0/23 (ACCURATE, credible)
+129.2.62.0/23 (ACCURATE, credible)
+129.2.68.0/22 (ODD, credible)
+129.2.76.0/23 (ACCURATE, credible)
+129.2.78.0/24 (ACCURATE, credible)
+129.2.82.192/26 (ACCURATE, credible)
+129.2.90.0/27 (ACCURATE, credible)
+129.2.94.0/23 (ACCURATE, credible), on the way to 129.2.95.102, 129.2.95.110
+129.2.98.0/24 (ACCURATE, credible)
+129.2.100.0/22 (ACCURATE, credible)
+129.2.104.0/23 (ACCURATE, credible)
+129.2.106.0/25 (ACCURATE, credible)
+129.2.122.0/24 (ACCURATE, credible)
+129.2.124.0/23 (ACCURATE, credible)
+129.2.162.0/23 (ACCURATE, credible)
+129.2.168.0/23 (ACCURATE, credible)
+129.2.202.0/23 (ACCURATE, credible)
+Inferred a total 81 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 128.8.0.97 belongs to registered subnet 128.8.0.96/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.7.137 - <32,*,*,Yes,No>
+128.8.27.1 - <32,*,*,Yes,No>
+128.8.39.173 - <32,*,*,Yes,No>
+128.8.55.1 - <32,*,*,Yes,No>
+128.8.60.45 - <32,*,*,Yes,No>
+128.8.98.29 - <32,*,*,Yes,No>
+128.8.101.29 - <32,*,*,Yes,No>
+128.8.107.189 - <32,*,*,Yes,No>
+128.8.141.253 - <32,*,*,Yes,No>
+129.2.14.1 - <32,*,*,Yes,No>
+129.2.98.1 - <32,*,*,Yes,No>
+128.8.0.97 - <32,*,*,No,No>
+128.8.7.1 - <32,*,*,No,No>
+128.8.7.169 - <32,*,*,No,No>
+128.8.19.33 - <32,*,*,No,No>
+128.8.26.193 - <32,*,*,No,No>
+128.8.29.129 - <32,*,*,No,No>
+128.8.39.65 - <32,*,*,No,No>
+128.8.46.1 - <32,*,*,No,No>
+128.8.47.129 - <32,*,*,No,No>
+128.8.78.1 - <32,*,*,No,No>
+128.8.79.65 - <32,*,*,No,No>
+128.8.80.1 - <32,*,*,No,No>
+128.8.80.129 - <32,*,*,No,No>
+128.8.87.1 - <32,*,*,No,No>
+128.8.88.1 - <32,*,*,No,No>
+128.8.96.1 - <32,*,*,No,No>
+128.8.98.1 - <32,*,*,No,No>
+128.8.98.97 - <32,*,*,No,No>
+128.8.102.1 - <32,*,*,No,No>
+128.8.103.1 - <32,*,*,No,No>
+128.8.103.129 - <32,*,*,No,No>
+128.8.107.177 - <32,*,*,No,No>
+128.8.109.33 - <32,*,*,No,No>
+128.8.111.1 - <32,*,*,No,No>
+128.8.138.1 - <32,*,*,No,No>
+128.8.141.129 - <32,*,*,No,No>
+128.8.141.193 - <32,*,*,No,No>
+128.8.141.225 - <32,*,*,No,No>
+128.8.142.1 - <32,*,*,No,No>
+128.8.157.65 - <32,*,*,No,No>
+128.8.167.193 - <32,*,*,No,No>
+128.8.182.129 - <32,*,*,No,No>
+128.8.193.1 - <32,*,*,No,No>
+128.8.194.129 - <32,*,*,No,No>
+128.8.195.1 - <32,*,*,No,No>
+128.8.200.1 - <32,*,*,No,No>
+128.8.204.1 - <32,*,*,No,No>
+128.8.218.1 - <32,*,*,No,No>
+128.8.219.1 - <32,*,*,No,No>
+128.8.223.129 - <32,*,*,No,No>
+128.8.224.1 - <32,*,*,No,No>
+128.8.226.1 - <32,*,*,No,No>
+128.8.233.109 - <32,*,*,No,No>
+128.8.236.129 - <32,*,*,No,No>
+128.8.244.193 - <32,*,*,No,No>
+128.8.245.1 - <32,*,*,No,No>
+128.8.247.1 - <32,*,*,No,No>
+129.2.4.1 - <32,*,*,No,No>
+129.2.6.1 - <32,*,*,No,No>
+129.2.8.1 - <32,*,*,No,No>
+129.2.24.1 - <32,*,*,No,No>
+129.2.36.1 - <32,*,*,No,No>
+129.2.38.1 - <32,*,*,No,No>
+129.2.44.1 - <32,*,*,No,No>
+129.2.50.1 - <32,*,*,No,No>
+129.2.58.1 - <32,*,*,No,No>
+129.2.62.1 - <32,*,*,No,No>
+129.2.70.1 - <32,*,*,No,No>
+129.2.76.1 - <32,*,*,No,No>
+129.2.78.1 - <32,*,*,No,No>
+129.2.82.225 - <32,*,*,No,No>
+129.2.90.1 - <32,*,*,No,No>
+129.2.94.1 - <32,*,*,No,No>
+129.2.100.1 - <32,*,*,No,No>
+129.2.104.1 - <32,*,*,No,No>
+129.2.106.1 - <32,*,*,No,No>
+129.2.122.1 - <32,*,*,No,No>
+129.2.124.1 - <32,*,*,No,No>
+129.2.162.1 - <32,*,*,No,No>
+129.2.168.1 - <32,*,*,No,No>
+129.2.202.1 - <32,*,*,No,No>
+128.8.143.1 - <*,*,*,No,No>
+129.2.68.1 - <*,*,*,No,No>
+
+Inferred routers: 
+[128.8.0.97]
+[128.8.7.1]
+[128.8.7.169]
+[128.8.19.33]
+[128.8.26.193]
+[128.8.29.129]
+[128.8.39.65]
+[128.8.46.1]
+[128.8.47.129]
+[128.8.78.1]
+[128.8.79.65]
+[128.8.80.1]
+[128.8.80.129]
+[128.8.87.1]
+[128.8.88.1]
+[128.8.96.1]
+[128.8.98.1]
+[128.8.98.97]
+[128.8.102.1]
+[128.8.103.1]
+[128.8.103.129]
+[128.8.107.177]
+[128.8.109.33]
+[128.8.111.1]
+[128.8.138.1]
+[128.8.143.1]
+[128.8.157.65]
+[128.8.167.193]
+[128.8.182.129]
+[128.8.193.1]
+[128.8.194.129]
+[128.8.195.1]
+[128.8.200.1]
+[128.8.204.1]
+[128.8.218.1]
+[128.8.219.1]
+[128.8.223.129]
+[128.8.224.1]
+[128.8.226.1]
+[128.8.233.109]
+[128.8.236.129]
+[128.8.244.193]
+[128.8.245.1]
+[128.8.247.1]
+[129.2.4.1]
+[129.2.6.1]
+[129.2.8.1]
+[129.2.14.1]
+[129.2.24.1]
+[129.2.36.1]
+[129.2.38.1]
+[129.2.44.1]
+[129.2.50.1]
+[129.2.58.1]
+[129.2.62.1]
+[129.2.76.1]
+[129.2.78.1]
+[129.2.82.225]
+[129.2.90.1]
+[129.2.94.1]
+[129.2.100.1]
+[129.2.104.1]
+[129.2.106.1]
+[129.2.122.1]
+[129.2.124.1]
+[129.2.162.1]
+[129.2.168.1]
+[129.2.202.1]
+[128.8.27.1, 128.8.55.1 (Reverse DNS), 129.2.98.1 (Reverse DNS)]
+[128.8.7.137, 128.8.39.173 (Reverse DNS), 128.8.60.45 (Reverse DNS), 128.8.98.29 (Reverse DNS), 128.8.101.29 (Reverse DNS), 128.8.107.189 (Reverse DNS)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.7.2:
+128.8.7.144/29 (ACCURATE, credible)
+128.8.118.192/30 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.7.2 belongs to registered subnet 128.8.7.0/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.7.2 - <32,*,*,No,No>
+128.8.7.145 - <32,*,*,No,No>
+128.8.118.193 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.7.2]
+[128.8.7.145]
+[128.8.118.193]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.7.6:
+128.8.118.196/30 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 128.8.7.6 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+128.8.7.6 - <32,*,*,No,No>
+128.8.118.198 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.7.6]
+[128.8.118.198]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.118.234:
+128.8.118.216/29 (ACCURATE, credible)
+128.8.118.232/30 (ACCURATE, credible), on the way to 128.8.118.233
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.118.234 belongs to registered subnet 128.8.118.232/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.118.222 - <32,*,*,No,No>
+128.8.118.234 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.118.222]
+[128.8.118.234]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.118.233:
+128.8.118.0/26 (ACCURATE, credible)
+128.8.118.204/30 (ACCURATE, credible)
+128.8.118.224/30 (ACCURATE, credible)
+128.8.118.228/30 (ACCURATE, credible)
+128.8.119.0/27 (ACCURATE, credible)
+128.8.120.0/24 (ACCURATE, credible)
+128.8.124.0/26 (ACCURATE, credible)
+128.8.124.64/30 (ACCURATE, credible)
+128.8.124.128/28 (ACCURATE, credible)
+128.8.124.192/28 (ACCURATE, credible)
+128.8.132.0/24 (ACCURATE, credible)
+129.2.30.0/27 (ACCURATE, credible)
+Inferred a total 14 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 128.8.118.233 belongs to registered subnet 128.8.118.232/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.118.205 - <32,*,*,Yes,No>
+128.8.118.229 - <32,*,*,Yes,No>
+128.8.119.1 - <32,*,*,Yes,No>
+128.8.120.1 - <32,*,*,Yes,No>
+128.8.124.1 - <32,*,*,Yes,No>
+128.8.124.65 - <32,*,*,Yes,No>
+128.8.124.129 - <32,*,*,Yes,No>
+128.8.124.193 - <32,*,*,Yes,No>
+128.8.132.1 - <32,*,*,Yes,No>
+128.8.118.1 - <32,*,*,No,No>
+128.8.118.225 - <32,*,*,No,No>
+128.8.118.233 - <32,*,*,No,No>
+129.2.30.1 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.118.1]
+[128.8.118.205]
+[128.8.118.225]
+[128.8.118.229]
+[128.8.118.233]
+[128.8.119.1]
+[128.8.132.1]
+[129.2.30.1]
+[128.8.120.1, 128.8.124.1 (Reverse DNS), 128.8.124.65 (Reverse DNS), 128.8.124.129 (Reverse DNS), 128.8.124.193 (Reverse DNS)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 0.0.0.0:
+129.2.30.64/27 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 0.0.0.0 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+129.2.30.65 - <*,*,*,No,No>
+
+Inferred router: 
+[129.2.30.65]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.7.170:
+128.8.7.32/27 (ACCURATE, credible), on the way to 128.8.7.58, 128.8.7.60
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.7.170 belongs to registered subnet 128.8.7.168/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.7.33 - <32,*,*,Yes,No>
+128.8.7.170 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.7.33]
+[128.8.7.170]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.7.58:
+128.8.252.0/30 (ACCURATE, credible)
+128.8.252.16/30 (ACCURATE, credible)
+128.8.252.136/31 (ACCURATE, credible)
+128.8.252.138/31 (ACCURATE, credible)
+128.8.252.240/28 (ACCURATE, credible)
+Inferred a total 6 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.7.58 belongs to registered subnet 128.8.7.32/27
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.7.58 - <32,*,*,Yes,No>
+128.8.252.1 - <32,*,*,No,No>
+128.8.252.17 - <32,*,*,No,No>
+128.8.252.136 - <32,*,*,No,No>
+128.8.252.138 - <32,*,*,No,No>
+128.8.252.249 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.7.58]
+[128.8.252.1]
+[128.8.252.17]
+[128.8.252.136]
+[128.8.252.138]
+[128.8.252.249]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.7.60:
+128.8.254.192/26 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.7.60 belongs to registered subnet 128.8.7.32/27
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.7.60 - <32,*,*,Yes,No>
+128.8.254.193 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.7.60]
+[128.8.254.193]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.223.130:
+206.196.172.0/27 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.223.130 belongs to registered subnet 128.8.223.128/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.223.130 - <32,*,*,No,No>
+206.196.172.1 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.223.130]
+[206.196.172.1]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.95.102:
+128.8.24.0/23 (ACCURATE, credible)
+128.8.116.0/23 (ACCURATE, credible)
+128.8.171.0/24 (ACCURATE, credible)
+129.2.26.0/23 (ACCURATE, credible)
+Inferred a total 5 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.95.102 belongs to registered subnet 129.2.94.0/23
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.24.1 - <32,*,*,Yes,No>
+129.2.95.102 - <32,*,*,Yes,No>
+128.8.116.1 - <32,*,*,No,No>
+128.8.171.1 - <32,*,*,No,No>
+129.2.26.1 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.24.1]
+[128.8.116.1]
+[128.8.171.1]
+[129.2.26.1]
+[129.2.95.102]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.95.110:
+128.8.37.64/26 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 129.2.95.110 belongs to registered subnet 129.2.94.0/23
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+129.2.95.110 - <32,*,*,Yes,No>
+128.8.37.65 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.37.65]
+[129.2.95.110]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.238.67:
+128.8.238.0/25 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.238.67 belongs to registered subnet 128.8.238.0/25
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.238.67 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.238.67]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.157:
+128.8.0.100/31 (ACCURATE, credible)
+128.8.0.180/31 (ACCURATE, credible), on the way to 128.8.0.181
+129.2.0.180/31 (ACCURATE, credible)
+Inferred a total 5 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 129.2.0.157 belongs to registered subnet 129.2.0.156/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.0.100 - <32,*,*,No,No>
+128.8.0.180 - <32,*,*,No,No>
+129.2.0.157 - <32,*,*,No,No>
+129.2.0.180 - <32,*,*,No,No>
+
+Inferred routers: 
+[128.8.0.100]
+[128.8.0.180]
+[129.2.0.157]
+[129.2.0.180]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.181:
+128.8.153.160/28 (ACCURATE, credible)
+128.8.168.0/24 (ACCURATE, credible)
+128.8.203.64/27 (ACCURATE, credible)
+128.8.203.128/27 (ACCURATE, credible)
+129.2.108.0/23 (ACCURATE, credible)
+Inferred a total 6 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.0.181 belongs to registered subnet 128.8.0.180/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.153.161 - <255,*,Echo,No,No>
+128.8.168.1 - <255,*,Echo,No,No>
+128.8.203.65 - <255,*,Echo,No,No>
+128.8.203.129 - <255,*,Echo,No,No>
+129.2.108.1 - <255,*,Echo,No,No>
+128.8.0.181 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[128.8.0.181]
+[128.8.153.161, 128.8.168.1 (Echo group), 128.8.203.65 (Echo group), 128.8.203.129 (Echo group), 129.2.108.1 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.199:
+128.8.153.128/28 (ACCURATE, credible)
+129.2.54.0/23 (ACCURATE, credible)
+129.2.136.0/25 (ACCURATE, credible)
+129.2.188.0/24 (ACCURATE, credible)
+Inferred a total 5 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.0.199 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+128.8.153.129 - <255,*,Echo,No,No>
+129.2.136.1 - <255,*,Echo,No,No>
+129.2.188.1 - <255,*,Echo,No,No>
+128.8.0.199 - <255,*,Echo,No,Yes>
+129.2.54.1 - <*,*,*,No,No>
+
+Inferred routers: 
+[128.8.0.199]
+[129.2.54.1]
+[128.8.153.129, 129.2.136.1 (Echo group), 129.2.188.1 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.159:
+128.8.0.98/31 (ACCURATE, credible), on the way to 128.8.0.99
+128.8.0.196/31 (ACCURATE, credible), on the way to 128.8.0.197
+129.2.0.182/31 (ACCURATE, credible)
+Inferred a total 5 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 129.2.0.159 belongs to registered subnet 129.2.0.158/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.0.196 - <255,*,Echo,No,No>
+129.2.0.159 - <255,*,Echo,No,No>
+129.2.0.182 - <255,*,Echo,No,No>
+128.8.0.98 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[128.8.0.98]
+[128.8.0.196, 129.2.0.159 (Echo group), 129.2.0.182 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.99:
+129.2.208.0/24 (ACCURATE, credible)
+129.2.209.0/24 (ACCURATE, credible)
+129.2.212.0/24 (ACCURATE, credible)
+129.2.213.0/24 (ACCURATE, credible)
+Inferred a total 5 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.0.99 belongs to registered subnet 128.8.0.98/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+129.2.208.1 - <255,*,Echo,No,No>
+129.2.209.1 - <255,*,Echo,No,No>
+129.2.212.1 - <255,*,Echo,No,No>
+129.2.213.1 - <255,*,Echo,No,No>
+128.8.0.99 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[128.8.0.99]
+[129.2.208.1, 129.2.209.1 (Echo group), 129.2.212.1 (Echo group), 129.2.213.1 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.179:
+129.2.234.192/29 (ODD)
+129.2.204.192/26 (ODD)
+129.2.210.0/24 (ACCURATE, credible)
+129.2.211.0/24 (ACCURATE, credible)
+129.2.218.0/25 (ACCURATE, credible)
+129.2.218.128/25 (ACCURATE, credible)
+129.2.219.0/25 (ACCURATE, credible)
+129.2.219.128/25 (ACCURATE, credible)
+129.2.220.0/26 (ACCURATE, credible)
+129.2.220.128/25 (ACCURATE, credible)
+129.2.222.0/24 (ACCURATE, credible)
+129.2.223.0/25 (ACCURATE, credible)
+129.2.223.128/25 (ACCURATE, credible)
+129.2.225.0/25 (ACCURATE, credible)
+129.2.225.128/25 (ACCURATE, credible)
+129.2.227.0/26 (ACCURATE, credible)
+129.2.227.128/25 (ACCURATE, credible)
+129.2.228.192/27 (ACCURATE, credible)
+129.2.229.0/26 (ACCURATE, credible)
+129.2.229.64/27 (ACCURATE, credible)
+129.2.229.128/26 (ACCURATE, credible)
+129.2.229.192/26 (ACCURATE, credible)
+129.2.231.64/28 (ACCURATE, credible)
+129.2.232.0/26 (ACCURATE, credible)
+129.2.232.64/26 (ACCURATE, credible)
+129.2.233.96/27 (ACCURATE, credible)
+129.2.233.128/28 (ACCURATE, credible)
+129.2.233.160/27 (ACCURATE, credible)
+129.2.233.192/27 (ACCURATE, credible)
+129.2.234.64/26 (ACCURATE, credible)
+129.2.234.160/28 (ACCURATE, credible)
+129.2.235.32/27 (ODD)
+129.2.236.96/27 (ACCURATE, credible)
+129.2.236.128/27 (ACCURATE, credible)
+Inferred a total 42 interfaces.
+
+Label analysis:
+Label 128.8.0.179 belongs to registered subnet 128.8.0.176/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+129.2.218.129 - <255,*,Echo,Yes,No>
+129.2.211.1 - <255,*,Echo,No,No>
+129.2.218.1 - <255,*,Echo,No,No>
+129.2.219.1 - <255,*,Echo,No,No>
+129.2.219.129 - <255,*,Echo,No,No>
+129.2.220.1 - <255,*,Echo,No,No>
+129.2.220.129 - <255,*,Echo,No,No>
+129.2.222.129 - <255,*,Echo,No,No>
+129.2.223.1 - <255,*,Echo,No,No>
+129.2.223.129 - <255,*,Echo,No,No>
+129.2.225.1 - <255,*,Echo,No,No>
+129.2.225.129 - <255,*,Echo,No,No>
+129.2.227.1 - <255,*,Echo,No,No>
+129.2.227.129 - <255,*,Echo,No,No>
+129.2.228.193 - <255,*,Echo,No,No>
+129.2.229.1 - <255,*,Echo,No,No>
+129.2.229.65 - <255,*,Echo,No,No>
+129.2.229.129 - <255,*,Echo,No,No>
+129.2.229.193 - <255,*,Echo,No,No>
+129.2.231.65 - <255,*,Echo,No,No>
+129.2.232.1 - <255,*,Echo,No,No>
+129.2.232.65 - <255,*,Echo,No,No>
+129.2.233.97 - <255,*,Echo,No,No>
+129.2.233.129 - <255,*,Echo,No,No>
+129.2.233.161 - <255,*,Echo,No,No>
+129.2.233.193 - <255,*,Echo,No,No>
+129.2.234.65 - <255,*,Echo,No,No>
+129.2.234.161 - <255,*,Echo,No,No>
+129.2.234.193 - <255,*,Echo,No,No>
+129.2.235.33 - <255,*,Echo,No,No>
+129.2.235.44 - <255,*,Echo,No,No>
+129.2.236.97 - <255,*,Echo,No,No>
+129.2.236.129 - <255,*,Echo,No,No>
+128.8.0.179 - <255,*,Echo,No,Yes>
+129.2.210.1 - <255,*,Echo,No,Yes>
+129.2.204.250 - <64,*,Healthy,Yes,No>
+129.2.204.223 - <64,*,Healthy,No,No>
+
+Inferred routers: 
+[128.8.0.179, 129.2.210.1 (Echo group)]
+[129.2.211.1 (Echo group), 129.2.218.1 (Echo group), 129.2.218.129, 129.2.219.1 (Echo group), 129.2.219.129 (Echo group), 129.2.220.1 (Echo group), 129.2.220.129 (Echo group), 129.2.222.129 (Echo group), 129.2.223.1 (Echo group), 129.2.223.129 (Echo group), 129.2.225.1 (Echo group), 129.2.225.129 (Echo group), 129.2.227.1 (Echo group), 129.2.227.129 (Echo group), 129.2.228.193 (Echo group), 129.2.229.1 (Echo group), 129.2.229.65 (Echo group), 129.2.229.129 (Echo group), 129.2.229.193 (Echo group), 129.2.231.65 (Echo group), 129.2.232.1 (Echo group), 129.2.232.65 (Echo group), 129.2.233.97 (Echo group), 129.2.233.129 (Echo group), 129.2.233.161 (Echo group), 129.2.233.193 (Echo group), 129.2.234.65 (Echo group), 129.2.234.161 (Echo group), 129.2.234.193 (Echo group), 129.2.235.33 (Echo group), 129.2.235.44 (Echo group), 129.2.236.97 (Echo group), 129.2.236.129 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 0.0.0.0:
+129.2.228.0/26 (ODD)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 0.0.0.0 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+129.2.228.1 - <255,*,Echo,No,Yes>
+129.2.228.29 - <128,*,Healthy,Yes,No>
+
+Data is lacking for credible router inference.
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.204.16:
+129.2.204.0/25 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.204.16 belongs to registered subnet 129.2.204.0/25
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+129.2.204.16 - <*,*,*,No,No>
+
+Inferred router: 
+[129.2.204.16]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.204.144:
+129.2.204.128/26 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.204.144 belongs to registered subnet 129.2.204.128/26
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+129.2.204.144 - <*,*,*,No,No>
+
+Inferred router: 
+[129.2.204.144]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 0.0.0.0:
+129.2.205.0/27 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 0.0.0.0 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+
+Data is lacking for credible router inference.
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.205.39:
+129.2.205.32/27 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.205.39 belongs to registered subnet 129.2.205.32/27
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+129.2.205.39 - <*,*,*,No,No>
+
+Inferred router: 
+[129.2.205.39]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.205.79:
+129.2.205.64/26 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.205.79 belongs to registered subnet 129.2.205.64/26
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+129.2.205.79 - <*,*,*,No,No>
+
+Inferred router: 
+[129.2.205.79]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.205.209:
+129.2.205.128/25 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.205.209 belongs to registered subnet 129.2.205.128/25
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+129.2.205.209 - <*,*,*,No,No>
+
+Inferred router: 
+[129.2.205.209]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.197:
+129.2.230.0/29 (ACCURATE, credible)
+129.2.230.64/26 (ACCURATE, credible)
+129.2.230.128/26 (ACCURATE, credible)
+129.2.230.192/26 (ACCURATE, credible)
+129.2.231.0/26 (ACCURATE, credible)
+129.2.235.96/28 (ACCURATE, credible)
+129.2.235.128/28 (ACCURATE, credible)
+129.2.235.192/27 (ACCURATE, credible)
+129.2.235.224/27 (ACCURATE, credible)
+129.2.236.0/27 (ACCURATE, credible)
+Inferred a total 11 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.0.197 belongs to registered subnet 128.8.0.196/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+129.2.230.1 - <255,*,Echo,No,No>
+129.2.230.65 - <255,*,Echo,No,No>
+129.2.230.129 - <255,*,Echo,No,No>
+129.2.230.193 - <255,*,Echo,No,No>
+129.2.231.1 - <255,*,Echo,No,No>
+129.2.235.97 - <255,*,Echo,No,No>
+129.2.235.129 - <255,*,Echo,No,No>
+129.2.235.193 - <255,*,Echo,No,No>
+129.2.235.225 - <255,*,Echo,No,No>
+129.2.236.1 - <255,*,Echo,No,No>
+128.8.0.197 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[128.8.0.197]
+[129.2.230.1, 129.2.230.65 (Echo group), 129.2.230.129 (Echo group), 129.2.230.193 (Echo group), 129.2.231.1 (Echo group), 129.2.235.97 (Echo group), 129.2.235.129 (Echo group), 129.2.235.193 (Echo group), 129.2.235.225 (Echo group), 129.2.236.1 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.161:
+128.8.0.102/31 (ACCURATE, credible)
+128.8.0.182/31 (ACCURATE, credible), on the way to 128.8.0.183
+128.8.0.200/31 (ACCURATE, credible), on the way to 128.8.0.201
+Inferred a total 4 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.0.161 belongs to registered subnet 129.2.0.160/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.0.182 - <255,*,Echo,No,No>
+128.8.0.200 - <255,*,Echo,No,No>
+129.2.0.161 - <255,*,Echo,No,No>
+128.8.0.102 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[128.8.0.102]
+[128.8.0.182, 128.8.0.200 (Echo group), 129.2.0.161 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.183:
+128.8.0.172/31 (ACCURATE, credible)
+128.8.0.176/30 (ODD)
+128.8.23.240/29 (ACCURATE, credible)
+128.8.26.64/26 (ACCURATE, credible)
+128.8.35.160/28 (ACCURATE, credible)
+128.8.42.64/28 (ACCURATE, credible)
+128.8.47.192/28 (ACCURATE, credible)
+128.8.83.128/26 (ACCURATE, credible)
+128.8.84.0/23 (ACCURATE, credible)
+128.8.157.96/28 (ACCURATE, credible)
+128.8.159.128/27 (ACCURATE, credible)
+128.8.175.176/28 (ACCURATE, credible)
+128.8.186.0/23 (ACCURATE, credible)
+128.8.188.0/24 (ACCURATE, credible)
+128.8.192.0/24 (ACCURATE, credible)
+128.8.196.0/26 (ACCURATE, credible)
+128.8.226.160/27 (ACCURATE, credible)
+129.2.7.192/28 (ACCURATE, credible)
+Inferred a total 20 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 128.8.0.183 belongs to registered subnet 128.8.0.182/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.0.177 - <255,*,Echo,No,No>
+128.8.0.183 - <255,*,Echo,No,No>
+128.8.23.241 - <255,*,Echo,No,No>
+128.8.26.65 - <255,*,Echo,No,No>
+128.8.35.161 - <255,*,Echo,No,No>
+128.8.42.65 - <255,*,Echo,No,No>
+128.8.47.193 - <255,*,Echo,No,No>
+128.8.83.129 - <255,*,Echo,No,No>
+128.8.84.1 - <255,*,Echo,No,No>
+128.8.157.97 - <255,*,Echo,No,No>
+128.8.159.129 - <255,*,Echo,No,No>
+128.8.175.177 - <255,*,Echo,No,No>
+128.8.186.1 - <255,*,Echo,No,No>
+128.8.188.1 - <255,*,Echo,No,No>
+128.8.192.1 - <255,*,Echo,No,No>
+128.8.196.1 - <255,*,Echo,No,No>
+128.8.226.161 - <255,*,Echo,No,No>
+129.2.7.193 - <255,*,Echo,No,No>
+128.8.0.173 - <255,*,Echo,No,Yes>
+128.8.0.179 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[128.8.0.173, 128.8.0.179 (Echo group)]
+[128.8.0.177, 128.8.0.183 (Echo group), 128.8.23.241 (Echo group), 128.8.26.65 (Echo group), 128.8.35.161 (Echo group), 128.8.42.65 (Echo group), 128.8.47.193 (Echo group), 128.8.83.129 (Echo group), 128.8.84.1 (Echo group), 128.8.157.97 (Echo group), 128.8.159.129 (Echo group), 128.8.175.177 (Echo group), 128.8.186.1 (Echo group), 128.8.188.1 (Echo group), 128.8.192.1 (Echo group), 128.8.196.1 (Echo group), 128.8.226.161 (Echo group), 129.2.7.193 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.190.38:
+128.8.190.0/24 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.190.38 belongs to registered subnet 128.8.190.0/24
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.190.38 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.190.38]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.201:
+128.8.157.112/28 (ACCURATE, credible)
+128.8.175.160/28 (ACCURATE, credible)
+129.2.2.0/25 (ACCURATE, credible)
+Inferred a total 4 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.0.201 belongs to registered subnet 128.8.0.200/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.157.113 - <255,*,Echo,No,No>
+128.8.175.161 - <255,*,Echo,No,No>
+129.2.2.1 - <255,*,Echo,No,No>
+128.8.0.201 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[128.8.0.201]
+[128.8.157.113, 128.8.175.161 (Echo group), 129.2.2.1 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.163:
+128.8.0.136/31 (ACCURATE, credible), on the way to 128.8.0.137
+128.8.0.174/31 (ACCURATE, credible), on the way to 128.8.0.175
+128.8.0.192/31 (ACCURATE, credible), on the way to 128.8.0.193
+128.8.160.0/22 (ODD, credible)
+129.2.0.168/30 (ACCURATE, credible)
+Inferred a total 7 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 129.2.0.163 belongs to registered subnet 129.2.0.162/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.161.204 - <255,*,Echo,Yes,No>
+128.8.0.174 - <255,*,Echo,No,No>
+128.8.0.192 - <255,*,Echo,No,No>
+128.8.161.1 - <255,*,Echo,No,No>
+128.8.161.28 - <255,*,Echo,No,No>
+129.2.0.168 - <255,*,Echo,No,No>
+128.8.0.136 - <255,*,Echo,No,Yes>
+128.8.161.145 - <255,*,Echo,No,Yes>
+129.2.0.163 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[128.8.0.136, 128.8.161.145 (Echo group), 129.2.0.163 (Echo group)]
+[128.8.0.174 (Echo group), 128.8.0.192 (Echo group), 128.8.161.1 (Echo group), 128.8.161.28 (Echo group), 128.8.161.204, 129.2.0.168 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.137:
+128.8.4.0/24 (ACCURATE, credible)
+128.8.42.0/26 (ACCURATE, credible)
+128.8.79.128/25 (ACCURATE, credible)
+128.8.135.0/24 (ACCURATE, credible)
+128.8.167.0/27 (ACCURATE, credible)
+128.8.176.0/23 (ACCURATE, credible)
+129.2.3.0/24 (ACCURATE, credible)
+129.2.7.128/28 (ACCURATE, credible)
+129.2.12.0/24 (ACCURATE, credible)
+129.2.84.0/26 (ACCURATE, credible)
+129.2.132.0/23 (ACCURATE, credible)
+Inferred a total 12 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.0.137 belongs to registered subnet 128.8.0.136/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.4.1 - <255,*,Echo,No,No>
+128.8.42.1 - <255,*,Echo,No,No>
+128.8.79.129 - <255,*,Echo,No,No>
+128.8.135.1 - <255,*,Echo,No,No>
+128.8.167.1 - <255,*,Echo,No,No>
+128.8.176.1 - <255,*,Echo,No,No>
+129.2.3.1 - <255,*,Echo,No,No>
+129.2.7.129 - <255,*,Echo,No,No>
+129.2.12.1 - <255,*,Echo,No,No>
+129.2.84.1 - <255,*,Echo,No,No>
+129.2.132.1 - <255,*,Echo,No,No>
+128.8.0.137 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[128.8.0.137]
+[128.8.4.1, 128.8.42.1 (Echo group), 128.8.79.129 (Echo group), 128.8.135.1 (Echo group), 128.8.167.1 (Echo group), 128.8.176.1 (Echo group), 129.2.3.1 (Echo group), 129.2.7.129 (Echo group), 129.2.12.1 (Echo group), 129.2.84.1 (Echo group), 129.2.132.1 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.175:
+128.8.17.64/27 (ACCURATE, credible)
+128.8.20.96/27 (ACCURATE, credible)
+128.8.31.192/27 (ACCURATE, credible)
+128.8.35.64/26 (ACCURATE, credible)
+128.8.35.192/29 (ACCURATE, credible)
+128.8.39.16/28 (ACCURATE, credible)
+128.8.39.176/28 (ACCURATE, credible)
+128.8.42.192/27 (ACCURATE, credible)
+128.8.50.0/26 (ODD, credible)
+128.8.54.0/24 (ACCURATE, credible)
+128.8.56.0/24 (ACCURATE, credible)
+128.8.61.64/26 (ACCURATE, credible)
+128.8.62.0/24 (ACCURATE, credible)
+128.8.64.0/23 (ACCURATE, credible)
+128.8.67.0/25 (ACCURATE, credible)
+128.8.90.0/23 (ACCURATE, credible)
+128.8.104.0/24 (ACCURATE, credible)
+128.8.106.0/24 (ACCURATE, credible)
+128.8.107.240/28 (ACCURATE, credible)
+128.8.108.0/24 (ACCURATE, credible)
+128.8.109.160/27 (ACCURATE, credible)
+128.8.166.0/24 (ACCURATE, credible)
+128.8.175.0/27 (ODD)
+128.8.178.0/23 (ACCURATE, credible)
+128.8.183.32/28 (ACCURATE, credible)
+128.8.183.64/27 (ACCURATE, credible)
+128.8.183.128/27 (ACCURATE, credible)
+128.8.183.192/28 (ACCURATE, credible)
+128.8.223.176/28 (ACCURATE, credible)
+128.8.223.192/29 (ACCURATE, credible)
+128.8.227.128/27 (ACCURATE, credible)
+128.8.227.160/29 (ACCURATE, credible)
+128.8.234.0/24 (ACCURATE, credible)
+129.2.2.128/27 (ACCURATE, credible)
+129.2.28.0/23 (ACCURATE, credible)
+129.2.31.32/29 (ACCURATE, credible)
+129.2.31.192/26 (ACCURATE, credible)
+129.2.48.0/23 (ACCURATE, credible)
+129.2.80.0/25 (ACCURATE, credible)
+129.2.110.0/23 (ODD, credible)
+129.2.184.0/23 (ACCURATE, credible)
+Inferred a total 44 interfaces.
+
+Label analysis:
+Label 128.8.0.175 belongs to registered subnet 128.8.0.174/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.17.65 - <255,*,Echo,No,No>
+128.8.20.97 - <255,*,Echo,No,No>
+128.8.31.193 - <255,*,Echo,No,No>
+128.8.35.65 - <255,*,Echo,No,No>
+128.8.39.17 - <255,*,Echo,No,No>
+128.8.39.177 - <255,*,Echo,No,No>
+128.8.42.193 - <255,*,Echo,No,No>
+128.8.50.1 - <255,*,Echo,No,No>
+128.8.54.1 - <255,*,Echo,No,No>
+128.8.56.1 - <255,*,Echo,No,No>
+128.8.61.65 - <255,*,Echo,No,No>
+128.8.62.1 - <255,*,Echo,No,No>
+128.8.65.1 - <255,*,Echo,No,No>
+128.8.67.1 - <255,*,Echo,No,No>
+128.8.90.1 - <255,*,Echo,No,No>
+128.8.104.1 - <255,*,Echo,No,No>
+128.8.106.1 - <255,*,Echo,No,No>
+128.8.107.241 - <255,*,Echo,No,No>
+128.8.108.1 - <255,*,Echo,No,No>
+128.8.109.161 - <255,*,Echo,No,No>
+128.8.166.1 - <255,*,Echo,No,No>
+128.8.175.1 - <255,*,Echo,No,No>
+128.8.178.1 - <255,*,Echo,No,No>
+128.8.183.33 - <255,*,Echo,No,No>
+128.8.183.65 - <255,*,Echo,No,No>
+128.8.183.129 - <255,*,Echo,No,No>
+128.8.183.193 - <255,*,Echo,No,No>
+128.8.223.177 - <255,*,Echo,No,No>
+128.8.223.193 - <255,*,Echo,No,No>
+128.8.227.129 - <255,*,Echo,No,No>
+128.8.227.161 - <255,*,Echo,No,No>
+128.8.234.1 - <255,*,Echo,No,No>
+129.2.2.129 - <255,*,Echo,No,No>
+129.2.28.1 - <255,*,Echo,No,No>
+129.2.31.33 - <255,*,Echo,No,No>
+129.2.31.193 - <255,*,Echo,No,No>
+129.2.48.1 - <255,*,Echo,No,No>
+129.2.80.1 - <255,*,Echo,No,No>
+129.2.110.1 - <255,*,Echo,No,No>
+129.2.184.1 - <255,*,Echo,No,No>
+128.8.0.175 - <255,*,Echo,No,Yes>
+128.8.35.193 - <*,*,*,No,No>
+
+Inferred routers: 
+[128.8.0.175]
+[128.8.35.193]
+[128.8.17.65, 128.8.20.97 (Echo group), 128.8.31.193 (Echo group), 128.8.35.65 (Echo group), 128.8.39.17 (Echo group), 128.8.39.177 (Echo group), 128.8.42.193 (Echo group), 128.8.50.1 (Echo group), 128.8.54.1 (Echo group), 128.8.56.1 (Echo group), 128.8.61.65 (Echo group), 128.8.62.1 (Echo group), 128.8.65.1 (Echo group), 128.8.67.1 (Echo group), 128.8.90.1 (Echo group), 128.8.104.1 (Echo group), 128.8.106.1 (Echo group), 128.8.107.241 (Echo group), 128.8.108.1 (Echo group), 128.8.109.161 (Echo group), 128.8.166.1 (Echo group), 128.8.175.1 (Echo group), 128.8.178.1 (Echo group), 128.8.183.33 (Echo group), 128.8.183.65 (Echo group), 128.8.183.129 (Echo group), 128.8.183.193 (Echo group), 128.8.223.177 (Echo group), 128.8.223.193 (Echo group), 128.8.227.129 (Echo group), 128.8.227.161 (Echo group), 128.8.234.1 (Echo group), 129.2.2.129 (Echo group), 129.2.28.1 (Echo group), 129.2.31.33 (Echo group), 129.2.31.193 (Echo group), 129.2.48.1 (Echo group), 129.2.80.1 (Echo group), 129.2.110.1 (Echo group), 129.2.184.1 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.35.202:
+128.8.35.200/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.35.202 belongs to registered subnet 128.8.35.200/29
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.35.202 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.35.202]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.35.213:
+128.8.35.208/28 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.35.213 belongs to registered subnet 128.8.35.208/28
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.35.213 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.35.213]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.193:
+128.8.33.128/25 (ODD, credible)
+128.8.51.0/28 (ACCURATE, credible)
+128.8.66.128/26 (ACCURATE, credible)
+128.8.89.224/30 (ACCURATE, credible)
+128.8.232.0/26 (ODD, credible)
+129.2.16.0/24 (ACCURATE, credible)
+129.2.18.0/23 (ACCURATE, credible)
+129.2.74.0/24 (ACCURATE, credible)
+129.2.88.0/23 (ACCURATE, credible)
+129.2.93.0/24 (ACCURATE, credible)
+129.2.112.0/22 (ACCURATE, credible)
+129.2.118.0/24 (ACCURATE, credible)
+Inferred a total 14 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 128.8.0.193 belongs to registered subnet 128.8.0.192/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.33.193 - <255,*,Echo,No,No>
+128.8.33.209 - <255,*,Echo,No,No>
+128.8.33.225 - <255,*,Echo,No,No>
+128.8.51.1 - <255,*,Echo,No,No>
+128.8.66.129 - <255,*,Echo,No,No>
+128.8.89.225 - <255,*,Echo,No,No>
+128.8.232.1 - <255,*,Echo,No,No>
+129.2.16.1 - <255,*,Echo,No,No>
+129.2.18.1 - <255,*,Echo,No,No>
+129.2.74.1 - <255,*,Echo,No,No>
+129.2.88.1 - <255,*,Echo,No,No>
+129.2.93.1 - <255,*,Echo,No,No>
+129.2.112.1 - <255,*,Echo,No,No>
+129.2.118.1 - <255,*,Echo,No,No>
+128.8.0.193 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[128.8.0.193]
+[128.8.33.193, 128.8.33.209 (Echo group), 128.8.33.225 (Echo group), 128.8.51.1 (Echo group), 128.8.66.129 (Echo group), 128.8.89.225 (Echo group), 128.8.232.1 (Echo group), 129.2.16.1 (Echo group), 129.2.18.1 (Echo group), 129.2.74.1 (Echo group), 129.2.88.1 (Echo group), 129.2.93.1 (Echo group), 129.2.112.1 (Echo group), 129.2.118.1 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.230.13:
+128.8.230.0/23 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.230.13 belongs to registered subnet 128.8.230.0/23
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.230.13 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.230.13]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.249.1:
+128.8.249.0/24 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.249.1 belongs to registered subnet 128.8.249.0/24
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.249.140 - <255,*,Echo,No,No>
+128.8.249.1 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[128.8.249.1]
+[128.8.249.140]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.165:
+128.8.0.194/31 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.0.165 belongs to registered subnet 129.2.0.164/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+129.2.0.165 - <255,*,Echo,No,No>
+128.8.0.194 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[128.8.0.194]
+[129.2.0.165]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.203:
+128.8.0.16/29 (ACCURATE, credible), on the way to 128.8.0.17
+128.8.1.0/26 (ODD, credible)
+128.8.1.64/26 (ODD, credible)
+128.8.7.124/31 (ACCURATE, credible)
+128.8.12.0/27 (ACCURATE, credible)
+128.8.12.32/28 (ACCURATE, credible)
+128.8.12.48/28 (ACCURATE, credible)
+128.8.12.92/31 (ACCURATE, credible)
+128.8.18.0/25 (ODD)
+128.8.31.60/31 (ACCURATE, credible)
+128.8.31.140/31 (ACCURATE, credible)
+128.8.100.0/24 (ACCURATE, credible)
+128.8.144.0/21 (ODD, credible)
+128.8.170.252/31 (ACCURATE, credible)
+128.8.205.0/24 (ODD)
+128.8.235.0/28 (ACCURATE, credible)
+128.8.235.124/31 (ACCURATE, credible)
+128.8.236.0/25 (ACCURATE, credible)
+128.8.250.124/31 (ACCURATE, credible)
+128.8.250.220/31 (ACCURATE, credible)
+129.2.1.0/27 (ODD, credible)
+129.2.128.0/26 (ODD)
+Inferred a total 28 interfaces.
+
+Label analysis:
+Label 129.2.0.203 belongs to registered subnet 129.2.0.202/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.12.60 - <255,*,Echo,Yes,No>
+128.8.12.92 - <255,*,Echo,Yes,No>
+128.8.31.60 - <255,*,Echo,Yes,No>
+128.8.31.140 - <255,*,Echo,Yes,No>
+128.8.148.253 - <255,*,Echo,Yes,No>
+128.8.235.124 - <255,*,Echo,Yes,No>
+128.8.250.124 - <255,*,Echo,Yes,No>
+129.2.0.203 - <255,*,Echo,Yes,No>
+129.2.1.16 - <255,*,Echo,Yes,No>
+129.2.1.20 - <255,*,Echo,Yes,No>
+129.2.1.22 - <255,*,Echo,Yes,No>
+129.2.1.24 - <255,*,Echo,Yes,No>
+129.2.1.26 - <255,*,Echo,Yes,No>
+129.2.128.60 - <255,*,Echo,Yes,No>
+128.8.0.19 - <255,*,Echo,No,No>
+128.8.1.1 - <255,*,Echo,No,No>
+128.8.1.2 - <255,*,Echo,No,No>
+128.8.1.65 - <255,*,Echo,No,No>
+128.8.1.66 - <255,*,Echo,No,No>
+128.8.7.124 - <255,*,Echo,No,No>
+128.8.12.1 - <255,*,Echo,No,No>
+128.8.12.33 - <255,*,Echo,No,No>
+128.8.18.1 - <255,*,Echo,No,No>
+128.8.18.2 - <255,*,Echo,No,No>
+128.8.18.33 - <255,*,Echo,No,No>
+128.8.100.252 - <255,*,Echo,No,No>
+128.8.170.252 - <255,*,Echo,No,No>
+128.8.205.129 - <255,*,Echo,No,No>
+128.8.205.188 - <255,*,Echo,No,No>
+128.8.235.1 - <255,*,Echo,No,No>
+128.8.236.99 - <255,*,Echo,No,No>
+128.8.250.220 - <255,*,Echo,No,No>
+129.2.128.33 - <255,*,Echo,No,No>
+128.8.148.1 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[129.2.0.203]
+[129.2.1.22, 129.2.1.26 (Echo group & DNS)]
+[129.2.1.16, 129.2.1.20 (Echo group & DNS), 129.2.1.24 (Echo group & DNS)]
+[128.8.0.19 (Echo group), 128.8.1.1 (Echo group), 128.8.1.2 (Echo group), 128.8.1.65 (Echo group), 128.8.1.66 (Echo group), 128.8.7.124 (Echo group), 128.8.12.1 (Echo group), 128.8.12.33 (Echo group), 128.8.12.60, 128.8.12.92 (Echo group & DNS), 128.8.18.1 (Echo group), 128.8.18.2 (Echo group), 128.8.18.33 (Echo group), 128.8.31.60 (Echo group & DNS), 128.8.31.140 (Echo group & DNS), 128.8.100.252 (Echo group), 128.8.170.252 (Echo group), 128.8.205.129 (Echo group), 128.8.205.188 (Echo group), 128.8.235.1 (Echo group), 128.8.235.124 (Echo group & DNS), 128.8.236.99 (Echo group), 128.8.250.124 (Echo group & DNS), 128.8.250.220 (Echo group), 129.2.128.33 (Echo group), 129.2.128.60 (Echo group & DNS)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.0.17:
+128.8.10.0/23 (ACCURATE, credible)
+128.8.18.128/28 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.0.17 belongs to registered subnet 128.8.0.16/29
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.10.1 - <64,*,Healthy,No,No>
+128.8.18.129 - <64,*,Healthy,No,No>
+128.8.0.17 - <64,*,Healthy,No,Yes>
+
+Inferred routers: 
+[128.8.0.17]
+[128.8.10.1, 128.8.18.129 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.12.129:
+128.8.12.128/25 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.12.129 belongs to registered subnet 128.8.12.128/25
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.12.129 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.12.129]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.13.1:
+128.8.13.0/24 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.13.1 belongs to registered subnet 128.8.13.0/24
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.13.1 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.13.1]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.14.1:
+128.8.14.0/23 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.14.1 belongs to registered subnet 128.8.14.0/23
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.14.1 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.14.1]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.19.100:
+128.8.19.100/30 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 128.8.19.100 belongs to registered subnet 128.8.19.100/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.19.100 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.19.100]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.19.104:
+128.8.19.104/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.19.104 belongs to registered subnet 128.8.19.104/29
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.19.104 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.19.104]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.133.1:
+128.8.133.0/24 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.133.1 belongs to registered subnet 128.8.133.0/24
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.133.1 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.133.1]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.205:
+128.8.250.192/28 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.0.205 belongs to registered subnet 129.2.0.204/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.250.205 - <255,*,Echo,Yes,No>
+129.2.0.205 - <255,*,Echo,Yes,No>
+
+Inferred routers: 
+[128.8.250.205]
+[129.2.0.205]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.207:
+128.8.1.128/26 (ODD, credible)
+128.8.1.192/26 (ODD, credible)
+128.8.21.0/24 (ODD, credible)
+128.8.23.96/29 (ACCURATE, credible)
+128.8.23.104/29 (ACCURATE, credible)
+128.8.31.160/28 (ODD)
+128.8.47.32/30 (ODD)
+128.8.47.36/30 (ACCURATE, credible)
+128.8.164.0/24 (ACCURATE, credible)
+128.8.207.0/24 (ODD, credible)
+128.8.208.0/21 (ODD, credible)
+129.2.67.0/25 (ODD, credible)
+129.2.67.128/25 (ACCURATE, credible)
+129.2.73.0/29 (ODD)
+129.2.73.252/31 (ACCURATE, credible)
+Inferred a total 20 interfaces.
+
+Label analysis:
+Label 129.2.0.207 belongs to registered subnet 129.2.0.206/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.31.164 - <255,*,Echo,Yes,No>
+128.8.213.13 - <255,*,Echo,Yes,No>
+128.8.214.253 - <255,*,Echo,Yes,No>
+129.2.0.207 - <255,*,Echo,Yes,No>
+128.8.1.129 - <255,*,Echo,No,No>
+128.8.1.132 - <255,*,Echo,No,No>
+128.8.1.193 - <255,*,Echo,No,No>
+128.8.21.1 - <255,*,Echo,No,No>
+128.8.21.124 - <255,*,Echo,No,No>
+128.8.23.97 - <255,*,Echo,No,No>
+128.8.23.109 - <255,*,Echo,No,No>
+128.8.31.161 - <255,*,Echo,No,No>
+128.8.47.33 - <255,*,Echo,No,No>
+128.8.47.38 - <255,*,Echo,No,No>
+128.8.164.252 - <255,*,Echo,No,No>
+128.8.207.129 - <255,*,Echo,No,No>
+128.8.207.252 - <255,*,Echo,No,No>
+128.8.214.1 - <255,*,Echo,No,No>
+129.2.67.1 - <255,*,Echo,No,No>
+129.2.67.252 - <255,*,Echo,No,No>
+129.2.73.1 - <255,*,Echo,No,No>
+129.2.73.252 - <255,*,Echo,No,No>
+128.8.213.1 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[129.2.0.207]
+[128.8.1.129 (Echo group), 128.8.1.132 (Echo group), 128.8.1.193 (Echo group), 128.8.21.1 (Echo group), 128.8.21.124 (Echo group), 128.8.23.97 (Echo group), 128.8.23.109 (Echo group), 128.8.31.161 (Echo group), 128.8.31.164, 128.8.47.33 (Echo group), 128.8.47.38 (Echo group), 128.8.164.252 (Echo group), 128.8.207.129 (Echo group), 128.8.207.252 (Echo group), 128.8.214.1 (Echo group), 129.2.67.1 (Echo group), 129.2.67.252 (Echo group), 129.2.73.1 (Echo group), 129.2.73.252 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.19.129:
+128.8.19.128/25 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.19.129 belongs to registered subnet 128.8.19.128/25
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.19.129 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.19.129]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.165.161:
+128.8.165.160/28 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.165.161 belongs to registered subnet 128.8.165.160/28
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.165.161 - <*,*,*,No,No>
+
+Inferred router: 
+[128.8.165.161]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.1.21:
+128.8.105.0/30 (ODD)
+128.8.244.64/30 (ODD)
+128.8.70.0/25 (ACCURATE, credible)
+128.8.70.192/26 (ACCURATE, credible)
+128.8.165.60/31 (ACCURATE, credible)
+128.8.165.124/31 (ACCURATE, credible)
+128.8.165.188/31 (ACCURATE, credible)
+128.8.165.252/31 (ACCURATE, credible)
+Inferred a total 9 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.1.21 belongs to registered subnet 129.2.1.0/27
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+129.2.1.21 - <255,*,Echo,Yes,No>
+128.8.70.1 - <255,*,Echo,No,No>
+128.8.70.252 - <255,*,Echo,No,No>
+128.8.105.1 - <255,*,Echo,No,No>
+128.8.105.2 - <255,*,Echo,No,No>
+128.8.165.60 - <255,*,Echo,No,No>
+128.8.165.124 - <255,*,Echo,No,No>
+128.8.165.188 - <255,*,Echo,No,No>
+128.8.165.252 - <255,*,Echo,No,No>
+128.8.244.65 - <255,*,Echo,No,No>
+128.8.244.66 - <255,*,Echo,No,No>
+
+Inferred router: 
+[128.8.70.1 (Echo group), 128.8.70.252 (Echo group), 128.8.105.1 (Echo group), 128.8.105.2 (Echo group), 128.8.165.60 (Echo group), 128.8.165.124 (Echo group), 128.8.165.188 (Echo group), 128.8.165.252 (Echo group), 128.8.244.65 (Echo group), 128.8.244.66 (Echo group), 129.2.1.21]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.1.25:
+129.2.0.132/30 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.1.25 belongs to registered subnet 129.2.1.0/27
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+129.2.1.25 - <255,*,Echo,Yes,No>
+129.2.0.134 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[129.2.0.134]
+[129.2.1.25]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.2.0.221:
+128.8.17.0/28 (ACCURATE, credible)
+128.8.216.0/24 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 129.2.0.221 belongs to registered subnet 129.2.0.220/31
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.216.1 - <255,*,Echo,Yes,No>
+128.8.17.1 - <255,*,Echo,Yes,Yes>
+129.2.0.221 - <255,*,Echo,No,No>
+
+Inferred routers: 
+[128.8.17.1]
+[128.8.216.1]
+[129.2.0.221]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 128.8.7.230:
+128.8.68.0/23 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 128.8.7.230 belongs to registered subnet 128.8.7.228/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+128.8.7.230 - <255,*,Echo,No,No>
+
+Inferred router: 
+[128.8.7.230]
+
+------------------------------------------
+

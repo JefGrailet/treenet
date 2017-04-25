@@ -11,7 +11,6 @@ python FingerprintsAnalysisIPIDClass.py $year $date $ASFile
 python FingerprintsAnalysisITTL.py $year $date $ASFile
 python FingerprintsAnalysisSSR.py $year $date $ASFile
 python FingerprintsAnalysisTSRequest.py $year $date $ASFile
-python ProbeAmount.py $year $date $ASFile
 
 mkdir -p ./Figures/$year/$date
 mv *.pdf ./Figures/$year/$date

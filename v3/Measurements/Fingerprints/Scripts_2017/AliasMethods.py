@@ -147,7 +147,7 @@ if __name__ == "__main__":
     plt.ylabel('Proportion of aliases (%)', **hfont)
     plt.xlabel('AS index', **hfont)
     plt.ylim([0,100])
-    plt.xlim([0,20])
+    plt.xlim([0,len(ASes)])
     plt.xticks(ind + center, range(1,21,1), **hfont2)
     plt.yticks(np.arange(0, 101, 10), **hfont2)
     

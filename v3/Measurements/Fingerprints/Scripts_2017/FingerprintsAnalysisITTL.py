@@ -115,13 +115,13 @@ if __name__ == "__main__":
     plt.ylabel('Proportion (%)', **hfont)
     plt.xlabel('AS index', **hfont)
     plt.ylim([0,100])
-    plt.xlim([0,20])
+    plt.xlim([0,len(ASes)])
     plt.xticks(ind + center, range(1,21,1), **hfont2)
     plt.yticks(np.arange(0, 101, 10), **hfont2)
     
     plt.rc('font', family='serif', size=15)
-    plt.legend((p1[0], p2[0], p3[0], p4[0]), 
-               ('64', '128', '255', '32'), 
+    plt.legend((p4[0], p1[0], p2[0], p3[0]), 
+               ('32', '64', '128', '255'), 
                bbox_to_anchor=(0.05, 1.02, 0.90, .102), 
                loc=3,
                ncol=4, 

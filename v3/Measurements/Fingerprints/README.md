@@ -1,6 +1,6 @@
 # About Fingerprints/ folder
 
-*By Jean-François Grailet, January 31, 2017*
+*By Jean-François Grailet (last edited: April 25, 2017)*
 
 ## Overview
 
@@ -51,7 +51,7 @@ For each date, we provide 8 different figures.
 
 * **ITTL_\[year\]_\[date\].pdf:** shows stacked bar charts, just like above, but this time illustrates the inferred initial TTL of the echo reply from the probed IP, if responsive. There are 4 typical values: 32, 64, 128 and 255.
 
-* **ProbeAmount_\[year\]_\[date\].pdf:** shows **non-**bar charts on a logarithmic scale to demonstrate the benefits of `TreeNET` regarding probe amount, by comparing this amount with predicted amount of probes used by `MIDAR`, `RadarGun` and `Ally` (3 state-of-the-art alias resolution tools).
+* **(January 2017 only) ProbeAmount_\[year\]_\[date\].pdf:** shows **non-**bar charts on a logarithmic scale to demonstrate the benefits of `TreeNET` regarding probe amount, by comparing this amount with predicted amount of probes used by `MIDAR`, `RadarGun` and `Ally` (3 state-of-the-art alias resolution tools).
 
 * **TSRequest_\[year\]_\[date\].pdf:** shows the proportion of fingerprinted IPs which replied (or not) to ICMP timestamp requests.
 
