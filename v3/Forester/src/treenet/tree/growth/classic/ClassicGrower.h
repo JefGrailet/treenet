@@ -39,10 +39,10 @@ protected:
     
     /**** Private methods for route repairment and analysis ****/
     
-    // Method to count the amount of incomplete routes among a list of subnets.
+    // Method to count the amount of incomplete routes seen in the set of subnets.
     unsigned int countIncompleteRoutes();
     
-    // Repairment of a route (see prepare()); returns the amount of replaced 0.0.0.0's
+    // Repairment of a route (see prepare()); returns the amount of replaced missing hops.
     unsigned short repairRouteOffline(SubnetSite *ss);
     
     // Evaluates route stretching and route cycling and mitigates them

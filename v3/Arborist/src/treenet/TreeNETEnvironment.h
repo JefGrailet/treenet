@@ -111,7 +111,6 @@ public:
     inline bool debugMode() { return (this->displayMode == DISPLAY_MODE_DEBUG); }
     inline unsigned short getMaxThreads() { return this->maxThreads; }
     
-    // Setters (very few of them)
     inline void setTimeoutPeriod(TimeVal timeout) { this->timeoutPeriod = timeout; }
     
     // Methods to handle the ExploreNET records (optional feature, added Aug 29, 2016).

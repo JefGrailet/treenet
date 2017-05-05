@@ -108,9 +108,9 @@ public:
     inline unsigned short getRouteSize() { return this->routeSize; }
     inline RouteInterface *getRoute() { return this->route; }
     inline bool hasValidRoute() { return this->routeSize > 0 && this->route != NULL; }
-    bool hasCompleteRoute(); // Returns true if the route has no "holes" (i.e. 0.0.0.0)
-    bool hasIncompleteRoute(); // Dual operation (true if the route has 0.0.0.0's)
-    unsigned short countMissingHops(); // Returns amount of 0.0.0.0's
+    bool hasCompleteRoute(); // Returns true if the route has no missing/anonymous hop
+    bool hasIncompleteRoute(); // Dual operation (true if the route has missing/anonymous hop)
+    unsigned short countMissingHops(); // Returns amount of missing/anonymous hops
     
     // Additionnal and optional post-processed route than can be set in TreeNET v3.2
     inline void setProcessedRouteSize(unsigned short prs) { this->processedRouteSize = prs; }

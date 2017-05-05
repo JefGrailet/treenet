@@ -8,8 +8,8 @@
  * which represents an interface on a router obtained through alias resolution). Initially, routes 
  * would only consist of an array of InetAddress objects, but for the needs of TreeNET v3.0 (and 
  * onwards), it is necessary to be able to give a "class" to an interface on the route, because a 
- * 0.0.0.0 InetAddress object can mean several things in v3.0 ("hole" during measurements, not 
- * measured because not useful, etc.).
+ * 0.0.0.0 InetAddress object can mean several things in v3.0 (rate-limited IP, "truly anonymous" 
+ * interface, etc.).
  */
 
 #ifndef ROUTEINTERFACE_H_
@@ -25,7 +25,7 @@ public:
     enum InterfaceStates
     {
         NOT_MEASURED, // Not measured yet
-        MISSING, // Tried to get it via traceroute, but replied with 0.0.0.0 as replying IP
+        MISSING, // Tried to get it via traceroute, without success
         ANONYMOUS, // Tried to get it via traceroute, but resulted in a timeout at any time
         LIMITED, // Same, but got something when retrying later (because of rate-limitation or firewall)
         REPAIRED_1, // Repaired at first offline fix

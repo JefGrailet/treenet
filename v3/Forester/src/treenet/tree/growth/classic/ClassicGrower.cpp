@@ -108,6 +108,9 @@ unsigned short ClassicGrower::repairRouteOffline(SubnetSite *ss)
             hopBefore = route[i - 1].ip;
         hopAfter = route[i + 1].ip;
         
+        if(hopBefore == InetAddress(0) || hopAfter == InetAddress(0))
+            continue;
+        
         // Lists the options
         list<InetAddress> options;
         for(list<SubnetSite*>::iterator it = ssList->begin(); it != ssList->end(); ++it)
@@ -352,7 +355,7 @@ void ClassicGrower::prepare()
      *    and the operation is carried out 3 times.
      * 
      * The process stops once there are no longer incomplete routes (besides unavoidable anonymous 
-     * hops, so not all steps mentioned above will necessarily be conducted. No matter when it 
+     * hops), so not all steps mentioned above will necessarily be performed. No matter when it 
      * stops, all placeholder IPs are changed back to 0.0.0.0 and the route post-processing phase 
      * is launched (i.e., detecting and mitigating last hop issue and route cycling/stretching).
      */
@@ -499,12 +502,16 @@ void ClassicGrower::prepare()
         if(ratioSolved > 0.4)
         {
             (*out) << "Repaired " << (ratioSolved * 100) << "\% of missing hops. ";
-            (*out) << "Starting a second opinion..." << endl;
             
-            Thread::invokeSleep(TimeVal(60, 0));
-            
-            checker->reload();
-            checker->probe();
+            if(ratioSolved < 1.0)
+            {
+                (*out) << "Starting a second opinion..." << endl;
+                
+                Thread::invokeSleep(TimeVal(60, 0));
+                
+                checker->reload();
+                checker->probe();
+            }
             
             nbRepairments += checker->getTotalSolved();
             fullyRepaired += checker->getTotalFullyRepaired();

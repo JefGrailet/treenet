@@ -6,7 +6,7 @@
  *
  * This file defines a class "IPTableEntry" which extends the InetAddress class. An entry from 
  * the IP Look-up Table (IPLookUpTable) is essentially an InetAddress with additionnal fields 
- * maintaining data related to the probing work, such as the protocol which should be used to 
+ * maintaining data related to the probing work, such as the timeout delay which should be used to 
  * probe this IP. The goal of the table is also to maintain this kind of information during the 
  * execution of TreeNET, as multiple InetAddress objects are used for a same IP and are not kept 
  * during next steps, therefore not suited for keeping such details.

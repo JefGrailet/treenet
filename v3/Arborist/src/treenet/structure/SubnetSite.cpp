@@ -864,9 +864,7 @@ string SubnetSite::toString()
                         ss << " [Stretched]";
                     else if(curState == RouteInterface::CYCLE)
                         ss << " [Cycle]";
-                    else if(curState == RouteInterface::PREDICTED)
-                        ss << " [Predicted]";
-                    // Predicted is unused in Arborist, since there is no grafting
+                    // PREDICTED is currently unused in Arborist, since there is no grafting
                 }
                 else
                 {

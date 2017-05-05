@@ -4,8 +4,8 @@
  *  Created on: Mar 27, 2017
  *      Author: jefgrailet
  *
- * This class is dedicated to the detect route stretching and route cycling among routes to the 
- * subnets and mitigate both phenomenons as much as possible, as they worsen neighborhood 
+ * This class is dedicated to the detection of route stretching and route cycling among routes 
+ * to the subnets and mitigate both phenomenons as much as possible, as they worsen neighborhood 
  * inference by causing real-life neighborhoods to be split across several branches.
  *
  * Route stretching is the phenomenon of observing a same IP in several routes, but at different 
