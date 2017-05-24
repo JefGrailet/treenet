@@ -10,7 +10,7 @@ At the root of each AS sub-folder, you should also find a "\[AS number\].txt" fi
 
 ## Typical target ASes
 
-*Important remark (May 24):* target prefixes files have been reviewed because the announced prefixes for each AS contained redundant prefixes. This has no impact on the measurements of `TreeNET` since the program is designed to avoid duplicate subnets or duplicate entries in the IP dictionnary, but this means that the total amount of potential IPs per AS given in the TMA 2017 paper are larger than it should for several ASes. I apologize for this small mistake. Please use the table below to get the up-to-date total amounts of potential IPs per AS.
+**Important remark (May 24):** target prefixes files have been reviewed because the announced prefixes for each AS contained redundant prefixes. This has no impact on the measurements of `TreeNET` since the program is designed to avoid duplicate subnets or duplicate entries in the IP dictionnary, but this means that the total amount of potential IPs per AS given in the TMA 2017 paper are larger than it should for several ASes. I apologize for this small mistake. Please use the table below to get the up-to-date total amounts of potential IPs per AS.
 
 The next table lists the typical target ASes we measured with `TreeNET` and for which we provide our data in this repository.
 
