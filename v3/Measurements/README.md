@@ -1,6 +1,6 @@
 # About Measurements/ folder
 
-*By Jean-François Grailet (last edited: April 25, 2017)*
+*By Jean-François Grailet (last edited: May 24, 2017)*
 
 ## Overview
 
@@ -10,30 +10,32 @@ At the root of each AS sub-folder, you should also find a "\[AS number\].txt" fi
 
 ## Typical target ASes
 
+*Important remark (May 24):* target prefixes files have been reviewed because the announced prefixes for each AS contained redundant prefixes. This has no impact on the measurements of `TreeNET` since the program is designed to avoid duplicate subnets or duplicate entries in the IP dictionnary, but this means that the total amount of potential IPs per AS given in the TMA 2017 paper are larger than it should for several ASes. I apologize for this small mistake. Please use the table below to get the up-to-date total amounts of potential IPs per AS.
+
 The next table lists the typical target ASes we measured with `TreeNET` and for which we provide our data in this repository.
 
 |   AS    | AS name                  | Type    | Max. amount of IPs |
 | :-----: | :----------------------- | :------ | :----------------- |
-| AS109   | Cisco Systems            | Stub    | 1,600,512          |
-| AS10010 | TOKAI Communications     | Transit | 1,860,096          |
+| AS109   | Cisco Systems            | Stub    | 1,173,760          |
+| AS10010 | TOKAI Communications     | Transit | 1,445,376          |
 | AS224   | UNINETT                  | Stub    | 1,115,392          |
-| AS2764  | AAPT Limited             | Transit | 1,074,688          |
-| AS5400  | British Telecom          | Transit | 1,385,472          |
-| AS5511  | Orange S.A.              | Transit | 922,880            |
-| AS6453  | TATA Communications      | Tier-1  | 966,144            |
-| AS703   | Verizon Business         | Transit | 873,728            |
-| AS8220  | COLT Technology          | Transit | 1,372,160          |
-| AS8928  | Interoute Communications | Transit | 841,728            |
-| AS12956 | Telefonica International | Tier-1  | 215,040            |
-| AS13789 | Internap Network         | Transit | 106,240            |
+| AS2764  | AAPT Limited             | Transit | 993,536            |
+| AS5400  | British Telecom          | Transit | 1,385,216          |
+| AS5511  | Orange S.A.              | Transit | 911,872            |
+| AS6453  | TATA Communications      | Tier-1  | 656,640            |
+| AS703   | Verizon Business         | Transit | 863,232            |
+| AS8220  | COLT Technology          | Transit | 1,342,720          |
+| AS8928  | Interoute Communications | Transit | 827,904            |
+| AS12956 | Telefonica International | Tier-1  | 209,920            |
+| AS13789 | Internap Network         | Transit | 96,256             |
 | AS14    | University of Columbia   | Stub    | 339,968            |
-| AS22652 | Fibrenoire, Inc.         | Transit | 76,544             |
-| AS30781 | Jaguar Network           | Transit | 45,824             |
+| AS22652 | Fibrenoire, Inc.         | Transit | 76,288             |
+| AS30781 | Jaguar Network           | Transit | 45,312             |
 | AS37    | University of Maryland   | Stub    | 140,544            |
-| AS4711  | INET Inc.                | Stub    | 34,816             |
-| AS50673 | Serverius Holding        | Transit | 65,280             |
+| AS4711  | INET Inc.                | Stub    | 17,408             |
+| AS50673 | Serverius Holding        | Transit | 61,696             |
 | AS52    | University of California | Stub    | 328,960            |
-| AS802   | University of York       | Stub    | 75,264             |
+| AS802   | University of York       | Stub    | 71,936             |
 
 ## Composition of a dataset
 
