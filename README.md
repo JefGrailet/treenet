@@ -1,6 +1,6 @@
 # TreeNET, a subnet-based topology discovery tool
 
-*By Jean-François Grailet (last edited: May 24, 2017)*
+*By Jean-François Grailet (last edited: June 29, 2017)*
 
 ## Overview
 
@@ -44,7 +44,7 @@ As the names suggest, *v1/* contains all files related to `TreeNET` v1.0, while 
 
 ## Work in progress
 
-`TreeNET` v3.2 is currently being used on PlanetLab to conduct new measurements. In particular, the collected traceroute data and its analysis by `TreeNET` will be studied in order to study traceroute anomalies and improve the construction of the network tree.
+`TreeNET` will be upgraded to v3.3 in the coming months in order to further improve the alias resolution step. This upgrade will bring new heuristics for reverse DNS alias resolution, along a pre-alias resolution phase for internal nodes with multiple labels. `traceroute` anomalies are still being studied in the meantime.
 
 ## Disclaimer
 
