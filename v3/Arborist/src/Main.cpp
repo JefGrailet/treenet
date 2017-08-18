@@ -219,12 +219,19 @@ void printUsage()
     cout << "behaviour has been observed from time to time despite being not recommended.\n";
     cout << "This is mostly relevant during the subnet inference phase.\n";
     cout << "\n";
-    cout << "-b      --probing-base-protocol             \"UDP\", \"TCP\" or \"ICMP\"\n";
+    cout << "-b      --probing-base-protocol             \"ICMP\", \"UDP\" or \"TCP\"\n";
     cout << "\n";
     cout << "Use this option to specify the base protocol used to probe target addresses.\n";
     cout << "By default, it is ICMP. Note that this is only the \"base\" protocol because\n";
-    cout << "some inference techniques (like some alias resolution methods) rely on a\n";
-    cout << "precise protocol which is therefore used instead.\n";
+    cout << "some inference techniques (e.g. during alias resolution) rely on a precise\n";
+    cout << "protocol which is therefore used instead.\n";
+    cout << "\n";
+    cout << "WARNING for TCP probing: keep in mind that the TCP probing consists in sending\n";
+    cout << "a SYN message to the target, without handling the 3-way handshake properly in\n";
+    cout << "case of a SYN+ACK reply. Repeated probes towards a same IP (which can occur\n";
+    cout << "during alias resolution) can also be identified as SYN flooding, which is a\n";
+    cout << "type of denial-of-service attack. Please consider security issues carefully\n";
+    cout << "before using this probing method.\n";
     cout << "\n";
     cout << "-r      --probing-regulating-period         Integer (amount of milliseconds)\n";
     cout << "\n";
@@ -256,9 +263,8 @@ void printUsage()
     cout << "collection). By default, this value is set to 256.\n";
     cout << "\n";
     cout << "WARNING: due to scheduling strategies used during alias resolution, this value\n";
-    cout << "SHOULD NOT be smaller than the amount of collected IP IDs per IP (from [3,20])\n";
-    cout << "plus one. Using less threads would lead to malfunction and less efficient\n";
-    cout << "alias resolution.\n";
+    cout << "MUST NOT be smaller than the amount of collected IP IDs per IP (from [3,20])\n";
+    cout << "plus one.\n";
     cout << "\n";
     cout << "-d      --concurrency-delay-threading       Integer (amount of milliseconds)\n";
     cout << "\n";
@@ -298,8 +304,7 @@ void printUsage()
     cout << "between 3 consecutive IP IDs to get a range.\n";
     cout << "\n";
     cout << "WARNING: due to scheduling strategies used during alias resolution, this value\n";
-    cout << "SHOULD NOT be greater than the amount of threads being used minus one. Using\n";
-    cout << "less threads would lead to malfunction and less efficient alias resolution.\n";
+    cout << "MUST NOT be greater than the amount of threads being used minus one.\n";
     cout << "\n";
     cout << "-x      --alias-resolution-rollovers-max    Integer from [1,256]\n";
     cout << "\n";
@@ -696,9 +701,13 @@ int main(int argc, char *argv[])
                 case 'b':
                     std::transform(optargSTR.begin(), optargSTR.end(), optargSTR.begin(),::toupper);
                     if(optargSTR == string("UDP"))
+                    {
                         probingProtocol = TreeNETEnvironment::PROBING_PROTOCOL_UDP;
+                    }
                     else if(optargSTR == string("TCP"))
+                    {
                         probingProtocol = TreeNETEnvironment::PROBING_PROTOCOL_TCP;
+                    }
                     else if(optargSTR != string("ICMP"))
                     {
                         cout << "Warning for option -b: unrecognized protocol " << optargSTR;

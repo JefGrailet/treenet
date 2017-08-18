@@ -394,7 +394,7 @@ void ParisTracerouteTask::run()
         }
         else
         {
-            this->log += "Got the route to " + subnet->getInferredNetworkAddressString() + ".\n";
+            this->log += "Got the route to " + subnet->getInferredNetworkAddressString() + ".";
         }
         
         // Prints out the final log (with debug messages, if any)
@@ -497,7 +497,7 @@ void ParisTracerouteTask::run()
             if(debugMode)
                 routeLog << "\n"; // For airy display
             routeLog << "Got the route to " << subnet->getInferredNetworkAddressString();
-            routeLog << " (successfully repositioned).\n";
+            routeLog << " (successfully repositioned).";
         }
         this->log += routeLog.str();
         
@@ -774,7 +774,7 @@ void ParisTracerouteTask::run()
             else
                 routeLog << " (failed repositioning)";
         }
-        routeLog << ".\n";
+        routeLog << ".";
     }
     this->log += routeLog.str();
     

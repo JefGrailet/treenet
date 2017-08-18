@@ -11,7 +11,7 @@
  * Modifications brought by J.-F. Grailet since ExploreNET v2.1:
  * -September 2015: slight edit to improve coding style.
  * -March 4, 2016: slightly edited to comply to the (slightly) extended ProbeRecord class.
- * -Augustus 2016: removed the loose source and record route options, because they are unused by 
+ * -August 2016: removed the loose source and record route options, because they are unused by 
  *  both TreeNET and ExploreNEt v2.1 and because the IETF (see RFC 7126) reports that packets 
  *  featuring these options are widely dropped, and that the default policy of a router receiving 
  *  such packets should be to drop them anyway due to security concerns.

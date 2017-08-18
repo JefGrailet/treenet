@@ -11,6 +11,9 @@
 #include <netinet/ip_icmp.h>
 #include <cerrno>
 
+#include <sstream>
+using std::stringstream;
+
 #include <iostream>
 
 #include "DirectTCPProber.h"
@@ -21,14 +24,14 @@ const unsigned short DirectTCPProber::DEFAULT_UPPER_TCP_SRC_PORT = 64000;
 const unsigned short DirectTCPProber::DEFAULT_LOWER_TCP_DST_PORT = 39000;
 const unsigned short DirectTCPProber::DEFAULT_UPPER_TCP_DST_PORT = 64000;
 
-DirectTCPProber::DirectTCPProber(string &attentionMessage,
-                                 int tcpUdpRoundRobinSocketCount,
-                                 const TimeVal &timeoutPeriod,
-                                 const TimeVal &probeRegulatorPausePeriod,
-                                 unsigned short lowerBoundTCPsrcPort,
-                                 unsigned short upperBoundTCPsrcPort,
-                                 unsigned short lowerBoundTCPdstPort,
-                                 unsigned short upperBoundTCPdstPort,
+DirectTCPProber::DirectTCPProber(string &attentionMessage, 
+                                 int tcpUdpRoundRobinSocketCount, 
+                                 const TimeVal &timeoutPeriod, 
+                                 const TimeVal &probeRegulatorPausePeriod, 
+                                 unsigned short lowerBoundTCPsrcPort, 
+                                 unsigned short upperBoundTCPsrcPort, 
+                                 unsigned short lowerBoundTCPdstPort, 
+                                 unsigned short upperBoundTCPdstPort, 
                                  bool verbose) throw (SocketException):
 DirectProber(attentionMessage, 
              IPPROTO_TCP, 
@@ -58,13 +61,11 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
 {
     uint32_t src_32 = (uint32_t) (src.getULongAddress());
     uint32_t dst_32 = (uint32_t) (dst.getULongAddress());
-    uint16_t IPIdentifier_16= (uint16_t) IPIdentifier;
+    uint16_t IPIdentifier_16 = (uint16_t) IPIdentifier;
     uint8_t TTL_8 = (uint8_t) TTL;
     uint16_t srcPort_16 = (uint16_t) srcPort;
     uint16_t dstPort_16 = (uint16_t) dstPort;
 
-    uint32_t tcpSeq_32 = (uint32_t) rand();
-    
     this->nbProbes++;
 
     // 1) Prepares packet to send
@@ -74,7 +75,6 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
     ip->ip_hl = IPHeaderLength / ((uint32_t) 4); // In terms of 4 byte units
     ip->ip_tos = DirectProber::DEFAULT_IP_TOS;
     uint16_t totalPacketLength = IPHeaderLength + DirectProber::MINIMUM_TCP_HEADER_LENGTH;
-    totalPacketLength += DirectProber::DEFAULT_TCP_RANDOM_DATA_LENGTH + (uint32_t) getAttentionMsg().length();
     ip->ip_len = htons(totalPacketLength);
     ip->ip_id = htons(IPIdentifier_16);
     ip->ip_off = htons(DirectProber::DEFAULT_IP_FRAGMENT_OFFSET);
@@ -91,47 +91,29 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
     // Sets tcp fields
     struct tcphdr *tcp = (struct tcphdr*) (buffer + IPHeaderLength);
 
-    // memset((uint8_t*) tcp, 0, DirectProber::MINIMUM_TCP_HEADER_LENGTH);
-
+    memset((uint8_t*) tcp, 0, DirectProber::MINIMUM_TCP_HEADER_LENGTH);
     tcp->source = htons(srcPort_16);
     tcp->dest = htons(dstPort_16);
-    tcp->seq = htonl(tcpSeq_32);
-    tcp->ack_seq = htonl((unsigned long) rand());
     tcp->doff = (DirectProber::MINIMUM_TCP_HEADER_LENGTH / 4);
-    tcp->res1 = 0;
-    tcp->res2 = 0;
-    tcp->syn = 1;
-    tcp->ack = 1;
-    tcp->fin = 0;
-    tcp->psh = 0;
-    tcp->urg = 0;
-    tcp->rst = 0;
+    tcp->syn = 1; // TCP SYN probe
     tcp->window = htons(32767);
-    tcp->check = 0x0;
-    tcp->urg_ptr = 0x0;
-
-    /**
-     * Set the 8 bytes data portion of the TCP packet in order to keep a single flow
-     * and avoid routers applying path balancing. The random data must be generated
-     * and put into the randomDataBuffer by the calling function.
+    
+    /*
+     * N.B.: ACK, SYN+ACK probes are also a possibility, but are likely to give much less answers 
+     * than SYN probes. More generally, TCP probing with TreeNET has a limited interest and should 
+     * only be used in unique situations, as TreeNET heavily relies on target responsivity, which 
+     * is difficult to obtain with ACK/SYN+ACK probes.
      */
     
-    uint8_t *tcpdata = ((uint8_t*) tcp + DirectProber::MINIMUM_TCP_HEADER_LENGTH);
-    memcpy(tcpdata, this->randomDataBuffer, DirectProber::DEFAULT_TCP_RANDOM_DATA_LENGTH);
-    tcpdata += DirectProber::DEFAULT_TCP_RANDOM_DATA_LENGTH;
-    memcpy(tcpdata, getAttentionMsg().c_str(), getAttentionMsg().length());
-    tcpdata += getAttentionMsg().length();
-
     // TCP checksum is calculated over pseudo header
-    uint8_t *pseudo=pseudoBuffer;
+    uint8_t *pseudo = pseudoBuffer;
     memcpy(pseudo, &((ip->ip_src).s_addr), 4);
     pseudo += 4;
     memcpy(pseudo, &((ip->ip_dst).s_addr), 4);
     pseudo += 4;
     memset(pseudo++, 0, 1); // 1 byte padding
     memset(pseudo++, IPPROTO_TCP, 1); // 1 byte protocol
-    uint16_t tcpPseudoLength = htons(DirectProber::MINIMUM_TCP_HEADER_LENGTH 
-    + DirectProber::DEFAULT_TCP_RANDOM_DATA_LENGTH + (uint32_t) getAttentionMsg().length());
+    uint16_t tcpPseudoLength = htons(DirectProber::MINIMUM_TCP_HEADER_LENGTH);
     memcpy(pseudo, &tcpPseudoLength, 2);
     pseudo += 2;
 
@@ -140,18 +122,13 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
     pseudo += totalPacketLength;
 
     int pseudoBufferLength = pseudo - pseudoBuffer;
-
     tcp->check = DirectProber::calculateInternetChecksum((uint16_t*) pseudoBuffer, pseudoBufferLength);
     
-    // return 0;
-    
-    // 2) Sends the SYN+ACK packet
+    // 2) Sends the packet
     struct sockaddr_in to;
     memset(&to, 0, sizeof(to));
     to.sin_family = AF_INET;
     to.sin_addr.s_addr = (ip->ip_dst).s_addr;
-
-    // Thread::invokeSleep(TimeVal(30,0));
 
     regulateProbingFrequency();
     if(verbose)
@@ -228,7 +205,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
 
         if(selectResult > 0)
         {
-            //************************  packet arrived   *****************
+            //************************  Packet arrived   *****************
 
             // First, makes sure that the packet arrived to the socket we are interested in
             int readySocketDescriptor = GET_READY_SOCKET_DESCRIPTOR();
@@ -309,8 +286,8 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
                 continue;
             }
 
-            // Computes the IP header checksum to make sure that the IP header is intact
-            // Despite ip header checksum is 2 bytes long we don't need to apply htons() or ntohs()
+            // Computes the IP header checksum to make sure that the IP header is intact.
+            // Despite IP header checksum is 2 bytes long, we don't need to apply htons() or ntohs().
             uint16_t tmpChecksum = ip->ip_sum;
             
             // Temporarily sets ip_sum to zero in order to compute checksum. This value will be restored later
@@ -350,8 +327,8 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
                 // Resets icmp for the arrived packet
                 struct icmphdr *icmp = (struct icmphdr*) (buffer + (ip->ip_hl) * 4);
 
-                // First check is the ICMP checksum of the received packet is correct
-                // Despite icmp checksum is 2 bytes long we don't need to apply htons() or ntohs()
+                // First checks that the ICMP checksum of the received packet is correct.
+                // Despite ICMP checksum is 2 bytes long, we don't need to apply htons() or ntohs().
                 tmpChecksum = icmp->checksum;
                 icmp->checksum = 0x0; // Before computing checksum, the sum field must be zero
                 
@@ -375,8 +352,7 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
 
                     // IP identifier of the piggybacked packet is checked especially for multiplexing usingFixedFlowID packets
                     if(payloadip->ip_p == IPPROTO_TCP && ntohs(payloadip->ip_id) == IPIdentifier_16 
-                       && ntohs(payloadtcp->source) == srcPort_16 && (ntohs(payloadtcp->dest) == dstPort_16 
-                       || ntohl(payloadtcp->seq) == tcpSeq_32))
+                       && ntohs(payloadtcp->source) == srcPort_16 && ntohs(payloadtcp->dest) == dstPort_16)
                     {
                         InetAddress rplyAddress((unsigned long int) ntohl((ip->ip_src).s_addr));
                         
@@ -425,10 +401,8 @@ ProbeRecord *DirectTCPProber::basic_probe(const InetAddress &src,
 
                 // Reset ICMP for the arrived packet
                 struct tcphdr *tcp = (struct tcphdr*) (buffer + (ip->ip_hl) * 4);
-
-                if(ntohs(tcp->dest) == srcPort_16 && (ntohs(tcp->source) == dstPort_16 
-                || ntohl(tcp->ack_seq) == tcpSeq_32 + 1 + DirectProber::DEFAULT_TCP_RANDOM_DATA_LENGTH 
-                + (uint32_t) getAttentionMsg().length()))
+                
+                if(ntohs(tcp->dest) == srcPort_16 && ntohs(tcp->source) == dstPort_16)
                 {
                     this->log += "coming from the right target!\n";
                 

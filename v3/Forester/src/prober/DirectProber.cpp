@@ -621,7 +621,11 @@ unsigned short DirectProber::getAvailableSrcPortICMPid(bool useFixedFlowID)
 
 unsigned short DirectProber::getAvailableDstPortICMPseq(bool useFixedFlowID)
 {
-    if(probingProtocol == IPPROTO_TCP || probingProtocol == IPPROTO_UDP)
+    if(probingProtocol == IPPROTO_TCP)
+    {
+        return 80; // Needs a small change to be more elegant
+    }
+    else if(probingProtocol == IPPROTO_UDP)
     {
         if(useFixedFlowID == true)
             return lowerBoundDstPortICMPseq + ((upperBoundDstPortICMPseq - lowerBoundDstPortICMPseq) / 2); // Just use the middle destination port

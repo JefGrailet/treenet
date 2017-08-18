@@ -258,12 +258,19 @@ void printUsage()
     cout << "message should just advertise that the probes are not sent for malicious\n";
     cout << "purposes, only for measurements. By default, it states \"NOT AN ATTACK\".\n";
     cout << "\n";
-    cout << "-b      --probing-base-protocol             \"UDP\", \"TCP\" or \"ICMP\"\n";
+    cout << "-b      --probing-base-protocol             \"ICMP\", \"UDP\" or \"TCP\"\n";
     cout << "\n";
     cout << "Use this option to specify the base protocol used to probe target addresses.\n";
     cout << "By default, it is ICMP. Note that this is only the \"base\" protocol because\n";
-    cout << "some inference techniques (like some alias resolution methods) rely on a\n";
-    cout << "precise protocol which is therefore used instead.\n";
+    cout << "some inference techniques (e.g. during alias resolution) rely on a precise\n";
+    cout << "protocol which is therefore used instead.\n";
+    cout << "\n";
+    cout << "WARNING for TCP probing: keep in mind that the TCP probing consists in sending\n";
+    cout << "a SYN message to the target, without handling the 3-way handshake properly in\n";
+    cout << "case of a SYN+ACK reply. Repeated probes towards a same IP (which can occur\n";
+    cout << "during alias resolution) can also be identified as SYN flooding, which is a\n";
+    cout << "type of denial-of-service attack. Please consider security issues carefully\n";
+    cout << "before using this probing method.\n";
     cout << "\n";
     cout << "-r      --probing-regulating-period         Integer (amount of milliseconds)\n";
     cout << "\n";
@@ -1222,14 +1229,14 @@ int main(int argc, char *argv[])
         {
             (*inferenceStream) << "Preparing the tree growth...\n" << endl;
             g->prepare();
-            (*inferenceStream) << "Preparation complete.\n\n" << endl;
+            (*inferenceStream) << "Preparation complete.\n" << endl;
         }
         
         (*inferenceStream) << "Growing network tree..." << endl;
         
         g->grow();
         
-        (*inferenceStream) << "Growth complete." << endl;
+        (*inferenceStream) << "Growth complete.\n" << endl;
         
         result = g->getResult();
         delete g;

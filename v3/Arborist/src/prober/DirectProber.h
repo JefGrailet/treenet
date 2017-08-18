@@ -6,10 +6,12 @@
  *
  * Modifications by J.-F. Grailet;
  * -December 2014: coding style slightly edited.
- * -Augustus 2016: removed the loose source and record route options, because they are unused by 
+ * -August 2016: removed the loose source and record route options, because they are unused by 
  *  both TreeNET and ExploreNEt v2.1 and because the IETF (see RFC 7126) reports that packets 
  *  featuring these options are widely dropped, and that the default policy of a router receiving 
  *  such packets should be to drop them anyway due to security concerns.
+ * -August 2017: slight edit to force all TCP probes to target port 80 of the destination (eases 
+ *  firewall/middlebox traversal).
  */
 
 #ifndef DIRECTPROBER_H_
