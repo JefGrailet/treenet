@@ -12,12 +12,12 @@ The tree-like structure (called *network tree*) aims at highlighting *neighborho
 
 `TreeNET` and its measurements have been the topics of several publications. People wishing to get a *big picture* on the software free of implementation details are encouraged to read them.
 
-* [TreeNET: Discovering and Connecting Subnets](http://www.run.montefiore.ulg.ac.be/~grailet/docs/publications/TreeNET_TMA_2016.pdf)
-  Jean-François Grailet, Fabien Tarissan, Benoit Donnet
+* [TreeNET: Discovering and Connecting Subnets](http://www.run.montefiore.ulg.ac.be/~grailet/docs/publications/TreeNET_TMA_2016.pdf)<br />
+  Jean-François Grailet, Fabien Tarissan, Benoit Donnet<br />
   [Traffic Monitoring and Analysis Workshop (TMA) 2016](http://tma.ifip.org/2016/), Louvain-La-Neuve, 07/04/2016 - 08/04/2016
 
-* [Towards a Renewed Alias Resolution with Space Search Reduction and IP Fingerprinting](http://www.run.montefiore.ulg.ac.be/~grailet/docs/publications/Alias_Resolution_TMA_2017.pdf)
-  Jean-François Grailet, Benoit Donnet
+* [Towards a Renewed Alias Resolution with Space Search Reduction and IP Fingerprinting](http://www.run.montefiore.ulg.ac.be/~grailet/docs/publications/Alias_Resolution_TMA_2017.pdf)<br />
+  Jean-François Grailet, Benoit Donnet<br />
   [Network Traffic Measurement and Analysis Conference (TMA) 2017](http://tma.ifip.org/2017/), Dublin, 21/06/2017 - 23/06/2017
 
 ## Version history (lattest version: v3.2)
