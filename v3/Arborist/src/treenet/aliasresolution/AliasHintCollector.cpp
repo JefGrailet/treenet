@@ -383,6 +383,8 @@ void AliasHintCollector::collect()
             
             if(inferredInitialTTL > 0 && !differentTTLs)
                 targetEntry->setEchoInitialTTL(inferredInitialTTL);
+            
+            delete[] tuplesArray;
         }
     }
     
@@ -406,8 +408,6 @@ void AliasHintCollector::collect()
             (*out) << endl;
         }
     }
-    
-    // TODO: compile and debug
     
     unsigned short range = (DirectProber::DEFAULT_UPPER_SRC_PORT_ICMP_ID - DirectProber::DEFAULT_LOWER_SRC_PORT_ICMP_ID) / maxThreads;
     unsigned short i = 0;

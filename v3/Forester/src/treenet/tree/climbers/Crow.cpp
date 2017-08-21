@@ -70,10 +70,10 @@ void Crow::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
         // Router inference
         ar->setCurrentTTL(depth);
         this->ar->resolve(cur);
-        list<Router*> *routers = cur->getInferredRouters();
-        if((unsigned short) routers->size() > 0)
+        list<Router*> routers = cur->getInferredRouters();
+        if((unsigned short) routers.size() > 0)
         {
-            for(list<Router*>::iterator i = routers->begin(); i != routers->end(); ++i)
+            for(list<Router*>::iterator i = routers.begin(); i != routers.end(); ++i)
             {
                 Router *cur = (*i);
                 this->aliases.push_back(cur);

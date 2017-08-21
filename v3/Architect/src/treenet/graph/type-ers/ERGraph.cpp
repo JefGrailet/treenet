@@ -115,15 +115,15 @@ void ERGraph::connectRouters(list<Router*> routers, NetworkTreeNode *withImagina
 void ERGraph::linkAllRouters(NetworkTreeNode *neighborhood)
 {
     L3Device *imaginaryRouter = lookUpImaginary(neighborhood);
-    list<Router*> *routers = neighborhood->getInferredRouters();
-    if((routers->size() <= 1 && imaginaryRouter == NULL) || routers->size() == 0)
+    list<Router*> routers = neighborhood->getInferredRouters();
+    if((routers.size() <= 1 && imaginaryRouter == NULL) || routers.size() == 0)
     {
         return; // Nothing to do, there is only one router
     }
 
     // Creates virtual switch and connects it to the routers
     L2Device *l2 = createSwitch();
-    for(list<Router*>::iterator it = routers->begin(); it != routers->end(); ++it)
+    for(list<Router*>::iterator it = routers.begin(); it != routers.end(); ++it)
     {
         Router *cur = (*it);
         

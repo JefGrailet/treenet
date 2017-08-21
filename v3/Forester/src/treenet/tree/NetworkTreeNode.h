@@ -29,9 +29,8 @@
 using std::list;
 
 #include "../../common/inet/InetAddress.h"
-#include "../aliasresolution/Fingerprint.h"
 #include "../structure/SubnetSite.h"
-#include "../structure/Router.h"
+#include "Aggregate.h"
 #include "InvalidSubnetException.h"
 
 class NetworkTreeNode
@@ -83,12 +82,12 @@ public:
     inline list<InetAddress> *getLabels() { return &labels; }
     inline list<InetAddress> *getPreviousLabels() { return &previousLabels; }
     inline list<NetworkTreeNode*> *getChildren() { return &children; }
-    inline list<Router*> *getInferredRouters() { return &inferredRouters; }
+    inline list<Aggregate*> *getAggregates() { return &aggregates; }
     
-    // Setter
+    inline Aggregate *getFirstAggregate() { return aggregates.size() > 0 ? aggregates.front() : NULL; }
+    
+    // Setters
     inline void setParent(NetworkTreeNode *p) { this->parent = p; }
-    
-    // Nullify subnet
     inline void nullifySubnet() { this->associatedSubnet = NULL; }
     
     /*
@@ -118,17 +117,11 @@ public:
     // Inline method to (re-)sort the children
     inline void sortChildren() { children.sort(NetworkTreeNode::compare); }
     
-    // Method to add a child to this node
+    // Various methods to handle the children and the construction process
     void addChild(NetworkTreeNode *child);
-    
-    // Method to merge children from a given node to this one
-    void merge(NetworkTreeNode *mergee);
-    
-    // Method to get a child of this node, given a label (returns NULL if no such child)
-    NetworkTreeNode *getChild(InetAddress label);
-    
-    // Boolean method to know if the current node has only subnets (leaves) as children
-    bool hasOnlyLeavesAsChildren();
+    void merge(NetworkTreeNode *mergee); // See ClassicGrower.cpp
+    NetworkTreeNode *getChild(InetAddress label); // NULL if no child bears this label
+    bool hasOnlyLeavesAsChildren(); // Returns true if this node has only subnets as children
     
     /*
      * Method to check if all non-subnet children have their label belonging to a brother 
@@ -140,28 +133,17 @@ public:
     unsigned short getLinkage();
     
     /*
-     * List the interfaces of this node if internal. The listed interfaces are the interfaces 
-     * listed as labels and the contra-pivot interface of the children subnets. It should be noted 
-     * that the list does not exactly have the number of inferred interfaces during internals 
-     * analysis. It should be identical, however, for cases where there is only one label and only 
-     * accurate and credible subnets as children.
-     * 
-     * Since February 2017, there is also a method to list these interfaces by last hop if the 
-     * node has multiple labels. The corresponding last hops are stored in a list passed with a 
-     * pointer.
+     * Methods to build the Aggregate objects from the initial NetworkTreeNode. If the 
+     * neighborhood contains a single label, there will be only one Aggregate object.
      */
     
-    list<InetAddress> listInterfaces();
-    list<list<InetAddress> > listInterfacesByLastHop(list<InetAddress> *lastHops = NULL);
+    void buildAggregates();
+    unsigned int countInterfaces();
     
-    // Methods to handle fingerprint lists and last hops (for hedera's)
-    inline void storeFingerprints(list<Fingerprint> ls) { this->fingerprints.push_back(ls); }
-    inline list<list<Fingerprint> > getFingerprints() { return this->fingerprints; }
-    inline void storeLastHop(InetAddress lh) { this->lastHops.push_back(lh); }
-    inline list<InetAddress> getLastHops() { return this->lastHops; }
-    
-    // Method to get the inferred router having a given interface. Returns NULL if no router.
-    Router* getRouterHaving(InetAddress interface);
+    // Method to get (an) inferred router(s) or check there is at least one.
+    bool hasRouters();
+    list<Router*> getInferredRouters(); // Lists all routers
+    Router* getRouterHaving(InetAddress interface); // NULL if no router with that interface
     
 private:
 
@@ -184,25 +166,14 @@ private:
     list<InetAddress> previousLabels;
     
     /*
-     * General remark for next fields: while they are not essential for all variants of TreeNET 
-     * (in particular, they are not essential for Arborist), putting it in every version helps to 
-     * harmonize the code to ease maintainance. It will also be useful later, for when L2 
-     * inference will be elaborated in depth and implemented in TreeNET.
+     * List of aggregates of IPs that are likely to be aliases of each other. As of August 2017, 
+     * these objects gather all once candidate interfaces, penultimate hop(s) towards them and 
+     * the associated fingerprints/inferred routers after alias resolution. A multi-label node 
+     * will likely have several aggregates, while a single-label node will only have one.
      */
     
-    /*
-     * The sorted fingerprints lists of the alias candidates surrounding this node (available only 
-     * after the end of alias resolution). Note that, as of February 2017, this is no longer a 
-     * simple list but a list of lists in order to be able to display fingerprints according to 
-     * the last hop towards the subnet(s) containing the corresponding IP interfaces when we are 
-     * dealing with an hedera. This list is also completed by a list of these last hops.
-     */
+    list<Aggregate*> aggregates;
     
-    list<list<Fingerprint> > fingerprints;
-    list<InetAddress> lastHops;
-    
-    // List of routers of this node after L3 inference/actual alias resolution.
-    list<Router*> inferredRouters;
 };
 
 #endif /* NETWORKTREENODE_H_ */

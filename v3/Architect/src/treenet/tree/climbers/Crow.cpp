@@ -50,6 +50,7 @@ void Crow::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
 {
     list<NetworkTreeNode*> *children = cur->getChildren();
     list<InetAddress> *labels = cur->getLabels();
+    cur->buildAggregates(); // Difference with other versions of TreeNET
     
     // Puts direct neighbor subnets in a list
     list<NetworkTreeNode*> childrenL;
@@ -70,10 +71,10 @@ void Crow::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
         // Router inference
         ar->setCurrentTTL(depth);
         this->ar->resolve(cur);
-        list<Router*> *routers = cur->getInferredRouters();
-        if((unsigned short) routers->size() > 0)
+        list<Router*> routers = cur->getInferredRouters();
+        if((unsigned short) routers.size() > 0)
         {
-            for(list<Router*>::iterator i = routers->begin(); i != routers->end(); ++i)
+            for(list<Router*>::iterator i = routers.begin(); i != routers.end(); ++i)
             {
                 Router *cur = (*i);
                 this->aliases.push_back(cur);

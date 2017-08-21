@@ -536,109 +536,30 @@ void AliasResolver::resolve(NetworkTreeNode *internal)
 {
     if(internal->isHedera())
     {
-        list<InetAddress> lastHops;
-        list<list<InetAddress> > sets = internal->listInterfacesByLastHop(&lastHops);
-        while(sets.size() > 0)
+        list<Aggregate*> *aggs = internal->getAggregates();
+        for(list<Aggregate*>::iterator it = aggs->begin(); it != aggs->end(); ++it)
         {
-            list<InetAddress> curGroup = sets.front();
-            InetAddress curLastHop = lastHops.front();
-            this->resolveGroup(internal, curGroup); // Also does storage of fingerprints
-            internal->storeLastHop(curLastHop);
-            
-            lastHops.pop_front();
-            sets.pop_front();
+            Aggregate *curAgg = (*it);
+            this->resolveGroup(curAgg);
+            this->postProcess(internal, curAgg);
         }
     }
     else
     {
-        this->resolveGroup(internal, internal->listInterfaces());
-    }
-    
-    list<Router*> *results = internal->getInferredRouters();
-
-    /*
-     * Some post-processing: removes the routers consisting of a single interface which happens 
-     * to be a candidate contra-pivot of an ODD subnet, except if it is among the labels of this 
-     * network tree node.
-     *
-     * N.B.: checking the interface appears in the subnet responsive IPs list is enough, as the 
-     * pivots were not listed at all in the potential interfaces.
-     */
-     
-    for(list<Router*>::iterator i = results->begin(); i != results->end(); ++i)
-    {
-        if((*i)->getNbInterfaces() == 1)
+        Aggregate *single = internal->getFirstAggregate();
+        if(single != NULL)
         {
-            InetAddress singleInterface = (*i)->getInterfacesList()->front()->ip;
-            list<NetworkTreeNode*> *children = internal->getChildren();
-            for(list<NetworkTreeNode*>::iterator j = children->begin(); j != children->end(); ++j)
-            {
-                if((*j)->isLeaf())
-                {
-                    SubnetSite *ss = (*j)->getAssociatedSubnet();
-                    
-                    if(ss->getStatus() == SubnetSite::ODD_SUBNET && 
-                       ss->hasLiveInterface(singleInterface))
-                    {
-                        bool isALabel = false;
-                        list<InetAddress> *labels = internal->getLabels();
-                        for(list<InetAddress>::iterator k = labels->begin(); k != labels->end(); ++k)
-                        {
-                            if((*k) == singleInterface)
-                            {
-                                isALabel = true;
-                                break;
-                            }
-                        }
-                        
-                        if(!isALabel)
-                        {
-                            delete (*i);
-                            results->erase(i--);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    /*
-     * Additionnal post-processing (January 2017): the list of routers is sorted and duplicates 
-     * are removed. Duplicates are a very rare occurrences but can occur when the contra-pivot of 
-     * a subnet and the last step on the route are the same IP (a consequence of a specific 
-     * routing policy OR a bad subnet measurement).
-     */
-    
-    results->sort(Router::compare);
-    Router *previousRouter = NULL;
-    for(list<Router*>::iterator i = results->begin(); i != results->end(); ++i)
-    {
-        Router *cur = (*i);
-        
-        if(previousRouter != NULL)
-        {
-            if(cur->equals(previousRouter))
-            {
-                delete cur;
-                results->erase(i--);
-            }
-            else
-            {
-                previousRouter = cur;
-            }
-        }
-        else
-        {
-            previousRouter = cur;
+            this->resolveGroup(single);
+            this->postProcess(internal, single);
         }
     }
 }
 
-void AliasResolver::resolveGroup(NetworkTreeNode *neighborhood, list<InetAddress> interfaces)
+void AliasResolver::resolveGroup(Aggregate *aggregate)
 {
     IPLookUpTable *table = env->getIPTable();
-    list<Router*> *results = neighborhood->getInferredRouters();
+    list<Router*> *results = aggregate->getInferredRouters();
+    list<InetAddress> interfaces = aggregate->listAllInterfaces();
     
     // Remove duplicata (possible because ingress interface of neighborhood can be a contra-pivot)
     InetAddress previous(0);
@@ -652,8 +573,8 @@ void AliasResolver::resolveGroup(NetworkTreeNode *neighborhood, list<InetAddress
         previous = current;
     }
     
-    // Evaluates IP ID counters of each IP and creates a fingerprint list
-    list<Fingerprint> fingerprints;
+    // Evaluates IP ID counters of each IP and generates the fingerprints
+    list<Fingerprint> *fingerprintsList = aggregate->getFingerprints();
     while(interfaces.size() > 0)
     {
         InetAddress cur = interfaces.front();
@@ -671,13 +592,12 @@ void AliasResolver::resolveGroup(NetworkTreeNode *neighborhood, list<InetAddress
         this->evaluateIPIDCounter(entryCur);
         
         Fingerprint curPrint(entryCur);
-        fingerprints.push_back(curPrint);
+        fingerprintsList->push_back(curPrint);
     }
-    fingerprints.sort(Fingerprint::compare);
+    fingerprintsList->sort(Fingerprint::compare);
     
-    // Makes a copy of the sorted fingerprints to store in the neighborhood/internal node object
-    list<Fingerprint> fingerprintsCp(fingerprints);
-    neighborhood->storeFingerprints(fingerprintsCp);
+    // Makes a copy of the sorted fingerprints
+    list<Fingerprint> fingerprints((*fingerprintsList));
     
     // Starts association...
     while(fingerprints.size() > 0)
@@ -1170,6 +1090,87 @@ void AliasResolver::resolveGroup(NetworkTreeNode *neighborhood, list<InetAddress
                     }
                 }
             }
+        }
+    }
+}
+
+void AliasResolver::postProcess(NetworkTreeNode *internal, Aggregate *aggregate)
+{
+    list<Router*> *results = aggregate->getInferredRouters();
+    
+    /*
+     * Removes the routers consisting of a single interface which happens to be a candidate 
+     * contra-pivot of an ODD subnet, except if it is among the labels of this network tree node.
+     *
+     * N.B.: checking the interface appears in the subnet responsive IPs list is enough, as the 
+     * pivots were not listed at all in the potential interfaces.
+     */
+     
+    for(list<Router*>::iterator i = results->begin(); i != results->end(); ++i)
+    {
+        if((*i)->getNbInterfaces() == 1)
+        {
+            InetAddress singleInterface = (*i)->getInterfacesList()->front()->ip;
+            list<NetworkTreeNode*> *children = internal->getChildren();
+            for(list<NetworkTreeNode*>::iterator j = children->begin(); j != children->end(); ++j)
+            {
+                if((*j)->isLeaf())
+                {
+                    SubnetSite *ss = (*j)->getAssociatedSubnet();
+                    
+                    if(ss->getStatus() == SubnetSite::ODD_SUBNET && 
+                       ss->hasLiveInterface(singleInterface))
+                    {
+                        bool isALabel = false;
+                        list<InetAddress> *labels = internal->getLabels();
+                        for(list<InetAddress>::iterator k = labels->begin(); k != labels->end(); ++k)
+                        {
+                            if((*k) == singleInterface)
+                            {
+                                isALabel = true;
+                                break;
+                            }
+                        }
+                        
+                        if(!isALabel)
+                        {
+                            delete (*i);
+                            results->erase(i--);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /*
+     * Then, the list of routers is sorted and duplicates are removed. Duplicates are a very rare 
+     * occurrence but can happen when the contra-pivot of a subnet and the penultimate hop for 
+     * this subnet the same IP (a consequence of a specific routing policy or a bad measurement).
+     */
+    
+    results->sort(Router::compare);
+    Router *previousRouter = NULL;
+    for(list<Router*>::iterator i = results->begin(); i != results->end(); ++i)
+    {
+        Router *cur = (*i);
+        
+        if(previousRouter != NULL)
+        {
+            if(cur->equals(previousRouter))
+            {
+                delete cur;
+                results->erase(i--);
+            }
+            else
+            {
+                previousRouter = cur;
+            }
+        }
+        else
+        {
+            previousRouter = cur;
         }
     }
 }

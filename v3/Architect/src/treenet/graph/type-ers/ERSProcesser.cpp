@@ -24,6 +24,10 @@ ERSProcesser::ERSProcesser(TreeNETEnvironment *env)
     this->soilRef = NULL;
     this->ERResult = NULL;
     this->RSResult = NULL;
+    
+    this->nESwitches = 0;
+    this->nRouters = 0;
+    this->nSubnets = 0;
 }
 
 ERSProcesser::~ERSProcesser()
@@ -170,7 +174,8 @@ double ERSProcesser::check()
             visitedSubnets++;
     
     // Frees the arrays
-    delete[] checkArrE;
+    if(nESwitches > 0)
+        delete[] checkArrE;
     delete[] checkArrR;
     delete[] checkArrS;
     checkArrE = NULL;
@@ -279,7 +284,7 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
     RSGraph *bipGraphRS = this->RSResult;
     list<NetworkTreeNode*> *children = cur->getChildren();
     list<InetAddress> *labels = cur->getLabels();
-    list<Router*> *routers = cur->getInferredRouters();
+    list<Router*> routers = cur->getInferredRouters();
     
     // Puts direct neighbor subnets in a list and puts the T_NEIGHBORHOOD nodes in another one
     list<SubnetSite*> childrenL;
@@ -370,9 +375,9 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
              * connect these subnets with the selected routers.
              */
             
-            if(curChildrenL.size() > 0 && ((!isMissingInterface && routers->size() > 1) || (routers->size() > 0)))
+            if(curChildrenL.size() > 0 && ((!isMissingInterface && routers.size() > 1) || (routers.size() > 0)))
             {
-                for(list<Router*>::iterator j = routers->begin(); j != routers->end(); ++j)
+                for(list<Router*>::iterator j = routers.begin(); j != routers.end(); ++j)
                 {
                     Router *curRouter = (*j);
                 
@@ -425,7 +430,7 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
                 bipGraphRS->createEdge(cur, (*i));
     }
     // Case where there is a single interface and at least one router
-    else if(routers->size() > 0)
+    else if(routers.size() > 0)
     {
         list<SubnetSite*> backUpSubnets(childrenL); // Copy of childrenL for last step
         InetAddress ingressInterface = labels->front();
@@ -452,9 +457,9 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
         }
         
         // Creates router - subnet links of other routers (if any)
-        if(routers->size() > 1 || (ingressInterface == InetAddress(0) && routers->size() == 1))
+        if(routers.size() > 1 || (ingressInterface == InetAddress(0) && routers.size() == 1))
         {
-            for(list<Router*>::iterator i = routers->begin(); i != routers->end(); ++i)
+            for(list<Router*>::iterator i = routers.begin(); i != routers.end(); ++i)
             {
                 if((*i) == ingressRouter)
                     continue;
@@ -510,7 +515,7 @@ void ERSProcesser::processRecursiveER(NetworkTreeNode *cur, unsigned short depth
     if(cur->isHedera())
     {
         list<InetAddress> *labels = cur->getLabels();
-        list<Router*> *routers = cur->getInferredRouters();
+        list<Router*> routers = cur->getInferredRouters();
         
         // Lists child leaves
         list<SubnetSite*> childrenL;
@@ -563,9 +568,9 @@ void ERSProcesser::processRecursiveER(NetworkTreeNode *cur, unsigned short depth
             list<Router*> routersToConnect;
             if(!isMissingInterface)
                 routersToConnect.push_back(ingressRouter);
-            if(curChildrenL.size() > 0 && routers->size() > 1)
+            if(curChildrenL.size() > 0 && routers.size() > 1)
             {
-                for(list<Router*>::iterator j = routers->begin(); j != routers->end(); ++j)
+                for(list<Router*>::iterator j = routers.begin(); j != routers.end(); ++j)
                 {
                     Router *curRouter = (*j);
                 

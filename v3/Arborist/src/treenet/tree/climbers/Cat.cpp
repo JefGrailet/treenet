@@ -245,39 +245,34 @@ void Cat::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
         (*out) << endl;
         
         // Fingerprints
-        list<list<Fingerprint> > fingerprints = cur->getFingerprints();
-        if(cur->isHedera() && fingerprints.size() > 1)
+        list<Aggregate*> *aggs = cur->getAggregates();
+        if(cur->isHedera() && aggs->size() > 1)
         {
-            list<InetAddress> lastHops = cur->getLastHops();
             (*out) << "Fingerprints (sorted, grouped by last hop towards interface):\n";
-            while(fingerprints.size() > 0)
+            for(list<Aggregate*>::iterator it = aggs->begin(); it != aggs->end(); ++it)
             {
-                list<Fingerprint> simpleList = fingerprints.front();
-                (*out) << "\nLast hop = " << lastHops.front() << ":\n";
-                for(list<Fingerprint>::iterator it = simpleList.begin(); it != simpleList.end(); ++it)
-                {
-                    (*out) << (InetAddress) (*((*it).ipEntry)) << " - " << (*it) << "\n";
-                }
-                
-                fingerprints.pop_front();
-                lastHops.pop_front();
+                list<Fingerprint> *prints = (*it)->getFingerprints();
+                (*out) << "\nLast hop = " << (*it)->getFirstLastHop() << ":\n";
+                for(list<Fingerprint>::iterator it2 = prints->begin(); it2 != prints->end(); ++it2)
+                    (*out) << (InetAddress) (*((*it2).ipEntry)) << " - " << (*it2) << "\n";
             }
             (*out) << endl;
         }
         else
         {
-            list<Fingerprint> simpleList = fingerprints.front();
-            (*out) << "Fingerprints (sorted):\n";
-            for(list<Fingerprint>::iterator it = simpleList.begin(); it != simpleList.end(); ++it)
+            list<Fingerprint> *prints = aggs->front()->getFingerprints();
+            if(prints->size() > 1)
             {
-                (*out) << (InetAddress) (*((*it).ipEntry)) << " - " << (*it) << "\n";
+                (*out) << "Fingerprints (sorted):\n";
+                for(list<Fingerprint>::iterator it = prints->begin(); it != prints->end(); ++it)
+                    (*out) << (InetAddress) (*((*it).ipEntry)) << " - " << (*it) << "\n";
+                (*out) << endl;
             }
-            (*out) << endl;
         }
         
         // Routers
-        list<Router*> *routers = cur->getInferredRouters();
-        unsigned short nbRouters = (unsigned short) routers->size();
+        list<Router*> routers = cur->getInferredRouters();
+        unsigned short nbRouters = (unsigned short) routers.size();
         if(nbRouters > 0)
         {
             if(nbRouters == 1)
@@ -285,7 +280,7 @@ void Cat::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
             else
                 (*out) << "Inferred routers: " << endl;
             
-            for(list<Router*>::iterator i = routers->begin(); i != routers->end(); ++i)
+            for(list<Router*>::iterator i = routers.begin(); i != routers.end(); ++i)
             {
                 (*out) << "[" << (*i)->toStringVerbose() << "]" << endl;
             }

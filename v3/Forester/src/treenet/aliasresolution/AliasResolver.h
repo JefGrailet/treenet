@@ -151,19 +151,31 @@ private:
     bool reverseDNS(IPTableEntry *ip1, IPTableEntry *ip2);
     
     /*
-     * Method to apply alias resolution to a group of IPs, from a given neighborhood. The reason 
-     * why this method exists is because multi-label nodes, as of February 2017, are treated 
-     * differently than regular nodes: instead of taking all interfaces together, they are grouped 
-     * per last hop on the route to their respective subnet, and both the alias hint collection 
-     * alias resolution are applied one group at a time. Of course, in the case of a regular 
-     * neighborhood, we will provide the full list of inferred interfaces. The method returns 
-     * nothing.
+     * Method to apply alias resolution to a group of IPs, modeled by an Aggregate object, from a 
+     * given neighborhood. The reason why this method exists is because multi-label nodes, as of 
+     * February 2017, are treated differently than regular nodes: instead of taking all interfaces 
+     * together, they are grouped per last hop on the route to their respective subnet, and both 
+     * the alias hint collection alias resolution are applied one group at a time. Of course, in 
+     * the case of a regular neighborhood with only one last hop, there is a single Aggregate 
+     * object to consider.
      *
-     * @param NetworkTreeNode*   neighborhood  The internal node from which the interfaces are from
-     * @param list<InetAddress>  interfaces    The interfaces to alias together
+     * @param Aggregate* aggregate  The aggregate containing the interfaces to alias
      */
     
-    void resolveGroup(NetworkTreeNode *neighborhood, list<InetAddress> interfaces);
+    void resolveGroup(Aggregate *aggregate);
+    
+    /*
+     * Method to post-process routers inferred from an aggregate of IPs (as an Aggregate object) 
+     * with alias resolution methods. The post-processing aims at removing duplicate routers and 
+     * "routers" which consist of a single interface that might be an outlier among the intefaces 
+     * of some subnet. To this end, both the Aggregate object and the parent NetworkTreeNode are 
+     * required.
+     *
+     * @param NetworkTreeNode* internal   The parent NetworkTreeNode
+     * @param Aggregate*       aggregate  The aggregate containing the inferred routers
+     */
+    
+    void postProcess(NetworkTreeNode *internal, Aggregate *aggregate);
     
 };
 

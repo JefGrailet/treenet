@@ -251,7 +251,7 @@ void printUsage()
     cout << "\n";
     cout << "Add this option to your command line to request conversion of the network tree\n";
     cout << "into a neighborhood graph. The final graph will be a projection on the\n";
-    cout << "neighborhoods of a NS graph. The output file will be named \"[label].n-graph\"";
+    cout << "neighborhoods of a NS graph. The output file will be named \"[label].n-graph\"\n";
     cout << "(see -l flag for [label]).\n";
     cout << "\n";
     cout << "-r      --graph-router                      None (flag)\n";
@@ -285,9 +285,9 @@ void printUsage()
     cout << "\n";
     cout << "-c      --credits                           None (flag)\n";
     cout << "\n";
-    cout << "Add this flag to your command line to display the version of Architect and some\n";
-    cout << "credits. Architect will not run further in this case, though -h and -i flags can\n";
-    cout << "be used in addition.\n";
+    cout << "Add this flag to your command line to display the version of Architect and\n";
+    cout << "some credits. Architect will not run further in this case, though -h and -i\n";
+    cout << "flags can be used in addition.\n";
     cout << "\n";
     cout << "-h      --help                              None (flag)\n";
     cout << "\n";

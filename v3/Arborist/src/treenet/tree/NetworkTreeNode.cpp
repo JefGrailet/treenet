@@ -60,11 +60,11 @@ NetworkTreeNode::~NetworkTreeNode()
         }
         children.clear();
         
-        for(list<Router*>::iterator i = inferredRouters.begin(); i != inferredRouters.end(); ++i)
+        for(list<Aggregate*>::iterator i = aggregates.begin(); i != aggregates.end(); ++i)
         {
             delete (*i);
         }
-        inferredRouters.clear();
+        aggregates.clear();
     }
 }
 
@@ -258,60 +258,8 @@ unsigned short NetworkTreeNode::getLinkage()
     return 0;
 }
 
-list<InetAddress> NetworkTreeNode::listInterfaces()
+void NetworkTreeNode::buildAggregates()
 {
-    list<InetAddress> interfacesList;
-    
-    // Listing labels of this node
-    for(list<InetAddress>::iterator i = labels.begin(); i != labels.end(); ++i)
-    {
-        if((*i) != InetAddress("0.0.0.0"))
-            interfacesList.push_back((*i));
-    }
-    
-    // Listing children (only subnets)
-    for(list<NetworkTreeNode*>::iterator i = children.begin(); i != children.end(); ++i)
-    {
-        if((*i)->isLeaf())
-        {
-            SubnetSite *ss = (*i)->getAssociatedSubnet();
-            unsigned short status = ss->getStatus();
-            unsigned char shortestTTL = ss->getShortestTTL();
-            
-            if(status == SubnetSite::ACCURATE_SUBNET || status == SubnetSite::ODD_SUBNET)
-            {
-                list<SubnetSiteNode*> *listSsn = ss->getSubnetIPList();
-                
-                for(list<SubnetSiteNode*>::iterator j = listSsn->begin(); j != listSsn->end(); ++j)
-                {
-                    if((*j)->TTL == shortestTTL)
-                    {
-                        interfacesList.push_back(((*j)->ip));
-                    }
-                }
-            }
-        }
-    }
-    
-    // Sorts and removes duplicata (rare but possible when a contra-pivot is also a label)
-    interfacesList.sort(InetAddress::smaller);
-    InetAddress previous(0);
-    for(list<InetAddress>::iterator i = interfacesList.begin(); i != interfacesList.end(); ++i)
-    {
-        InetAddress cur = (*i);
-        if(cur == previous)
-            interfacesList.erase(i--);
-        else
-            previous = cur;
-    }
-    
-    return interfacesList;
-}
-
-list<list<InetAddress> > NetworkTreeNode::listInterfacesByLastHop(list<InetAddress> *lastHops)
-{
-    list<list<InetAddress> > sets;
-
     for(list<InetAddress>::iterator i = labels.begin(); i != labels.end(); ++i)
     {
         InetAddress curLastHop = (*i);
@@ -347,14 +295,7 @@ list<list<InetAddress> > NetworkTreeNode::listInterfacesByLastHop(list<InetAddre
             }
         }
         
-        if(candidates.size() > 0 || curLastHop != InetAddress(0))
-        {
-            if(curLastHop != InetAddress(0))
-                candidates.push_front(curLastHop);
-            if(lastHops != NULL)
-                lastHops->push_back(curLastHop);
-        }
-        else
+        if(candidates.size() == 0 && curLastHop == InetAddress(0))
             continue;
         
         // Sorts and removes duplicata (rare but possible when a contra-pivot is also a label)
@@ -369,21 +310,70 @@ list<list<InetAddress> > NetworkTreeNode::listInterfacesByLastHop(list<InetAddre
                 previous = cur;
         }
         
-        sets.push_back(candidates);
+        // Creates the Aggregate object
+        Aggregate *newAgg = new Aggregate(curLastHop, candidates);
+        aggregates.push_back(newAgg);
     }
     
-    return sets;
+    // Sorts the final list
+    aggregates.sort(Aggregate::compare);
+}
+
+unsigned int NetworkTreeNode::countInterfaces()
+{
+    unsigned int result = 0;
+    for(list<Aggregate*>::iterator it = aggregates.begin(); it != aggregates.end(); it++)
+    {
+        Aggregate *cur = (*it);
+        result += cur->getLastHops()->size();
+        result += cur->getCandidates()->size();
+    }
+    return result;
+}
+
+bool NetworkTreeNode::hasRouters()
+{
+    for(list<Aggregate*>::iterator it = aggregates.begin(); it != aggregates.end(); it++)
+    {
+        list<Router*> *routers = (*it)->getInferredRouters();
+        if(routers->size() > 0)
+            return true;
+    }
+    return false;
+}
+
+list<Router*> NetworkTreeNode::getInferredRouters()
+{
+    list<Router*> result;
+    for(list<Aggregate*>::iterator it = aggregates.begin(); it != aggregates.end(); it++)
+    {
+        list<Router*> *routers = (*it)->getInferredRouters();
+    
+        if(routers->size() == 0)
+            continue;
+        
+        for(list<Router*>::iterator i = routers->begin(); i != routers->end(); ++i)
+            result.push_back((*i));
+    }
+    
+    result.sort(Router::compare);
+    return result;
 }
 
 Router* NetworkTreeNode::getRouterHaving(InetAddress interface)
 {
-    if(inferredRouters.size() == 0)
-        return NULL;
-    
-    for(list<Router*>::iterator i = inferredRouters.begin(); i != inferredRouters.end(); ++i)
+    for(list<Aggregate*>::iterator it = aggregates.begin(); it != aggregates.end(); it++)
     {
-        if((*i)->hasInterface(interface))
-            return (*i);
+        list<Router*> *routers = (*it)->getInferredRouters();
+    
+        if(routers->size() == 0)
+            continue;
+        
+        for(list<Router*>::iterator i = routers->begin(); i != routers->end(); ++i)
+        {
+            if((*i)->hasInterface(interface))
+                return (*i);
+        }
     }
     
     return NULL;

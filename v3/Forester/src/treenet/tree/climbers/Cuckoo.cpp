@@ -70,9 +70,9 @@ void Cuckoo::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
     // Any other case: internal node
     else
     {
-        list<InetAddress> interfacesToProbe = cur->listInterfaces();
+        cur->buildAggregates();
         
-        if(interfacesToProbe.size() > 1)
+        if(cur->countInterfaces() > 1)
         {
             (*out) << "Collecting alias resolution hints for ";
             if(cur->isHedera())
@@ -118,21 +118,15 @@ void Cuckoo::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
             
             if(cur->isHedera())
             {
-                (*out) << endl;
-                
-                list<InetAddress> lastHops;
-                list<list<InetAddress> > sets = cur->listInterfacesByLastHop(&lastHops);
-                while(sets.size() > 0)
+                list<Aggregate*> *aggs = cur->getAggregates();
+                for(list<Aggregate*>::iterator it = aggs->begin(); it != aggs->end(); ++it)
                 {
-                    list<InetAddress> curInterfaces = sets.front();
-                    sets.pop_front();
+                    Aggregate *curAgg = (*it);
+                    InetAddress lastHop = curAgg->getFirstLastHop();
                     
-                    InetAddress curHop = lastHops.front();
-                    lastHops.pop_front();
+                    (*out) << "Alias candidates which last hop is " << lastHop << "..." << endl;
                     
-                    (*out) << "Alias candidates which last hop is " << curHop << "..." << endl;
-                    
-                    this->ahc->setIPsToProbe(curInterfaces);
+                    this->ahc->setIPsToProbe(curAgg->listAllInterfaces());
                     try
                     {
                         this->ahc->collect();
@@ -148,14 +142,18 @@ void Cuckoo::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
             // Simple internal: only one collection
             else
             {
-                this->ahc->setIPsToProbe(interfacesToProbe);
-                try
+                Aggregate *agg = cur->getFirstAggregate();
+                if(agg != NULL)
                 {
-                    this->ahc->collect();
-                }
-                catch(StopException e)
-                {
-                    throw;
+                    this->ahc->setIPsToProbe(agg->listAllInterfaces());
+                    try
+                    {
+                        this->ahc->collect();
+                    }
+                    catch(StopException e)
+                    {
+                        throw;
+                    }
                 }
             }
             
