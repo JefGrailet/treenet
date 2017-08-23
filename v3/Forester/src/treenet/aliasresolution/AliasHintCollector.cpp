@@ -387,13 +387,14 @@ void AliasHintCollector::collect()
             delete[] tuplesArray;
         }
     }
+    IPIDTuples.clear(); // Empties map for next call to collect() (collisions on 0.0.0.0 can occur)
     
     if(printSteps)
     {
         // Different output for debug mode
         if(debug)
         {
-            (*out) << "\nDone with IP ID collection for this neighborhood.\n" << endl;
+            (*out) << "\nDone with IP-ID collection for this neighborhood.\n" << endl;
         }
         else
             (*out) << "Done." << endl;
@@ -743,8 +744,8 @@ void AliasHintCollector::collect()
     }
     
     /*
-     * No condition on printSteps here because the "Done" follows the "Collecting hints..." and is 
-     * therefore still relevant.
+     * No condition on printSteps here because the "Done" is actually bringing closure to the 
+     * "Collecting hints..." message printed by calling code and is therefore still relevant.
      */
     
     (*out) << "Done." << endl;

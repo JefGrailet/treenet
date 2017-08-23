@@ -124,7 +124,9 @@ void Cuckoo::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
                     Aggregate *curAgg = (*it);
                     InetAddress lastHop = curAgg->getFirstLastHop();
                     
-                    (*out) << "Alias candidates which last hop is " << lastHop << "..." << endl;
+                    (*out) << "Alias candidates which last hop is " << lastHop << "... " << std::flush;
+                    if(this->ahc->isPrintingSteps()) // Additionnal line break for better output
+                        (*out) << endl;
                     
                     this->ahc->setIPsToProbe(curAgg->listAllInterfaces());
                     try
