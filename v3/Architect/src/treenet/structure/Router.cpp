@@ -69,12 +69,9 @@ IPTableEntry* Router::getMergingPivot(IPLookUpTable *table)
 string Router::toString()
 {
     stringstream result;
-    bool first = true;
     for(list<RouterInterface*>::iterator it = interfaces.begin(); it != interfaces.end(); ++it)
     {
-        if(first)
-            first = false;
-        else
+        if(it != interfaces.begin())
             result << " ";
         result << (*it)->ip;
     }
@@ -84,12 +81,9 @@ string Router::toString()
 string Router::toStringVerbose()
 {
     stringstream result;
-    bool first = true;
     for(list<RouterInterface*>::iterator it = interfaces.begin(); it != interfaces.end(); ++it)
     {
-        if(first)
-            first = false;
-        else
+        if(it != interfaces.begin())
             result << ", ";
         result << (*it)->ip;
         if((*it)->aliasMethod != RouterInterface::FIRST_IP)
@@ -134,13 +128,11 @@ string Router::toStringMinimalist()
 {
     stringstream result;
     result << "[";
-    bool first = true, shortened = false;
+    bool shortened = false;
     unsigned short i = 0;
     for(list<RouterInterface*>::iterator it = interfaces.begin(); it != interfaces.end(); ++it)
     {
-        if(first)
-            first = false;
-        else
+        if(it != interfaces.begin())
             result << ", ";
         
         if(i == 3)
