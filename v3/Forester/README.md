@@ -1,6 +1,6 @@
 # About TreeNET v3.3 "Forester" (treenet_forester)
 
-*By Jean-François Grailet, August 29, 2017*
+*By Jean-François Grailet, August 30, 2017*
 
 ## Compilation
 
@@ -61,7 +61,7 @@ If you intent to use `TreeNET` "*Forester*" from the PlanetLab testbed, here is 
 
 * **August 18, 2017:** light update of *Forester* to fix TCP probing, just like for *Arborist*. Instead of the SYN+ACK probing method inherited from `ExploreNET`, which is inefficient nowadays, `TreeNET` now uses SYN probing exclusively on the port 80 of the target IPs. This method should be much more successful, but users should keep in mind that this method of probing can be problematic security-wise. In particular, repeated probing towards a same IP (which can occur during alias resolution, for instance) can be identified as SYN flooding, which is a form of denial-of-service (DoS) attack.
 
-* **August 29, 2017:** upgrade of *Forester*, now in version v3.3. This new version essentially applies the changes brought to *Arborist* v3.3, i.e., it adds the new *pre-alias resolution* phase.
+* **August 30, 2017:** upgrade of *Forester*, now in version v3.3. This new version essentially applies the changes brought to *Arborist* v3.3, i.e., it adds the new *pre-alias resolution* phase.
 
 ## Disclaimer
 

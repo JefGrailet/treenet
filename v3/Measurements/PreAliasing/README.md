@@ -1,6 +1,6 @@
 # About PreAliasing/ folder
 
-*By Jean-François Grailet (last edited: August 29, 2017)*
+*By Jean-François Grailet (last edited: August 30, 2017)*
 
 ## Overview
 

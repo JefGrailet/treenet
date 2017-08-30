@@ -1,6 +1,6 @@
 # About TreeNET v3.3 "Architect" (treenet_architect)
 
-*By Jean-François Grailet, August 29, 2017*
+*By Jean-François Grailet, August 30, 2017*
 
 ## Compilation
 
@@ -51,7 +51,7 @@ make
 
 * **April 14, 2017:** update to version v3.2. It essentially aligns *Architect* with the lattest changes (in alias resolution and route treatment) implemented in *Arborist* v3.2 and makes some minor changes to the parsing utilities to comply with them. It also times its different algorithmic steps.
 
-* **August 29, 2017:** upgrade of *Architect*, now in version v3.3. This new version essentially takes account of the changes brought to *Arborist* v3.3 to aggregate IP interfaces in the same manner in the multi-label nodes of the network tree. It also takes account of the new aggregation process for the graph transformations.
+* **August 30, 2017:** upgrade of *Architect*, now in version v3.3. This new version essentially takes account of the changes brought to *Arborist* v3.3 to aggregate IP interfaces in the same manner in the multi-label nodes of the network tree. It also takes account of the new aggregation process for the graph transformations.
 
 ## Disclaimer
 
