@@ -50,7 +50,6 @@ void Crow::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
 {
     list<NetworkTreeNode*> *children = cur->getChildren();
     list<InetAddress> *labels = cur->getLabels();
-    cur->buildAggregates(); // Difference with other versions of TreeNET
     
     // Puts direct neighbor subnets in a list
     list<NetworkTreeNode*> childrenL;

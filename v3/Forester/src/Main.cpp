@@ -48,6 +48,8 @@ using std::iterator;
 #include "treenet/tree/growth/classic/ClassicGrower.h"
 #include "treenet/tree/growth/graft/Grafter.h"
 #include "treenet/tree/climbers/Robin.h"
+#include "treenet/tree/climbers/Magpie.h"
+#include "treenet/tree/climbers/Sparrow.h"
 #include "treenet/tree/climbers/Cuckoo.h"
 #include "treenet/tree/climbers/Crow.h"
 #include "treenet/tree/climbers/Cat.h"
@@ -429,7 +431,7 @@ void printVersion()
     cout << "Version and credits\n";
     cout << "===================\n";
     cout << "\n";
-    cout << "TreeNET v3.2 \"Forester\", written by Jean-François Grailet (03/2017).\n";
+    cout << "TreeNET v3.3 \"Forester\", written by Jean-François Grailet (03/2017).\n";
     cout << "Based on ExploreNET version 2.1, copyright (c) 2013 Mehmet Engin Tozal.\n";
     cout << "\n";
     
@@ -1005,7 +1007,7 @@ int main(int argc, char *argv[])
     SubnetSiteSet *set = env->getSubnetSet();
     
     // Some welcome message
-    cout << "TreeNET v3.2 \"Forester\" (time at start: " << getCurrentTimeStr() << ")\n" << endl;
+    cout << "TreeNET v3.3 \"Forester\" (time at start: " << getCurrentTimeStr() << ")\n" << endl;
     
     /*
      * INPUT FILE PARSING
@@ -1188,6 +1190,7 @@ int main(int argc, char *argv[])
     }
     
     Grower *g = NULL;
+    Climber *magpie = NULL;
     Climber *cuckoo = NULL;
     Soil *result = NULL;
     try
@@ -1283,10 +1286,18 @@ int main(int argc, char *argv[])
          * method. The hints are sometimes involved in this (for instance, IP-IDs), though some 
          * profiles might not be compatible with any technique implemented in TreeNET.
          *
-         * In Forester, both steps of the alias resolution (i.e., hint collection and actual 
-         * resolution) are optional. The first is conducted only under two re-do modes, and the 
-         * second only occurs if the user explicitely asks for it through a re-do mode or a 
-         * detailed analysis of the tree (-n flag).
+         * As of August 2017, the process is slightly longer to improve the alias resolution 
+         * on multi-label network tree nodes, as one needs to check before making separate 
+         * aggregates (consisting of a label + each child subnet which last hop is that lable) in 
+         * such nodes that labels are not aliases of each other. It consists of 4 steps:
+         * 1) (online) collection of hints exclusively for labels of multi-label nodes, 
+         * 2) (offline) build aggregates of IPs for each node; labels of a multi-label node are 
+         *    resolved and the results are used to build its aggregates, 
+         * 3) (online) collection of hints for all IPs in each aggregate of each node, 
+         * 4) (offline) actual alias resolution.
+         *
+         * In Forester, re-collecting alias hints is optional. It is only conducted under two 
+         * re-do modes.
          */
         
         // Re-does the full alias resolution.
@@ -1301,11 +1312,24 @@ int main(int argc, char *argv[])
             if(kickLogs)
                 env->openLogStream("Log_" + newFileName + "_alias_resolution");
             
+            // 1) Pre-alias resolution (collecting hints on labels from multi-label nodes)
+            magpie = new Magpie(env);
+            magpie->climb(result);
+            delete magpie;
+            magpie = NULL;
+            
+            // 2) Formation of IPs aggregates (IPs likely to be alias of each other)
+            Sparrow *sparrow = new Sparrow(env);
+            sparrow->climb(result);
+            delete sparrow;
+            
+            // 3) Collects alias resolution hints.
             cuckoo = new Cuckoo(env);
             cuckoo->climb(result);
             delete cuckoo;
             cuckoo = NULL;
             
+            // 4) Internal node exploration and actual alias resolution are only done now.
             Climber *crow = new Crow(env);
             crow->climb(result);
             ((Crow *) crow)->outputAliases(newFileName + ".alias");
@@ -1327,6 +1351,10 @@ int main(int argc, char *argv[])
         // Re-does only the "actual" alias resolution (+ save of the new .alias file if asked).
         else
         {
+            Sparrow *sparrow = new Sparrow(env);
+            sparrow->climb(result);
+            delete sparrow;
+        
             Climber *crow = new Crow(env);
             crow->climb(result);
             if(redoMode >= REDO_MODE_ALIASES)
@@ -1395,15 +1423,10 @@ int main(int argc, char *argv[])
         cout << "-[Stopped] " << newFileName << ".subnet\n";
         cout << "-[Stopped] " << newFileName << ".ip" << endl;
         
-        if(g != NULL)
-            delete g;
-        
-        if(cuckoo != NULL)
-            delete cuckoo;
-        
-        if(result != NULL)
-            delete result;
-        
+        delete g;
+        delete magpie;
+        delete cuckoo;
+        delete result;
         delete env;
         return 1;
     }

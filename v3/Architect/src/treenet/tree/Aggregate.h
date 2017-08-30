@@ -29,7 +29,9 @@ class Aggregate
 {
 public:
 
-    Aggregate(InetAddress lastHop, list<InetAddress> interfaces);
+    Aggregate(InetAddress lastHop);
+    Aggregate(list<InetAddress> hopsList); // Uses a list of last hops
+    Aggregate(Router *preAlias); // Turns a pre-alias into the base of an aggregate
     ~Aggregate();
     
     inline list<InetAddress> *getLastHops() { return &lastHops; }
@@ -43,8 +45,6 @@ public:
     list<InetAddress> listAllInterfaces();
     
     static bool compare(Aggregate *a1, Aggregate *a2);
-    
-    // TODO: merging method
     
 private:
     

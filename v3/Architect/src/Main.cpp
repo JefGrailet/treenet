@@ -47,6 +47,7 @@ using std::iterator;
 #include "treenet/tree/NetworkTree.h"
 #include "treenet/tree/growth/classic/ClassicGrower.h"
 #include "treenet/tree/climbers/Robin.h"
+#include "treenet/tree/climbers/Sparrow.h"
 #include "treenet/tree/climbers/Crow.h"
 #include "treenet/tree/climbers/Cat.h"
 #include "treenet/tree/climbers/Ant.h"
@@ -310,7 +311,7 @@ void printVersion()
     cout << "Version and credits\n";
     cout << "===================\n";
     cout << "\n";
-    cout << "TreeNET v3.2 \"Architect\", written by Jean-François Grailet (03/2017).\n";
+    cout << "TreeNET v3.3 \"Architect\", written by Jean-François Grailet (03/2017).\n";
     cout << "Based on ExploreNET version 2.1, copyright (c) 2013 Mehmet Engin Tozal.\n";
     cout << "\n";
     
@@ -746,7 +747,7 @@ int main(int argc, char *argv[])
     }
     
     // Some welcome message
-    cout << "TreeNET v3.2 \"Architect\" (time at start: " << getCurrentTimeStr() << ")\n" << endl;
+    cout << "TreeNET v3.3 \"Architect\" (time at start: " << getCurrentTimeStr() << ")\n" << endl;
     
     /*
      * INPUT DATASET PARSING
@@ -841,18 +842,22 @@ int main(int argc, char *argv[])
     /*
      * ALIAS RESOLUTION (AND ANALYSIS)
      *
-     * The alias resolution can now take place. As Architect is entirely passive, only the actual 
-     * alias resolution occurs (there is no hint collection). Indeed, it is assumed the provided 
-     * dataset already provides all the data Architect needs. Just after, Architect performs 
-     * tree/neighborhood/statistical analysis of the final tree before going to the conversion 
-     * into (bipartite) graphs.
+     * The alias resolution can now take place. As Architect is entirely passive, only the 
+     * formation of aggregates and the actual alias resolution occurs (there is no hint 
+     * collection). Indeed, it is assumed the provided dataset already provides all the data 
+     * Architect needs. Just after, Architect performs tree/neighborhood/statistical analysis of 
+     * the final tree before going to the conversion into (bipartite) graphs.
      */
      
     cout << "--- Start of alias resolution and tree analysis ---" << endl;
     timeval aliasResoStart, aliasResoEnd;
     gettimeofday(&aliasResoStart, NULL);
     
-    // Re-does alias resolution
+    // Re-does alias resolution (aggregates formation + actual alias resolution)
+    Sparrow *sparrow = new Sparrow(env);
+    sparrow->climb(result);
+    delete sparrow;
+    
     Climber *crow = new Crow(env);
     crow->climb(result);
     
@@ -867,7 +872,7 @@ int main(int argc, char *argv[])
         delete cat;
         
         cout << "New aliases have been written in a new file \"";
-        cout << newFileName << ".aliases\".\n";
+        cout << newFileName << ".alias\".\n";
         cout << "Neighborhood analysis has been written in a new file \"";
         cout << newFileName << ".neighborhoods\".\n";
     }

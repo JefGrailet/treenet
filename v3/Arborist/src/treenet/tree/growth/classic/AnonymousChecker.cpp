@@ -100,7 +100,7 @@ void AnonymousChecker::probe()
     if(nbTargets == 0)
         return;
     
-    // N.B.: ideally, we want this phase to last approx. one hour.
+    // N.B.: ideally, we want this phase to last approx. max. one hour.
     unsigned short nbThreads = MIN_THREADS;
     unsigned int targetsPerThread = THREAD_PROBES_PER_HOUR;
     
@@ -229,6 +229,9 @@ bool AnonymousChecker::similarAnonymousHops(SubnetSite *ss1, SubnetSite *ss2)
         {
             InetAddress hopBefore = routeSs1[i - 1].ip;
             InetAddress hopAfter = routeSs1[i + 1].ip;
+            
+            if(hopBefore == InetAddress(0) || hopAfter == InetAddress(0))
+                continue;
             
             if(routeSs2[i - 1].ip == hopBefore && routeSs2[i + 1].ip == hopAfter)
                 return true;

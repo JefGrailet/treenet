@@ -17,6 +17,8 @@
 
 #include <string>
 using std::string;
+#include <list>
+using std::list;
 
 #include "../../common/date/TimeVal.h"
 #include "../../common/inet/InetAddress.h"
@@ -50,6 +52,11 @@ public:
     inline TimeVal getPreferredTimeout() { return this->preferredTimeout; }
     inline void setTTL(unsigned char TTL) { this->TTL = TTL; }
     inline void setPreferredTimeout(TimeVal timeout) { this->preferredTimeout = timeout; }
+    
+    // August 2017: methods to handle pre-aliases (see fields for details).
+    inline list<InetAddress> *getPreAliases() { return &preAliases; }
+    bool hasPreAlias(InetAddress IP);
+    void recordPreAlias(InetAddress IP);
     
     // Comparison method for sorting purposes
     static bool compare(IPTableEntry *ip1, IPTableEntry *ip2);
@@ -125,6 +132,18 @@ private:
 	double velocityLowerBound, velocityUpperBound;
 	unsigned short IPIDCounterType;
 	unsigned char echoInitialTTL; // Inferred initial TTL of an ECHO reply packet
+	
+	/*
+	 * August 2017: "pre-alias" list. Pre-alias are only computed for IPs being labels of 
+	 * multi-label nodes, because one must ensure such IPs are from separate devices or if they 
+	 * are just different entries to the same device. The hints used to infer them are not kept 
+	 * for the following reasons:
+	 * -only the IP-IDs should differ, 
+	 * -the data obtained afterwards should be enough to prove again the pre-alias was acceptable.
+	 * However, keeping track of pre-alias still is useful to evaluate the tool.
+	 */
+	
+	list<InetAddress> preAliases;
 	
 };
 

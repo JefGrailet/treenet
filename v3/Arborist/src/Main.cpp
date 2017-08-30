@@ -51,6 +51,8 @@ using std::list;
 #include "treenet/tree/NetworkTree.h"
 #include "treenet/tree/growth/classic/ClassicGrower.h"
 #include "treenet/tree/climbers/Robin.h"
+#include "treenet/tree/climbers/Magpie.h"
+#include "treenet/tree/climbers/Sparrow.h"
 #include "treenet/tree/climbers/Cuckoo.h"
 #include "treenet/tree/climbers/Crow.h"
 #include "treenet/tree/climbers/Cat.h"
@@ -426,7 +428,7 @@ void printVersion()
     cout << "Version and credits\n";
     cout << "===================\n";
     cout << "\n";
-    cout << "TreeNET v3.2 \"Arborist\", written by Jean-François Grailet (03/2017).\n";
+    cout << "TreeNET v3.3 \"Arborist\", written by Jean-François Grailet (03/2017).\n";
     cout << "Based on ExploreNET version 2.1, copyright (c) 2013 Mehmet Engin Tozal.\n";
     cout << "\n";
     
@@ -1036,6 +1038,7 @@ int main(int argc, char *argv[])
     NetworkScanner *scanner = NULL;
     Grower *g = NULL;
     Soil *result = NULL;
+    Climber *magpie = NULL;
     Climber *cuckoo = NULL;
     
     try
@@ -1044,7 +1047,7 @@ int main(int argc, char *argv[])
         parser = new TargetParser(env);
         parser->parseCommandLine(targetsStr);
         
-        cout << "TreeNET \"Arborist\" v3.2 (time at start: " << getCurrentTimeStr() << ")\n" << endl;
+        cout << "TreeNET \"Arborist\" v3.3 (time at start: " << getCurrentTimeStr() << ")\n" << endl;
         
         // Announces that it will ignore LAN.
         if(parser->targetsEncompassLAN())
@@ -1264,6 +1267,16 @@ int main(int argc, char *argv[])
          * post-processing of the tree to conduct actual alias resolution via the best suited 
          * method. The hints are sometimes involved in this (for instance, IP-IDs), though some 
          * profiles might not be compatible with any technique implemented in TreeNET.
+         *
+         * As of August 2017, the process is slightly longer to improve the alias resolution 
+         * on multi-label network tree nodes, as one needs to check before making separate 
+         * aggregates (consisting of a label + each child subnet which last hop is that lable) in 
+         * such nodes that labels are not aliases of each other. It consists of 4 steps:
+         * 1) (online) collection of hints exclusively for labels of multi-label nodes, 
+         * 2) (offline) build aggregates of IPs for each node; labels of a multi-label node are 
+         *    resolved and the results are used to build its aggregates, 
+         * 3) (online) collection of hints for all IPs in each aggregate of each node, 
+         * 4) (offline) actual alias resolution.
          */
         
         cout << "--- Start of alias resolution ---" << endl;
@@ -1273,13 +1286,24 @@ int main(int argc, char *argv[])
         if(kickLogs)
             env->openLogStream("Log_" + newFileName + "_alias_resolution");
         
-        // Collects alias resolution hints.
+        // 1) Pre-alias resolution (collecting hints on labels from multi-label nodes)
+        magpie = new Magpie(env);
+        magpie->climb(result);
+        delete magpie;
+        magpie = NULL;
+        
+        // 2) Formation of IPs aggregates (IPs likely to be alias of each other)
+        Sparrow *sparrow = new Sparrow(env);
+        sparrow->climb(result);
+        delete sparrow;
+        
+        // 3) Collects alias resolution hints.
         cuckoo = new Cuckoo(env);
         cuckoo->climb(result);
         delete cuckoo;
         cuckoo = NULL;
         
-        // Internal node exploration and actual alias resolution are only done now.
+        // 4) Internal node exploration and actual alias resolution are only done now.
         Crow *crow = new Crow(env);
         crow->climb(result);
         crow->outputAliases(newFileName + ".alias");
@@ -1368,6 +1392,7 @@ int main(int argc, char *argv[])
         delete prescanner;
         delete scanner;
         delete g;
+        delete magpie;
         delete cuckoo;
         delete result;
         delete env;

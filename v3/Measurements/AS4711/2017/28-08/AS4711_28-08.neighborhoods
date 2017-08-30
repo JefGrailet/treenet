@@ -1,0 +1,2389 @@
+Hedera of internal node {200.143.252.22, 200.143.252.34}:
+No neighboring subnets, but inferred a total of 3 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 200.143.252.22 does not belong to any registered subnet 
+Label 200.143.252.34 does not belong to any registered subnet 
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 129.250.6.87:
+202.222.74.196/30 (ACCURATE, credible)
+202.222.74.212/31 (ACCURATE, credible)
+Inferred a total 4 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 129.250.6.87 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+129.250.6.87 - <255,*,Echo,Yes,No>
+202.222.74.212 - <255,*,Echo,Yes,No>
+202.222.74.197 - <255,*,Echo,Yes,Yes>
+
+Inferred routers: 
+[129.250.6.87]
+[202.222.74.197]
+[202.222.74.212]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 61.213.179.254:
+202.222.74.108/30 (ACCURATE, credible), on the way to 202.222.74.110
+202.222.74.112/30 (ACCURATE, credible)
+202.222.74.220/30 (ACCURATE, credible)
+202.222.74.240/30 (ACCURATE, credible)
+202.222.74.248/30 (ACCURATE, credible)
+Inferred a total 7 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 61.213.179.254 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+202.222.74.109 - <255,*,Echo,Yes,No>
+202.222.74.113 - <255,*,Echo,Yes,No>
+202.222.74.221 - <255,*,Echo,Yes,No>
+202.222.74.242 - <255,*,Echo,Yes,No>
+202.222.74.250 - <255,*,Echo,Yes,No>
+61.213.179.254 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[61.213.179.254]
+[202.222.74.109, 202.222.74.113 (Echo group & DNS), 202.222.74.221 (Echo group & DNS), 202.222.74.242 (Echo group & DNS), 202.222.74.250 (Echo group & DNS)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.74.110:
+202.222.64.252/30 (ACCURATE, credible)
+202.222.74.40/30 (ACCURATE, credible)
+202.222.74.48/30 (ACCURATE, credible)
+202.222.74.72/30 (ACCURATE, credible)
+202.222.74.80/30 (ACCURATE, credible)
+202.222.74.88/30 (ACCURATE, credible)
+202.222.74.120/30 (ACCURATE, credible)
+202.222.74.204/31 (ACCURATE, credible)
+Inferred a total 10 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 202.222.74.110 belongs to registered subnet 202.222.74.108/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.74.41 - <255,*,Echo,Yes,No>
+202.222.74.49 - <255,*,Echo,Yes,No>
+202.222.74.73 - <255,*,Echo,Yes,No>
+202.222.74.81 - <255,*,Echo,Yes,No>
+202.222.74.89 - <255,*,Echo,Yes,No>
+202.222.74.110 - <255,*,Echo,Yes,No>
+202.222.74.121 - <255,*,Echo,Yes,No>
+202.222.74.205 - <255,*,Echo,Yes,No>
+202.222.64.253 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[202.222.64.253]
+[202.222.74.41, 202.222.74.49 (Echo group & DNS), 202.222.74.73 (Echo group & DNS), 202.222.74.81 (Echo group & DNS), 202.222.74.89 (Echo group & DNS), 202.222.74.110 (Echo group & DNS), 202.222.74.121 (Echo group & DNS), 202.222.74.205 (Echo group & DNS)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.64.249:
+202.222.64.0/29 (ACCURATE, credible)
+202.222.64.208/28 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.64.249 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+202.222.64.221 - <255,*,Echo,No,No>
+202.222.64.1 - <64,*,Healthy,Yes,Yes>
+202.222.64.249 - <32,*,*,No,No>
+
+Inferred routers: 
+[202.222.64.1]
+[202.222.64.221]
+[202.222.64.249]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.74.197:
+202.222.74.104/30 (ACCURATE, credible), on the way to 202.222.74.106
+202.222.74.116/30 (ACCURATE, credible)
+202.222.74.214/31 (ACCURATE, credible)
+Inferred a total 4 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.74.197 belongs to registered subnet 202.222.74.196/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.74.215 - <255,*,Echo,Yes,No>
+202.222.74.105 - <255,*,Echo,Yes,Yes>
+202.222.74.118 - <255,*,Echo,Yes,Yes>
+202.222.74.197 - <255,*,Echo,Yes,Yes>
+
+Inferred routers: 
+[202.222.74.215]
+[202.222.74.105, 202.222.74.118 (Echo group & DNS), 202.222.74.197 (Echo group & DNS)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.74.106:
+202.222.73.60/30 (ACCURATE, credible)
+202.222.74.36/30 (ACCURATE, credible)
+202.222.74.44/30 (ACCURATE, credible)
+202.222.74.68/30 (ACCURATE, credible), on the way to 202.222.74.70
+202.222.74.76/30 (ACCURATE, credible), on the way to 202.222.74.78
+202.222.74.84/30 (ACCURATE, credible), on the way to 202.222.74.86
+202.222.74.96/30 (ACCURATE, credible), on the way to 202.222.74.98
+202.222.74.200/31 (ACCURATE, credible)
+202.222.74.206/31 (ACCURATE, credible)
+202.222.74.232/30 (ACCURATE, credible)
+202.222.74.236/30 (ACCURATE, credible)
+202.222.74.244/30 (ACCURATE, credible)
+202.222.75.28/31 (ACCURATE, credible)
+202.222.75.184/29 (ACCURATE, credible)
+202.222.75.204/31 (ACCURATE, credible)
+202.222.76.40/31 (ACCURATE, credible)
+202.222.76.140/31 (ACCURATE, credible)
+202.222.83.156/30 (ODD)
+202.222.83.252/31 (ACCURATE, credible)
+202.222.86.252/31 (ACCURATE, credible)
+202.222.94.128/29 (ACCURATE, credible)
+202.222.96.52/30 (ODD)
+202.222.98.56/29 (ODD)
+202.222.98.92/30 (ACCURATE, credible)
+202.222.98.144/28 (ACCURATE, credible)
+202.222.100.28/31 (ACCURATE, credible)
+Inferred a total 29 interfaces.
+
+Label analysis:
+Label 202.222.74.106 belongs to registered subnet 202.222.74.104/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.74.45 - <255,*,Echo,Yes,No>
+202.222.74.69 - <255,*,Echo,Yes,No>
+202.222.74.77 - <255,*,Echo,Yes,No>
+202.222.74.85 - <255,*,Echo,Yes,No>
+202.222.74.97 - <255,*,Echo,Yes,No>
+202.222.74.106 - <255,*,Echo,Yes,No>
+202.222.74.201 - <255,*,Echo,Yes,No>
+202.222.74.207 - <255,*,Echo,Yes,No>
+202.222.74.234 - <255,*,Echo,Yes,No>
+202.222.74.237 - <255,*,Echo,Yes,No>
+202.222.74.246 - <255,*,Echo,Yes,No>
+202.222.86.253 - <255,*,Echo,Yes,No>
+202.222.100.29 - <255,*,Echo,Yes,No>
+202.222.74.37 - <255,*,Echo,Yes,Yes>
+202.222.73.61 - <255,*,Echo,No,No>
+202.222.75.29 - <255,*,Echo,No,No>
+202.222.75.190 - <255,*,Echo,No,No>
+202.222.75.205 - <255,*,Echo,No,No>
+202.222.76.40 - <255,*,Echo,No,No>
+202.222.76.141 - <255,*,Echo,No,No>
+202.222.83.156 - <255,*,Echo,No,No>
+202.222.83.157 - <255,*,Echo,No,No>
+202.222.83.253 - <255,*,Echo,No,No>
+202.222.94.131 - <255,*,Echo,No,No>
+202.222.96.52 - <255,*,Echo,No,No>
+202.222.96.53 - <255,*,Echo,No,No>
+202.222.98.60 - <255,*,Echo,No,No>
+202.222.98.62 - <255,*,Echo,No,No>
+202.222.98.93 - <255,*,Echo,No,No>
+202.222.98.158 - <255,*,Echo,No,No>
+
+Inferred routers: 
+[202.222.74.37]
+[202.222.100.29]
+[202.222.74.45, 202.222.74.69 (Echo group & DNS), 202.222.74.77 (Echo group & DNS), 202.222.74.85 (Echo group & DNS), 202.222.74.97 (Echo group & DNS), 202.222.74.106 (Echo group & DNS), 202.222.74.201 (Echo group & DNS), 202.222.74.207 (Echo group & DNS), 202.222.74.234 (Echo group & DNS), 202.222.74.237 (Echo group & DNS), 202.222.74.246 (Echo group & DNS), 202.222.86.253 (Echo group & DNS)]
+[202.222.73.61, 202.222.75.29 (Echo group), 202.222.75.190 (Echo group), 202.222.75.205 (Echo group), 202.222.76.40 (Echo group), 202.222.76.141 (Echo group), 202.222.83.156 (Echo group), 202.222.83.157 (Echo group), 202.222.83.253 (Echo group), 202.222.94.131 (Echo group), 202.222.96.52 (Echo group), 202.222.96.53 (Echo group), 202.222.98.60 (Echo group), 202.222.98.62 (Echo group), 202.222.98.93 (Echo group), 202.222.98.158 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.74.70:
+202.222.66.8/29 (ODD)
+202.222.67.96/28 (ODD)
+202.222.74.0/30 (ACCURATE, credible)
+202.222.74.8/30 (ACCURATE, credible)
+202.222.74.202/31 (ACCURATE, credible)
+202.222.74.252/30 (ACCURATE, credible)
+202.222.75.72/29 (ODD), on the way to 202.222.75.75
+202.222.75.140/31 (ACCURATE, credible)
+202.222.76.188/31 (ACCURATE, credible)
+202.222.82.12/31 (ACCURATE, credible)
+202.222.87.0/28 (ODD)
+202.222.87.192/30 (ODD, credible)
+202.222.87.196/31 (ACCURATE, credible)
+202.222.87.252/31 (ACCURATE, credible)
+202.222.96.28/31 (ACCURATE, credible)
+202.222.96.48/30 (ACCURATE, credible)
+202.222.96.100/31 (ACCURATE, credible)
+202.222.96.104/30 (ACCURATE, credible)
+202.222.96.168/29 (ODD)
+202.222.96.180/31 (ACCURATE, credible)
+202.222.96.188/31 (ACCURATE, credible)
+202.222.98.128/29 (ODD), on the way to 202.222.98.129
+202.222.98.172/31 (ACCURATE, credible)
+202.222.98.192/30 (ACCURATE, credible)
+202.222.98.204/30 (ODD)
+202.222.98.210/31 (ACCURATE, credible)
+202.222.98.212/31 (ACCURATE, credible)
+202.222.98.216/29 (ODD)
+202.222.98.228/30 (ACCURATE, credible)
+202.222.98.232/30 (ODD, credible)
+202.222.98.236/31 (ACCURATE, credible)
+202.222.98.238/31 (ACCURATE, credible)
+202.222.98.242/31 (ACCURATE, credible)
+202.222.98.244/31 (ACCURATE, credible)
+202.222.98.246/31 (ACCURATE, credible)
+202.222.98.248/31 (ACCURATE, credible)
+202.222.98.252/31 (ACCURATE, credible)
+Inferred a total 52 interfaces.
+
+Label analysis:
+Label 202.222.74.70 belongs to registered subnet 202.222.74.68/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.67.108 - <255,*,Echo,Yes,No>
+202.222.74.2 - <255,*,Echo,Yes,No>
+202.222.74.10 - <255,*,Echo,Yes,No>
+202.222.74.70 - <255,*,Echo,Yes,No>
+202.222.74.253 - <255,*,Echo,Yes,No>
+202.222.66.12 - <255,*,Echo,Yes,Yes>
+202.222.75.76 - <255,*,Echo,No,No>
+202.222.75.140 - <255,*,Echo,No,No>
+202.222.76.188 - <255,*,Echo,No,No>
+202.222.82.12 - <255,*,Echo,No,No>
+202.222.87.12 - <255,*,Echo,No,No>
+202.222.87.14 - <255,*,Echo,No,No>
+202.222.87.252 - <255,*,Echo,No,No>
+202.222.96.28 - <255,*,Echo,No,No>
+202.222.96.100 - <255,*,Echo,No,No>
+202.222.96.106 - <255,*,Echo,No,No>
+202.222.96.172 - <255,*,Echo,No,No>
+202.222.96.173 - <255,*,Echo,No,No>
+202.222.96.174 - <255,*,Echo,No,No>
+202.222.96.180 - <255,*,Echo,No,No>
+202.222.96.188 - <255,*,Echo,No,No>
+202.222.98.132 - <255,*,Echo,No,No>
+202.222.98.134 - <255,*,Echo,No,No>
+202.222.98.172 - <255,*,Echo,No,No>
+202.222.98.252 - <255,*,Echo,No,No>
+202.222.98.204 - <255,*,Healthy,Yes,No>
+202.222.98.205 - <255,*,Healthy,Yes,No>
+202.222.98.212 - <255,*,Healthy,Yes,No>
+202.222.87.195 - <255,*,Healthy,No,No>
+202.222.87.197 - <255,*,Healthy,No,No>
+202.222.96.49 - <255,*,Healthy,No,No>
+202.222.98.194 - <255,*,Healthy,No,No>
+202.222.98.210 - <255,*,Healthy,No,No>
+202.222.98.230 - <255,*,Healthy,No,No>
+202.222.98.235 - <255,*,Healthy,No,No>
+202.222.98.237 - <255,*,Healthy,No,No>
+202.222.98.238 - <255,*,Healthy,No,No>
+202.222.98.243 - <255,*,Healthy,No,No>
+202.222.98.245 - <255,*,Healthy,No,No>
+202.222.98.246 - <255,*,Healthy,No,No>
+202.222.98.248 - <255,*,Healthy,No,No>
+202.222.74.203 - <64,*,Healthy,Yes,No>
+
+Inferred routers: 
+[202.222.74.203]
+[202.222.96.49]
+[202.222.98.210, 202.222.98.243 (Ally), 202.222.98.246 (Ally)]
+[202.222.67.108, 202.222.74.2 (Echo group & DNS), 202.222.74.10 (Echo group & DNS), 202.222.74.70 (Echo group & DNS), 202.222.74.253 (Echo group & DNS)]
+[202.222.87.195 (Ally), 202.222.98.194 (Ally), 202.222.98.204, 202.222.98.230 (Ally), 202.222.98.237 (Ally), 202.222.98.248 (Ally)]
+[202.222.87.197 (Ally), 202.222.98.205, 202.222.98.212 (Ally), 202.222.98.235 (Ally), 202.222.98.238 (Ally), 202.222.98.245 (Ally)]
+[202.222.75.76, 202.222.75.140 (Echo group), 202.222.76.188 (Echo group), 202.222.82.12 (Echo group), 202.222.87.12 (Echo group), 202.222.87.14 (Echo group), 202.222.87.252 (Echo group), 202.222.96.28 (Echo group), 202.222.96.100 (Echo group), 202.222.96.106 (Echo group), 202.222.96.172 (Echo group), 202.222.96.173 (Echo group), 202.222.96.174 (Echo group), 202.222.96.180 (Echo group), 202.222.96.188 (Echo group), 202.222.98.132 (Echo group), 202.222.98.134 (Echo group), 202.222.98.172 (Echo group), 202.222.98.252 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.71.124:
+202.222.71.124/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.71.124 belongs to registered subnet 202.222.71.124/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.71.124]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.71.126:
+202.222.71.126/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.71.126 belongs to registered subnet 202.222.71.126/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.71.126]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.75.55:
+202.222.75.32/27 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.75.55 belongs to registered subnet 202.222.75.32/27
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.75.55]
+
+------------------------------------------
+
+Neighborhood of internal node 202.222.75.193:
+No neighboring subnets, but inferred a total of 3 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 202.222.75.193 does not belong to any registered subnet 
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.75.220:
+202.222.80.8/29 (ACCURATE, credible)
+202.222.80.52/30 (ODD)
+202.222.80.104/29 (ODD)
+202.222.80.120/29 (ACCURATE, credible)
+202.222.80.136/30 (ODD)
+202.222.80.152/30 (ACCURATE, credible)
+202.222.80.164/30 (ACCURATE, credible)
+202.222.80.190/31 (ACCURATE, credible)
+202.222.80.224/28 (ACCURATE, credible)
+Inferred a total 19 interfaces.
+
+Label analysis:
+Label 202.222.75.220 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+202.222.80.105 - <64,*,Healthy,Yes,No>
+202.222.80.106 - <64,*,Healthy,Yes,No>
+202.222.80.107 - <64,*,Healthy,Yes,No>
+202.222.80.125 - <64,*,Healthy,Yes,No>
+202.222.80.153 - <64,*,Healthy,Yes,No>
+202.222.80.165 - <64,*,Healthy,Yes,No>
+202.222.80.232 - <64,*,Healthy,Yes,No>
+202.222.80.9 - <64,*,Healthy,Yes,Yes>
+202.222.75.220 - <32,*,*,No,No>
+
+Inferred routers: 
+[202.222.75.220]
+[202.222.80.9]
+[202.222.80.125]
+[202.222.80.153]
+[202.222.80.165]
+[202.222.80.232]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.80.32:
+202.222.80.32/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.80.32 belongs to registered subnet 202.222.80.32/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.80.32]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.80.86:
+202.222.80.84/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.80.86 belongs to registered subnet 202.222.80.84/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.80.86]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.80.94:
+202.222.80.88/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.80.94 belongs to registered subnet 202.222.80.88/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.80.94]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.80.96:
+202.222.80.96/31 (SHADOW)
+202.222.80.100/30 (SHADOW)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.80.96 belongs to registered subnet 202.222.80.96/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.80.96]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.80.184:
+202.222.80.184/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.80.184 belongs to registered subnet 202.222.80.184/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.80.184]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.80.196:
+202.222.80.192/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.80.196 belongs to registered subnet 202.222.80.192/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.80.196]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.80.200:
+202.222.80.200/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.80.200 belongs to registered subnet 202.222.80.200/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.80.200]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.80.202:
+202.222.80.202/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.80.202 belongs to registered subnet 202.222.80.202/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.80.202]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.80.208:
+202.222.80.208/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.80.208 belongs to registered subnet 202.222.80.208/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.80.208]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.75.221:
+202.222.80.0/29 (ACCURATE, credible)
+202.222.80.16/29 (ODD)
+202.222.80.24/29 (ACCURATE, credible)
+202.222.80.36/30 (ACCURATE, credible)
+202.222.80.40/29 (ACCURATE, credible)
+202.222.80.56/29 (ACCURATE, credible)
+202.222.80.112/30 (ACCURATE, credible)
+202.222.80.144/29 (ACCURATE, credible)
+202.222.80.168/29 (ACCURATE, credible)
+202.222.80.206/31 (ACCURATE, credible)
+Inferred a total 16 interfaces.
+
+Label analysis:
+Label 202.222.75.221 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+202.222.80.26 - <64,*,Healthy,Yes,No>
+202.222.80.37 - <64,*,Healthy,Yes,No>
+202.222.80.46 - <64,*,Healthy,Yes,No>
+202.222.80.63 - <64,*,Healthy,Yes,No>
+202.222.80.114 - <64,*,Healthy,Yes,No>
+202.222.80.147 - <64,*,Healthy,Yes,No>
+202.222.80.170 - <64,*,Healthy,Yes,No>
+202.222.80.206 - <64,*,Healthy,Yes,No>
+202.222.80.7 - <64,*,Healthy,Yes,Yes>
+202.222.75.221 - <32,*,*,No,No>
+
+Inferred routers: 
+[202.222.75.221]
+[202.222.80.7]
+[202.222.80.26]
+[202.222.80.37]
+[202.222.80.46]
+[202.222.80.63]
+[202.222.80.114]
+[202.222.80.147]
+[202.222.80.170]
+[202.222.80.206]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.80.83:
+202.222.80.80/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.80.83 belongs to registered subnet 202.222.80.80/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.80.83]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.80.99:
+202.222.80.98/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.80.99 belongs to registered subnet 202.222.80.98/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.80.99]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.80.141:
+202.222.80.140/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.80.141 belongs to registered subnet 202.222.80.140/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.80.141]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.80.163:
+202.222.80.160/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.80.163 belongs to registered subnet 202.222.80.160/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.80.163]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.80.217:
+202.222.80.216/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.80.217 belongs to registered subnet 202.222.80.216/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.80.217]
+
+------------------------------------------
+
+Neighborhood of internal node 202.222.82.1:
+No neighboring subnets, but inferred a total of 3 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 202.222.82.1 does not belong to any registered subnet 
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.82.28:
+202.222.81.104/29 (ODD)
+202.222.81.112/28 (ODD, credible)
+202.222.81.128/31 (ACCURATE, credible)
+Inferred a total 8 interfaces.
+
+Label analysis:
+Label 202.222.82.28 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+202.222.81.107 - <64,*,Healthy,Yes,No>
+202.222.81.122 - <64,*,Healthy,Yes,No>
+202.222.81.126 - <64,*,Healthy,Yes,No>
+202.222.81.129 - <64,*,Healthy,Yes,No>
+202.222.81.105 - <64,*,Healthy,Yes,Yes>
+202.222.82.28 - <32,*,*,No,No>
+
+Inferred routers: 
+[202.222.81.129]
+[202.222.82.28]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.81.4:
+202.222.81.4/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.81.4 belongs to registered subnet 202.222.81.4/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.81.4]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.81.6:
+202.222.81.6/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.81.6 belongs to registered subnet 202.222.81.6/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.81.6]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.81.8:
+202.222.81.8/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.81.8 belongs to registered subnet 202.222.81.8/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.81.8]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.81.130:
+202.222.81.130/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.81.130 belongs to registered subnet 202.222.81.130/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.81.130]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.81.1:
+202.222.81.0/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.81.1 belongs to registered subnet 202.222.81.0/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.81.1]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.87.198:
+202.222.87.198/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.87.198 belongs to registered subnet 202.222.87.198/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.87.198]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.96.57:
+202.222.96.56/29 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.96.57 belongs to registered subnet 202.222.96.56/29
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.96.62 - <255,*,Echo,No,No>
+202.222.96.57 - <255,*,Healthy,No,Yes>
+
+Inferred routers: 
+[202.222.96.57]
+[202.222.96.62]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.98.129:
+202.222.98.96/29 (ODD)
+202.222.98.108/30 (ODD, credible)
+202.222.98.106/31 (ACCURATE, credible)
+202.222.98.112/31 (ACCURATE, credible)
+202.222.98.136/29 (ACCURATE, credible)
+Inferred a total 6 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.98.129 belongs to registered subnet 202.222.98.128/29
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.98.129 - <255,*,Echo,No,No>
+202.222.98.137 - <255,*,Echo,No,No>
+202.222.98.103 - <255,*,Healthy,Yes,No>
+202.222.98.100 - <255,*,Healthy,No,No>
+202.222.98.102 - <255,*,Healthy,No,No>
+202.222.98.111 - <128,*,Healthy,No,No>
+202.222.98.112 - <128,*,Healthy,No,No>
+202.222.98.105 - <64,*,Healthy,Yes,Yes>
+202.222.98.106 - <64,*,Healthy,No,No>
+
+Inferred routers: 
+[202.222.98.106]
+[202.222.98.112]
+[202.222.98.100 (Ally), 202.222.98.103]
+[202.222.98.129, 202.222.98.137 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.98.161:
+202.222.98.160/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.98.161 belongs to registered subnet 202.222.98.160/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.98.161]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.98.196:
+202.222.98.196/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.98.196 belongs to registered subnet 202.222.98.196/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.98.196]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.98.200:
+202.222.98.200/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.98.200 belongs to registered subnet 202.222.98.200/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.98.200]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.98.208:
+202.222.98.208/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.98.208 belongs to registered subnet 202.222.98.208/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.98.208]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.98.214:
+202.222.98.214/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.98.214 belongs to registered subnet 202.222.98.214/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.98.214]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.98.224:
+202.222.98.224/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.98.224 belongs to registered subnet 202.222.98.224/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.98.224]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.98.240:
+202.222.98.240/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.98.240 belongs to registered subnet 202.222.98.240/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.98.240]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.100.118:
+202.222.101.216/31 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.100.118 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+202.222.101.216 - <255,*,Healthy,Yes,No>
+202.222.100.118 - <32,*,*,No,No>
+
+Inferred routers: 
+[202.222.100.118]
+[202.222.101.216]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.74.78:
+202.222.86.16/28 (ODD, credible)
+202.222.86.40/29 (ACCURATE, credible)
+202.222.86.48/31 (ACCURATE, credible)
+202.222.86.50/31 (ACCURATE, credible)
+202.222.86.56/31 (ACCURATE, credible)
+202.222.86.60/31 (ACCURATE, credible)
+202.222.86.64/30 (ACCURATE, credible)
+202.222.86.68/31 (ACCURATE, credible)
+202.222.86.70/31 (ACCURATE, credible)
+202.222.86.72/31 (ACCURATE, credible)
+202.222.86.74/31 (ACCURATE, credible)
+202.222.86.80/29 (ACCURATE, credible)
+202.222.86.88/29 (ODD)
+202.222.86.98/31 (ACCURATE, credible)
+202.222.86.112/29 (ODD)
+202.222.86.164/30 (ODD)
+202.222.86.182/31 (ACCURATE, credible)
+202.222.86.184/29 (ACCURATE, credible)
+202.222.86.192/28 (ACCURATE, credible)
+Inferred a total 29 interfaces.
+
+Label analysis:
+Label 202.222.74.78 belongs to registered subnet 202.222.74.76/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.86.183 - <255,*,Echo,Yes,No>
+202.222.74.78 - <255,*,Echo,Yes,Yes>
+202.222.86.72 - <128,*,Healthy,Yes,No>
+202.222.86.196 - <64,*,Echo,Yes,No>
+202.222.86.117 - <64,*,Echo,Yes,Yes>
+202.222.86.18 - <64,*,Healthy,Yes,No>
+202.222.86.25 - <64,*,Healthy,Yes,No>
+202.222.86.42 - <64,*,Healthy,Yes,No>
+202.222.86.49 - <64,*,Healthy,Yes,No>
+202.222.86.51 - <64,*,Healthy,Yes,No>
+202.222.86.57 - <64,*,Healthy,Yes,No>
+202.222.86.60 - <64,*,Healthy,Yes,No>
+202.222.86.66 - <64,*,Healthy,Yes,No>
+202.222.86.69 - <64,*,Healthy,Yes,No>
+202.222.86.70 - <64,*,Healthy,Yes,No>
+202.222.86.75 - <64,*,Healthy,Yes,No>
+202.222.86.80 - <64,*,Healthy,Yes,No>
+202.222.86.92 - <64,*,Healthy,Yes,No>
+202.222.86.94 - <64,*,Healthy,Yes,No>
+202.222.86.98 - <64,*,Healthy,Yes,No>
+202.222.86.118 - <64,*,Healthy,Yes,No>
+202.222.86.166 - <64,*,Healthy,Yes,No>
+202.222.86.167 - <64,*,Healthy,Yes,No>
+202.222.86.185 - <64,*,Healthy,Yes,No>
+
+Inferred routers: 
+[202.222.74.78]
+[202.222.86.42]
+[202.222.86.49]
+[202.222.86.51]
+[202.222.86.60]
+[202.222.86.69]
+[202.222.86.70]
+[202.222.86.72]
+[202.222.86.75]
+[202.222.86.80]
+[202.222.86.98]
+[202.222.86.183]
+[202.222.86.185]
+[202.222.86.196]
+[202.222.86.57, 202.222.86.66 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.86.32:
+202.222.86.32/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.86.32 belongs to registered subnet 202.222.86.32/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.86.32]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.86.58:
+202.222.86.58/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.86.58 belongs to registered subnet 202.222.86.58/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.86.58]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.86.62:
+202.222.86.62/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.86.62 belongs to registered subnet 202.222.86.62/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.86.62]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.86.76:
+202.222.86.76/31 (SHADOW)
+202.222.86.78/31 (SHADOW)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.86.76 belongs to registered subnet 202.222.86.76/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.86.76]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.86.96:
+202.222.86.96/31 (SHADOW)
+202.222.86.100/30 (SHADOW)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.86.96 belongs to registered subnet 202.222.86.96/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.86.96]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.86.104:
+202.222.86.104/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.86.104 belongs to registered subnet 202.222.86.104/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.86.104]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.86.159:
+202.222.86.128/27 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.86.159 belongs to registered subnet 202.222.86.128/27
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.86.159]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.86.176:
+202.222.86.176/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.86.176 belongs to registered subnet 202.222.86.176/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.86.176]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.86.178:
+202.222.86.178/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.86.178 belongs to registered subnet 202.222.86.178/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.86.178]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.74.86:
+202.222.74.92/30 (ACCURATE, credible)
+202.222.74.216/31 (ACCURATE, credible)
+202.222.75.98/31 (ACCURATE, credible)
+202.222.75.144/29 (ACCURATE, credible), on the way to 202.222.75.145
+202.222.75.152/31 (ACCURATE, credible)
+202.222.82.144/28 (ACCURATE, credible)
+202.222.96.164/31 (ACCURATE, credible)
+202.222.96.216/29 (ODD)
+Inferred a total 9 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.74.86 belongs to registered subnet 202.222.74.84/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.74.93 - <255,*,Echo,Yes,No>
+202.222.74.216 - <255,*,Echo,Yes,No>
+202.222.74.86 - <255,*,Echo,Yes,Yes>
+202.222.75.99 - <255,*,Echo,No,No>
+202.222.75.150 - <255,*,Echo,No,No>
+202.222.82.158 - <255,*,Echo,No,No>
+202.222.96.164 - <255,*,Echo,No,No>
+202.222.96.220 - <255,*,Echo,No,No>
+202.222.96.222 - <255,*,Echo,No,No>
+202.222.75.153 - <64,*,Healthy,No,No>
+
+Inferred routers: 
+[202.222.74.86]
+[202.222.75.153]
+[202.222.74.93, 202.222.74.216 (Echo group & DNS)]
+[202.222.75.99, 202.222.75.150 (Echo group), 202.222.82.158 (Echo group), 202.222.96.164 (Echo group), 202.222.96.220 (Echo group), 202.222.96.222 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.75.145:
+202.222.75.156/30 (ACCURATE, credible)
+202.222.96.224/29 (ACCURATE, credible)
+202.222.96.232/29 (ODD)
+202.222.96.240/28 (ODD, credible)
+Inferred a total 5 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.75.145 belongs to registered subnet 202.222.75.144/29
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.96.225 - <255,*,Echo,No,No>
+202.222.75.158 - <255,*,Echo,No,Yes>
+202.222.75.145 - <64,*,Healthy,No,No>
+202.222.96.236 - <64,*,Healthy,No,No>
+202.222.96.239 - <64,*,Healthy,No,No>
+202.222.96.249 - <64,*,Healthy,No,No>
+202.222.96.252 - <64,*,Healthy,No,No>
+
+Inferred routers: 
+[202.222.75.158]
+[202.222.96.225]
+[202.222.75.145, 202.222.96.252 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.74.98:
+202.222.64.204/30 (ACCURATE, credible)
+202.222.65.4/31 (ACCURATE, credible)
+202.222.70.224/27 (ODD)
+202.222.73.0/30 (ACCURATE, credible)
+202.222.73.12/31 (ACCURATE, credible)
+202.222.73.36/30 (ACCURATE, credible)
+202.222.73.124/30 (ODD)
+202.222.73.186/31 (ACCURATE, credible)
+202.222.74.208/31 (ACCURATE, credible)
+202.222.76.32/29 (ACCURATE, credible)
+202.222.76.172/31 (ACCURATE, credible)
+202.222.76.248/29 (ODD)
+202.222.82.252/31 (ACCURATE, credible)
+202.222.83.240/30 (ACCURATE, credible)
+202.222.84.48/28 (ODD)
+202.222.84.236/31 (ACCURATE, credible)
+202.222.94.28/31 (ACCURATE, credible)
+202.222.94.92/31 (ACCURATE, credible)
+202.222.97.0/24 (ODD, credible), on the way to 202.222.97.210
+202.222.104.240/29 (ODD)
+Inferred a total 25 interfaces.
+
+Label analysis:
+Label 202.222.74.98 belongs to registered subnet 202.222.74.96/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.74.98 - <255,*,Echo,Yes,No>
+202.222.74.208 - <255,*,Echo,Yes,No>
+202.222.83.241 - <255,*,Echo,Yes,No>
+202.222.84.50 - <255,*,Echo,Yes,No>
+202.222.65.4 - <255,*,Echo,No,No>
+202.222.70.252 - <255,*,Echo,No,No>
+202.222.70.253 - <255,*,Echo,No,No>
+202.222.70.254 - <255,*,Echo,No,No>
+202.222.73.2 - <255,*,Echo,No,No>
+202.222.73.12 - <255,*,Echo,No,No>
+202.222.73.38 - <255,*,Echo,No,No>
+202.222.73.124 - <255,*,Echo,No,No>
+202.222.73.125 - <255,*,Echo,No,No>
+202.222.73.187 - <255,*,Echo,No,No>
+202.222.76.172 - <255,*,Echo,No,No>
+202.222.76.249 - <255,*,Echo,No,No>
+202.222.82.252 - <255,*,Echo,No,No>
+202.222.84.49 - <255,*,Echo,No,No>
+202.222.84.236 - <255,*,Echo,No,No>
+202.222.94.28 - <255,*,Echo,No,No>
+202.222.94.92 - <255,*,Echo,No,No>
+202.222.97.140 - <255,*,Echo,No,No>
+202.222.104.244 - <255,*,Echo,No,No>
+202.222.64.205 - <255,*,Echo,No,Yes>
+202.222.97.1 - <255,*,Healthy,Yes,No>
+202.222.76.38 - <64,*,Healthy,No,No>
+
+Inferred routers: 
+[202.222.64.205]
+[202.222.76.38]
+[202.222.83.241]
+[202.222.65.4 (Echo group), 202.222.70.252 (Echo group), 202.222.70.253 (Echo group), 202.222.70.254 (Echo group), 202.222.73.2 (Echo group), 202.222.73.12 (Echo group), 202.222.73.38 (Echo group), 202.222.73.124 (Echo group), 202.222.73.125 (Echo group), 202.222.73.187 (Echo group), 202.222.74.98, 202.222.74.208 (Echo group & DNS), 202.222.76.172 (Echo group), 202.222.76.249 (Echo group), 202.222.82.252 (Echo group), 202.222.84.49 (Echo group), 202.222.84.236 (Echo group), 202.222.94.28 (Echo group), 202.222.94.92 (Echo group), 202.222.97.140 (Echo group), 202.222.104.244 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.64.218:
+202.222.65.56/29 (ACCURATE, credible)
+Inferred a total 4 interfaces.
+
+Label analysis:
+Label 202.222.64.218 belongs to registered subnet 202.222.64.208/28
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.65.62 - <255,*,Echo,No,Yes>
+202.222.64.218 - <32,*,*,No,No>
+
+Inferred routers: 
+[202.222.64.218]
+[202.222.65.62]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.65.34:
+202.222.65.50/31 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.65.34 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+202.222.65.34 - <255,*,Echo,No,Yes>
+202.222.65.50 - <64,*,Healthy,No,No>
+
+Inferred routers: 
+[202.222.65.34]
+[202.222.65.50]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.65.48:
+202.222.65.48/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.65.48 belongs to registered subnet 202.222.65.48/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.65.48]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.66.1:
+202.222.66.0/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.66.1 belongs to registered subnet 202.222.66.0/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.66.1]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.73.58:
+202.222.73.56/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.73.58 belongs to registered subnet 202.222.73.56/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.73.58]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.74.234:
+202.222.64.196/30 (ACCURATE, credible), on the way to 202.222.64.198
+202.222.66.4/30 (ACCURATE, credible)
+202.222.73.244/30 (ACCURATE, credible), on the way to 202.222.73.245
+Inferred a total 4 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.74.234 belongs to registered subnet 202.222.74.232/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.74.234 - <255,*,Echo,Yes,No>
+202.222.66.6 - <255,*,Echo,No,No>
+202.222.73.246 - <255,*,Echo,No,No>
+202.222.64.197 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[202.222.64.197]
+[202.222.66.6 (Echo group), 202.222.73.246 (Echo group), 202.222.74.234]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.64.198:
+202.222.65.24/29 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.64.198 belongs to registered subnet 202.222.64.196/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.65.30 - <255,*,Echo,No,No>
+202.222.64.198 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[202.222.64.198]
+[202.222.65.30]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.73.245:
+202.222.73.240/30 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.73.245 belongs to registered subnet 202.222.73.244/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.73.242 - <64,*,Echo,No,No>
+202.222.73.245 - <64,*,Echo,No,No>
+
+Inferred router: 
+[202.222.73.242, 202.222.73.245 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.97.210:
+202.222.107.56/29 (ODD)
+Inferred a total 3 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 202.222.97.210 belongs to registered subnet 202.222.97.0/24
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.107.62 - <255,*,Echo,No,No>
+202.222.107.60 - <255,*,Echo,No,Yes>
+202.222.97.210 - <32,*,*,No,No>
+
+Inferred router: 
+[202.222.97.210]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.107.4:
+202.222.107.0/27 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.107.4 belongs to registered subnet 202.222.107.0/27
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[202.222.107.4]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.74.118:
+202.222.74.210/31 (ACCURATE, credible)
+202.222.75.180/30 (ACCURATE, credible)
+202.222.75.236/31 (ACCURATE, credible)
+Inferred a total 4 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.74.118 belongs to registered subnet 202.222.74.116/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.74.210 - <255,*,Echo,Yes,No>
+202.222.74.118 - <255,*,Echo,Yes,Yes>
+202.222.75.182 - <255,*,Echo,No,No>
+202.222.75.236 - <255,*,Echo,No,No>
+
+Inferred routers: 
+[202.222.74.118]
+[202.222.74.210]
+[202.222.75.182, 202.222.75.236 (Echo group)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 202.222.86.117:
+202.222.86.120/29 (ODD)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 202.222.86.117 belongs to registered subnet 202.222.86.112/29
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+202.222.86.117 - <64,*,Echo,Yes,Yes>
+202.222.86.121 - <64,*,Healthy,Yes,No>
+202.222.86.123 - <64,*,Healthy,Yes,No>
+
+Inferred router: 
+[202.222.86.117]
+
+------------------------------------------
+
+Neighboring subnets of Hedera {210.167.1.14, 210.167.1.44}:
+101.53.97.32/30 (ACCURATE, credible)
+Inferred a total 4 interfaces.
+
+Label analysis:
+Label 210.167.1.14 does not belong to any registered subnet 
+Label 210.167.1.44 does not belong to any registered subnet 
+
+Fingerprints (sorted, grouped by last hop towards interface):
+
+Last hop = 210.167.1.14:
+101.53.97.34 - <255,*,Echo,Yes,Yes>
+210.167.1.14 - <255,*,Echo,No,No>
+
+Last hop = 210.167.1.44:
+210.167.1.44 - <255,*,Echo,No,Yes>
+
+Inferred routers: 
+[101.53.97.34]
+[210.167.1.14]
+[210.167.1.44]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.97.0:
+101.53.97.2/31 (SHADOW)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.97.0 belongs to registered subnet 101.53.97.0/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.97.0]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 210.250.167.14:
+101.53.97.0/31 (ACCURATE, credible)
+101.53.97.88/30 (ACCURATE, credible)
+Inferred a total 5 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 210.250.167.14 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+101.53.97.90 - <64,*,Healthy,Yes,No>
+101.53.97.0 - <64,*,Healthy,No,No>
+210.250.167.14 - <64,*,Healthy,No,No>
+
+Inferred router: 
+[101.53.97.0 (IP-ID Velocity), 101.53.97.90, 210.250.167.14 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.97.34:
+101.53.97.20/30 (ACCURATE, credible)
+101.53.97.24/30 (ACCURATE, credible)
+101.53.97.40/30 (ACCURATE, credible), on the way to 101.53.97.42
+101.53.97.48/30 (ACCURATE, credible)
+101.53.97.56/30 (ACCURATE, credible)
+101.53.97.68/30 (ACCURATE, credible)
+101.53.97.212/31 (ACCURATE, credible)
+101.53.112.20/30 (ACCURATE, credible)
+101.53.112.44/30 (ACCURATE, credible)
+101.53.120.0/31 (ACCURATE, credible)
+Inferred a total 16 interfaces.
+
+Label analysis:
+Label 101.53.97.34 belongs to registered subnet 101.53.97.32/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+101.53.97.25 - <255,*,Echo,Yes,No>
+101.53.97.41 - <255,*,Echo,Yes,No>
+101.53.97.21 - <255,*,Echo,Yes,Yes>
+101.53.97.34 - <255,*,Echo,Yes,Yes>
+101.53.97.212 - <255,*,Echo,Yes,Yes>
+101.53.112.45 - <255,*,Echo,No,No>
+101.53.97.50 - <64,*,Healthy,Yes,No>
+101.53.97.58 - <64,*,Healthy,Yes,No>
+101.53.97.70 - <64,*,Healthy,Yes,No>
+101.53.112.22 - <64,*,Healthy,No,No>
+101.53.120.1 - <64,*,Healthy,No,No>
+
+Inferred routers: 
+[101.53.112.45]
+[101.53.120.1]
+[101.53.97.25, 101.53.97.41 (Echo group & DNS)]
+[101.53.97.50, 101.53.97.70 (IP-ID Velocity)]
+[101.53.97.58, 101.53.112.22 (IP-ID Velocity)]
+[101.53.97.21, 101.53.97.34 (Echo group & DNS), 101.53.97.212 (Echo group & DNS)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.97.8:
+101.53.97.8/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.97.8 belongs to registered subnet 101.53.97.8/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.97.8]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.97.30:
+101.53.97.52/30 (ACCURATE, credible)
+101.53.97.92/30 (ACCURATE, credible)
+101.53.97.108/30 (ACCURATE, credible)
+101.53.97.168/30 (ACCURATE, credible)
+Inferred a total 5 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.97.30 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+101.53.97.53 - <255,*,Echo,Yes,No>
+101.53.97.93 - <255,*,Echo,Yes,No>
+101.53.97.109 - <255,*,Echo,Yes,No>
+101.53.97.169 - <255,*,Echo,Yes,No>
+101.53.97.30 - <255,*,Echo,Yes,Yes>
+
+Inferred routers: 
+[101.53.97.30]
+[101.53.97.53, 101.53.97.93 (Echo group & DNS), 101.53.97.109 (Echo group & DNS), 101.53.97.169 (Echo group & DNS)]
+
+------------------------------------------
+
+Neighboring subnets of Hedera {101.53.97.42, 101.53.97.106}:
+101.53.96.64/26 (ODD)
+101.53.96.128/26 (ODD)
+101.53.96.204/31 (ACCURATE, credible)
+101.53.97.4/31 (ACCURATE, credible)
+101.53.97.64/30 (ACCURATE, credible)
+101.53.97.80/29 (ACCURATE, credible)
+101.53.97.112/30 (ACCURATE, credible)
+101.53.97.148/30 (ACCURATE, credible)
+101.53.120.16/30 (ACCURATE, credible)
+101.53.120.20/30 (ACCURATE, credible), on the way to 101.53.120.22
+101.53.120.28/30 (ACCURATE, credible)
+101.53.120.32/28 (ODD)
+101.53.123.28/30 (ODD)
+Inferred a total 15 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.97.42 belongs to registered subnet 101.53.97.40/30
+Label 101.53.97.106 does not belong to any registered subnet 
+
+Fingerprints (sorted, grouped by last hop towards interface):
+
+Last hop = 101.53.97.42:
+101.53.96.118 - <255,*,Healthy,Yes,No>
+101.53.96.185 - <64,*,Echo,Yes,No>
+101.53.96.121 - <64,*,Healthy,Yes,No>
+101.53.96.125 - <64,*,Healthy,Yes,No>
+101.53.96.186 - <64,*,Healthy,Yes,No>
+101.53.96.205 - <64,*,Healthy,Yes,No>
+101.53.97.4 - <64,*,Healthy,Yes,No>
+101.53.97.42 - <64,*,Healthy,Yes,No>
+101.53.97.65 - <64,*,Healthy,Yes,No>
+101.53.97.81 - <64,*,Healthy,Yes,No>
+101.53.97.150 - <64,*,Healthy,Yes,No>
+101.53.96.174 - <64,*,Healthy,No,No>
+
+Last hop = 101.53.97.106:
+101.53.97.106 - <64,*,Healthy,Yes,No>
+101.53.97.113 - <64,*,Healthy,Yes,No>
+101.53.123.28 - <64,*,Healthy,Yes,No>
+101.53.123.29 - <64,*,Healthy,Yes,No>
+101.53.120.17 - <64,*,Healthy,No,No>
+101.53.120.21 - <64,*,Healthy,No,No>
+101.53.120.30 - <64,*,Healthy,No,No>
+101.53.120.33 - <64,*,Healthy,No,No>
+101.53.120.37 - <64,*,Healthy,No,No>
+
+Inferred routers: 
+[101.53.97.4]
+[101.53.97.42]
+[101.53.96.125, 101.53.96.205 (Ally)]
+[101.53.97.65, 101.53.97.81 (Ally)]
+[101.53.96.174 (Ally), 101.53.96.186, 101.53.97.150 (Ally)]
+[101.53.97.106, 101.53.120.30 (IP-ID Velocity), 101.53.120.33 (Ally)]
+[101.53.97.113, 101.53.120.17 (Ally), 101.53.120.21 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Hedera {101.53.97.70, 101.53.120.22}:
+101.53.96.0/28 (ODD)
+101.53.96.28/31 (ACCURATE, credible)
+101.53.96.44/31 (ACCURATE, credible)
+101.53.96.60/31 (ACCURATE, credible)
+101.53.97.6/31 (ACCURATE, credible)
+101.53.97.72/30 (ACCURATE, credible)
+101.53.97.76/30 (ACCURATE, credible), on the way to 101.53.97.78
+101.53.97.128/30 (ACCURATE, credible)
+101.53.97.132/30 (ACCURATE, credible)
+101.53.97.136/31 (ACCURATE, credible)
+101.53.97.248/29 (ACCURATE, credible)
+101.53.98.28/31 (ACCURATE, credible)
+101.53.120.2/31 (ACCURATE, credible)
+101.53.120.244/31 (ACCURATE, credible)
+101.53.121.28/31 (ACCURATE, credible)
+101.53.123.12/31 (ACCURATE, credible)
+101.53.123.44/30 (ACCURATE, credible)
+101.53.123.48/28 (ODD)
+Inferred a total 26 interfaces.
+
+Label analysis:
+Label 101.53.97.70 belongs to registered subnet 101.53.97.68/30
+Label 101.53.120.22 belongs to registered subnet 101.53.120.20/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted, grouped by last hop towards interface):
+
+Last hop = 101.53.97.70:
+101.53.97.136 - <255,*,Echo,Yes,No>
+101.53.97.133 - <255,*,Echo,Yes,Yes>
+101.53.96.5 - <255,*,Healthy,Yes,Yes>
+101.53.96.6 - <64,*,Healthy,Yes,No>
+101.53.96.28 - <64,*,Healthy,Yes,No>
+101.53.96.44 - <64,*,Healthy,Yes,No>
+101.53.96.60 - <64,*,Healthy,Yes,No>
+101.53.97.7 - <64,*,Healthy,Yes,No>
+101.53.97.70 - <64,*,Healthy,Yes,No>
+101.53.97.73 - <64,*,Healthy,Yes,No>
+101.53.97.77 - <64,*,Healthy,Yes,No>
+101.53.97.130 - <64,*,Healthy,Yes,No>
+101.53.97.254 - <64,*,Healthy,Yes,No>
+101.53.98.28 - <64,*,Healthy,Yes,No>
+
+Last hop = 101.53.120.22:
+101.53.121.28 - <64,*,Healthy,Yes,No>
+101.53.123.12 - <64,*,Healthy,Yes,No>
+101.53.123.60 - <64,*,Healthy,Yes,No>
+101.53.123.61 - <64,*,Healthy,Yes,No>
+101.53.123.62 - <64,*,Healthy,Yes,No>
+101.53.123.44 - <64,*,Healthy,Yes,Yes>
+101.53.120.2 - <64,*,Healthy,No,No>
+101.53.120.22 - <64,*,Healthy,No,No>
+101.53.120.244 - <64,*,Healthy,No,No>
+
+Inferred routers: 
+[101.53.97.7]
+[101.53.97.73]
+[101.53.97.133]
+[101.53.97.136]
+[101.53.120.2]
+[101.53.123.44]
+[101.53.120.22, 101.53.120.244 (Ally)]
+[101.53.121.28, 101.53.123.12 (Ally), 101.53.123.60 (Ally)]
+[101.53.96.6, 101.53.97.70 (Ally), 101.53.97.254 (Ally), 101.53.98.28 (Ally)]
+[101.53.96.28, 101.53.96.44 (Ally), 101.53.96.60 (Ally), 101.53.97.77 (Ally), 101.53.97.130 (Ally)]
+
+------------------------------------------
+
+Neighborhood of internal node 0.0.0.0:
+No neighboring subnets, but inferred a total of 4 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 0.0.0.0 does not belong to any registered subnet 
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.98.65:
+101.53.99.44/31 (ACCURATE, credible)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.98.65 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+101.53.99.44 - <128,*,Healthy,Yes,Yes>
+101.53.98.65 - <32,*,*,Yes,No>
+
+Inferred routers: 
+[101.53.98.65]
+[101.53.99.44]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.122.128:
+101.53.122.0/24 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.122.128 belongs to registered subnet 101.53.122.0/24
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.122.128]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.97.78:
+101.53.97.60/30 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.97.78 belongs to registered subnet 101.53.97.76/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+101.53.97.61 - <64,*,Healthy,Yes,No>
+101.53.97.78 - <64,*,Healthy,Yes,No>
+
+Inferred router: 
+[101.53.97.61, 101.53.97.78 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.97.226:
+101.53.97.224/28 (SHADOW)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.97.226 belongs to registered subnet 101.53.97.224/28
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.97.226]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.120.30:
+101.53.120.24/30 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.120.30 belongs to registered subnet 101.53.120.28/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+101.53.120.26 - <64,*,Healthy,No,No>
+101.53.120.30 - <64,*,Healthy,No,No>
+
+Inferred router: 
+[101.53.120.26, 101.53.120.30 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.120.241:
+101.53.120.224/29 (ACCURATE, credible)
+Inferred a total 4 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 101.53.120.241 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+101.53.120.225 - <64,*,Healthy,Yes,Yes>
+101.53.120.241 - <32,*,*,No,No>
+
+Inferred routers: 
+[101.53.120.225]
+[101.53.120.241]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.120.233:
+101.53.120.232/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.120.233 belongs to registered subnet 101.53.120.232/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.120.233]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.123.34:
+101.53.123.36/31 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.123.34 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+101.53.123.37 - <64,*,Healthy,Yes,Yes>
+101.53.123.34 - <32,*,*,Yes,No>
+
+Inferred routers: 
+[101.53.123.34]
+[101.53.123.37]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.123.38:
+101.53.123.38/31 (SHADOW)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.123.38 belongs to registered subnet 101.53.123.38/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.123.38]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.97.90:
+101.53.97.96/29 (ODD)
+101.53.112.0/31 (ACCURATE, credible)
+101.53.112.16/30 (ACCURATE, credible)
+101.53.113.12/31 (ACCURATE, credible)
+101.53.114.252/30 (ACCURATE, credible)
+101.53.115.28/31 (ACCURATE, credible)
+101.53.116.252/31 (ACCURATE, credible)
+Inferred a total 9 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 101.53.97.90 belongs to registered subnet 101.53.97.88/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+101.53.97.90 - <64,*,Healthy,Yes,No>
+101.53.97.97 - <64,*,Healthy,Yes,No>
+101.53.113.12 - <64,*,Healthy,Yes,No>
+101.53.114.253 - <64,*,Healthy,Yes,No>
+101.53.115.29 - <64,*,Healthy,Yes,No>
+101.53.112.0 - <64,*,Healthy,No,No>
+101.53.112.17 - <64,*,Healthy,No,No>
+101.53.116.253 - <64,*,Healthy,No,No>
+
+Inferred routers: 
+[101.53.97.90]
+[101.53.113.12]
+[101.53.97.97, 101.53.112.0 (Ally), 101.53.112.17 (Ally)]
+[101.53.114.253, 101.53.115.29 (Ally), 101.53.116.253 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.112.22:
+101.53.112.2/31 (ACCURATE, credible)
+101.53.112.28/30 (ACCURATE, credible), on the way to 101.53.112.30
+101.53.113.20/31 (ACCURATE, credible)
+101.53.113.28/31 (ACCURATE, credible)
+101.53.114.4/30 (ACCURATE, credible)
+101.53.114.26/31 (ACCURATE, credible)
+101.53.114.28/31 (ACCURATE, credible)
+101.53.114.32/30 (ODD, credible)
+101.53.114.36/30 (ACCURATE, credible)
+101.53.114.40/30 (ACCURATE, credible)
+101.53.114.44/31 (ACCURATE, credible)
+101.53.114.46/31 (ACCURATE, credible)
+101.53.114.54/31 (ACCURATE, credible)
+101.53.114.64/28 (ACCURATE, credible)
+101.53.114.80/30 (ACCURATE, credible)
+101.53.114.92/30 (ACCURATE, credible)
+101.53.114.96/30 (ODD, credible)
+101.53.114.112/29 (ACCURATE, credible)
+101.53.114.138/31 (ACCURATE, credible)
+101.53.114.140/31 (ACCURATE, credible)
+101.53.114.142/31 (ACCURATE, credible)
+101.53.114.146/31 (ACCURATE, credible)
+101.53.114.160/28 (ODD)
+101.53.114.176/28 (ODD)
+101.53.114.192/28 (ACCURATE, credible)
+101.53.114.208/28 (ODD)
+101.53.114.224/29 (ODD)
+101.53.115.60/30 (ACCURATE, credible)
+101.53.116.0/29 (ACCURATE, credible)
+101.53.116.8/31 (ACCURATE, credible)
+101.53.116.10/31 (ACCURATE, credible)
+101.53.116.16/28 (ODD, credible)
+101.53.116.40/29 (ODD)
+101.53.116.56/30 (ACCURATE, credible)
+101.53.116.64/30 (ACCURATE, credible)
+101.53.116.68/30 (ODD)
+101.53.116.72/29 (ODD)
+101.53.116.80/28 (ACCURATE, credible)
+101.53.116.96/29 (ODD)
+101.53.116.112/29 (ACCURATE, credible)
+101.53.116.120/30 (ODD, credible)
+101.53.116.132/31 (ACCURATE, credible)
+101.53.116.134/31 (ACCURATE, credible)
+101.53.116.136/31 (ACCURATE, credible)
+101.53.116.138/31 (ACCURATE, credible)
+101.53.116.140/31 (ACCURATE, credible)
+101.53.116.142/31 (ACCURATE, credible)
+101.53.116.144/31 (ACCURATE, credible), on the way to 101.53.116.144
+Inferred a total 68 interfaces.
+
+Label analysis:
+Label 101.53.112.22 belongs to registered subnet 101.53.112.20/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+101.53.113.20 - <64,*,Healthy,Yes,No>
+101.53.114.26 - <64,*,Healthy,Yes,No>
+101.53.114.28 - <64,*,Healthy,Yes,No>
+101.53.114.37 - <64,*,Healthy,Yes,No>
+101.53.114.41 - <64,*,Healthy,Yes,No>
+101.53.114.45 - <64,*,Healthy,Yes,No>
+101.53.114.46 - <64,*,Healthy,Yes,No>
+101.53.114.55 - <64,*,Healthy,Yes,No>
+101.53.114.67 - <64,*,Healthy,Yes,No>
+101.53.114.81 - <64,*,Healthy,Yes,No>
+101.53.114.94 - <64,*,Healthy,Yes,No>
+101.53.114.99 - <64,*,Healthy,Yes,No>
+101.53.114.117 - <64,*,Healthy,Yes,No>
+101.53.114.138 - <64,*,Healthy,Yes,No>
+101.53.114.141 - <64,*,Healthy,Yes,No>
+101.53.114.143 - <64,*,Healthy,Yes,No>
+101.53.114.147 - <64,*,Healthy,Yes,No>
+101.53.114.168 - <64,*,Healthy,Yes,No>
+101.53.114.170 - <64,*,Healthy,Yes,No>
+101.53.114.171 - <64,*,Healthy,Yes,No>
+101.53.114.177 - <64,*,Healthy,Yes,No>
+101.53.114.180 - <64,*,Healthy,Yes,No>
+101.53.114.206 - <64,*,Healthy,Yes,No>
+101.53.114.225 - <64,*,Healthy,Yes,No>
+101.53.114.226 - <64,*,Healthy,Yes,No>
+101.53.115.62 - <64,*,Healthy,Yes,No>
+101.53.116.1 - <64,*,Healthy,Yes,No>
+101.53.116.8 - <64,*,Healthy,Yes,No>
+101.53.116.11 - <64,*,Healthy,Yes,No>
+101.53.116.24 - <64,*,Healthy,Yes,No>
+101.53.116.25 - <64,*,Healthy,Yes,No>
+101.53.116.67 - <64,*,Healthy,Yes,No>
+101.53.116.68 - <64,*,Healthy,Yes,No>
+101.53.116.72 - <64,*,Healthy,Yes,No>
+101.53.116.76 - <64,*,Healthy,Yes,No>
+101.53.116.95 - <64,*,Healthy,Yes,No>
+101.53.116.100 - <64,*,Healthy,Yes,No>
+101.53.116.102 - <64,*,Healthy,Yes,No>
+101.53.116.114 - <64,*,Healthy,Yes,No>
+101.53.116.123 - <64,*,Healthy,Yes,No>
+101.53.116.133 - <64,*,Healthy,Yes,No>
+101.53.116.134 - <64,*,Healthy,Yes,No>
+101.53.116.136 - <64,*,Healthy,Yes,No>
+101.53.116.138 - <64,*,Healthy,Yes,No>
+101.53.116.141 - <64,*,Healthy,Yes,No>
+101.53.116.143 - <64,*,Healthy,Yes,No>
+101.53.116.145 - <64,*,Healthy,Yes,No>
+101.53.114.6 - <64,*,Healthy,Yes,Yes>
+101.53.112.2 - <64,*,Healthy,No,No>
+101.53.112.22 - <64,*,Healthy,No,No>
+101.53.112.29 - <64,*,Healthy,No,No>
+101.53.113.28 - <64,*,Healthy,No,No>
+101.53.114.35 - <64,*,*,Yes,No>
+
+Inferred routers: 
+[101.53.114.6]
+[101.53.114.26]
+[101.53.114.28]
+[101.53.114.37]
+[101.53.114.41]
+[101.53.114.45]
+[101.53.114.55]
+[101.53.114.67]
+[101.53.114.81]
+[101.53.114.94]
+[101.53.114.117]
+[101.53.114.138]
+[101.53.114.143]
+[101.53.114.147]
+[101.53.116.1]
+[101.53.116.8]
+[101.53.116.11]
+[101.53.116.95]
+[101.53.116.114]
+[101.53.116.133]
+[101.53.116.136]
+[101.53.116.138]
+[101.53.116.141]
+[101.53.116.143]
+[101.53.116.145]
+[101.53.112.2, 101.53.112.22 (Ally)]
+[101.53.112.29, 101.53.113.28 (Ally)]
+[101.53.113.20, 101.53.115.62 (Ally)]
+[101.53.114.99, 101.53.114.141 (Ally)]
+[101.53.114.206, 101.53.116.134 (Ally)]
+[101.53.116.67, 101.53.116.123 (Ally)]
+[101.53.114.46, 101.53.116.68 (Ally), 101.53.116.100 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.112.30:
+101.53.112.24/30 (ACCURATE, credible)
+101.53.112.32/29 (ACCURATE, credible)
+Inferred a total 3 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.112.30 belongs to registered subnet 101.53.112.28/30
+All labels belong to subnets appearing in the tree.
+
+Fingerprints (sorted):
+101.53.112.26 - <64,*,Healthy,No,No>
+101.53.112.30 - <64,*,Healthy,No,No>
+101.53.112.33 - <64,*,Healthy,No,No>
+
+Inferred routers: 
+[101.53.112.33]
+[101.53.112.26, 101.53.112.30 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.114.16:
+101.53.114.16/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.114.16 belongs to registered subnet 101.53.114.16/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.114.16]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.114.56:
+101.53.114.56/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.114.56 belongs to registered subnet 101.53.114.56/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.114.56]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.114.84:
+101.53.114.84/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.114.84 belongs to registered subnet 101.53.114.84/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.114.84]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.114.86:
+101.53.114.86/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.114.86 belongs to registered subnet 101.53.114.86/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.114.86]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.114.100:
+101.53.114.100/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.114.100 belongs to registered subnet 101.53.114.100/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.114.100]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.114.110:
+101.53.114.104/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.114.110 belongs to registered subnet 101.53.114.104/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.114.110]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.114.127:
+101.53.114.120/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.114.127 belongs to registered subnet 101.53.114.120/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.114.127]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.114.144:
+101.53.114.144/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.114.144 belongs to registered subnet 101.53.114.144/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.114.144]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.114.148:
+101.53.114.148/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.114.148 belongs to registered subnet 101.53.114.148/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.114.148]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.114.154:
+101.53.114.152/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.114.154 belongs to registered subnet 101.53.114.152/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.114.154]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.114.233:
+101.53.114.232/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.114.233 belongs to registered subnet 101.53.114.232/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.114.233]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.114.237:
+101.53.114.236/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.114.237 belongs to registered subnet 101.53.114.236/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.114.237]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.116.33:
+101.53.116.32/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.116.33 belongs to registered subnet 101.53.116.32/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.116.33]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.116.49:
+101.53.116.48/29 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.116.49 belongs to registered subnet 101.53.116.48/29
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.116.49]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.116.60:
+101.53.116.60/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.116.60 belongs to registered subnet 101.53.116.60/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.116.60]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.116.126:
+101.53.116.124/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.116.126 belongs to registered subnet 101.53.116.124/30
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.116.126]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.116.128:
+101.53.116.128/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.116.128 belongs to registered subnet 101.53.116.128/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.116.128]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.116.130:
+101.53.116.130/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.116.130 belongs to registered subnet 101.53.116.130/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.116.130]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.116.144:
+101.53.116.148/30 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.116.144 belongs to registered subnet 101.53.116.144/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.116.144]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.116.146:
+101.53.116.146/31 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.116.146 belongs to registered subnet 101.53.116.146/31
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.116.146]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.97.209:
+101.53.124.0/23 (ODD, credible)
+Inferred a total 3 interfaces.
+This internal node has partial linkage with its children.
+
+Label analysis:
+Label 101.53.97.209 does not belong to any registered subnet 
+
+Fingerprints (sorted):
+101.53.125.21 - <64,*,Healthy,No,No>
+101.53.125.22 - <64,*,Healthy,No,No>
+101.53.125.30 - <64,*,Healthy,No,No>
+101.53.125.46 - <64,*,Healthy,No,No>
+101.53.97.209 - <32,*,*,Yes,No>
+
+Inferred routers: 
+[101.53.97.209]
+[101.53.125.21, 101.53.125.46 (Ally)]
+[101.53.125.22, 101.53.125.30 (Ally)]
+
+------------------------------------------
+
+Neighboring subnets of Neighborhood 101.53.97.201:
+101.53.97.192/28 (SHADOW)
+Inferred a total 2 interfaces.
+This internal node has complete linkage with its children.
+
+Label analysis:
+Label 101.53.97.201 belongs to registered subnet 101.53.97.192/28
+All labels belong to subnets appearing in the tree.
+
+Inferred router: 
+[101.53.97.201]
+
+------------------------------------------
+

@@ -157,22 +157,7 @@ void IPLookUpTable::clearAliasHints()
         {
             IPTableEntry *cur = (*j);
             
-            cur->resetFlagProcessed();
-            cur->setHostName("");
-            for(unsigned short j = 0; j < nbIPIDs; j++)
-            {
-                cur->setProbeToken(j, 0);
-                cur->setIPIdentifier(j, 0);
-                cur->resetEcho(j);
-                if(j < nbIPIDs - 1)
-                    cur->setDelay(j, 0);
-            }
-            cur->setCounterType(IPTableEntry::NO_IDEA);
-            cur->setVelocityUpperBound(0.0);
-            cur->setVelocityLowerBound(0.0);
-            cur->setEchoInitialTTL(0);
-            cur->resetReplyingToTSRequest();
-            cur->setPortUnreachableSrcIP(InetAddress(0));
+            cur->resetARHints();
         }
     }
 }

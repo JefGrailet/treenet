@@ -47,6 +47,14 @@ public:
     IPTableEntry(InetAddress ip, unsigned short nbIPIDs);
     ~IPTableEntry();
     
+    /*
+     * Resets alias resolution hints. This method is called by the constructor, but can also (and 
+     * should) be called after pre-alias resolution on IPs being labels of multi-label network 
+     * tree nodes. This is why this method is public.
+     */
+    
+    void resetARHints();
+    
     // Accessers/setters
     inline unsigned char getTTL() { return this->TTL; }
     inline TimeVal getPreferredTimeout() { return this->preferredTimeout; }
@@ -65,6 +73,11 @@ public:
     inline bool sameTTL(unsigned char TTL) { return (this->TTL != 0 && this->TTL == TTL); }
     bool hasHopCount(unsigned char hopCount);
     void recordHopCount(unsigned char hopCount);
+    
+    // August 2017: methods to handle pre-aliases (see fields for details).
+    inline list<InetAddress> *getPreAliases() { return &preAliases; }
+    bool hasPreAlias(InetAddress IP);
+    void recordPreAlias(InetAddress IP);
     
     // Comparison method for sorting purposes
     static bool compare(IPTableEntry *ip1, IPTableEntry *ip2);
@@ -141,6 +154,18 @@ private:
 	double velocityLowerBound, velocityUpperBound;
 	unsigned short IPIDCounterType;
 	unsigned char echoInitialTTL; // Inferred initial TTL of an ECHO reply packet
+	
+	/*
+	 * August 2017: "pre-alias" list. Pre-alias are only computed for IPs being labels of 
+	 * multi-label nodes, because one must ensure such IPs are from separate devices or if they 
+	 * are just different entries to the same device. The hints used to infer them are not kept 
+	 * for the following reasons:
+	 * -only the IP-IDs should differ, 
+	 * -the data obtained afterwards should be enough to prove again the pre-alias was acceptable.
+	 * However, keeping track of pre-alias still is useful to evaluate the tool.
+	 */
+	
+	list<InetAddress> preAliases;
 	
 };
 

@@ -260,63 +260,66 @@ unsigned short NetworkTreeNode::getLinkage()
 
 void NetworkTreeNode::buildAggregates()
 {
-    for(list<InetAddress>::iterator i = labels.begin(); i != labels.end(); ++i)
+    for(list<Aggregate*>::iterator i = aggregates.begin(); i != aggregates.end(); ++i)
     {
-        InetAddress curLastHop = (*i);
-        list<InetAddress> candidates;
-    
-        // Lists targets for which the last hop is the current label
-        for(list<NetworkTreeNode*>::iterator j = children.begin(); j != children.end(); ++j)
+        Aggregate *curAgg = (*i);
+        list<InetAddress> *lastHops = curAgg->getLastHops();
+        list<InetAddress> *candidates = curAgg->getCandidates();
+        
+        // Goes through the last hops listed in current aggregate
+        for(list<InetAddress>::iterator j = lastHops->begin(); j != lastHops->end(); ++j)
         {
-            if((*j)->isLeaf())
+            InetAddress curLastHop = (*j);
+            
+            // Lists child subnets which the penultimate route hop is the current last hop
+            for(list<NetworkTreeNode*>::iterator k = children.begin(); k != children.end(); ++k)
             {
-                SubnetSite *ss = (*j)->getAssociatedSubnet();
+                NetworkTreeNode *curNode = (*k);
+                if(!curNode->isLeaf())
+                    continue;
+                    
+                SubnetSite *ss = curNode->getAssociatedSubnet();
                 unsigned short routeSize = ss->getRouteSize();
                 RouteInterface *route = ss->getRoute();
-                
+                    
+                // This is indeed the current last hop
                 if(route[routeSize - 1].ip == curLastHop)
                 {
-                    unsigned short status = ss->getStatus();
+                    unsigned short state = ss->getStatus();
                     unsigned char shortestTTL = ss->getShortestTTL();
-                    
-                    if(status == SubnetSite::ACCURATE_SUBNET || status == SubnetSite::ODD_SUBNET)
+                    if(state == SubnetSite::ACCURATE_SUBNET || state == SubnetSite::ODD_SUBNET)
                     {
+                        // Contra-pivot nodes are added to the candidates of current aggregate
                         list<SubnetSiteNode*> *ssn = ss->getSubnetIPList();
-                        
-                        for(list<SubnetSiteNode*>::iterator k = ssn->begin(); k != ssn->end(); ++k)
+                        for(list<SubnetSiteNode*>::iterator l = ssn->begin(); l != ssn->end(); ++l)
                         {
-                            if((*k)->TTL == shortestTTL)
-                            {
-                                candidates.push_back(((*k)->ip));
-                            }
+                            SubnetSiteNode *curSSN = (*l);
+                            if(curSSN->TTL == shortestTTL)
+                                candidates->push_back((curSSN->ip));
                         }
                     }
                 }
             }
         }
         
-        if(candidates.size() == 0 && curLastHop == InetAddress(0))
+        if(candidates->size() == 0)
             continue;
         
-        // Sorts and removes duplicata (rare but possible when a contra-pivot is also a label)
-        candidates.sort(InetAddress::smaller);
-        InetAddress previous(0);
-        for(list<InetAddress>::iterator j = candidates.begin(); j != candidates.end(); ++j)
+        // Sorts and removes duplicata (rare; occurs when a contra-pivot is one of the last hops)
+        if(candidates->front() != InetAddress(0))
         {
-            InetAddress cur = (*j);
-            if(cur == previous)
-                candidates.erase(j--);
-            else
-                previous = cur;
+            candidates->sort(InetAddress::smaller);
+            InetAddress previous(0);
+            for(list<InetAddress>::iterator j = candidates->begin(); j != candidates->end(); ++j)
+            {
+                InetAddress cur = (*j);
+                if(cur == previous)
+                    candidates->erase(j--);
+                else
+                    previous = cur;
+            }
         }
-        
-        // Creates the Aggregate object
-        Aggregate *newAgg = new Aggregate(curLastHop, candidates);
-        aggregates.push_back(newAgg);
     }
-    
-    // Sorts the final list
-    aggregates.sort(Aggregate::compare);
 }
 
 unsigned int NetworkTreeNode::countInterfaces()

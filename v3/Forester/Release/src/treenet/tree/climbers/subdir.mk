@@ -6,6 +6,8 @@
 CPP_SRCS += \
 ../src/treenet/tree/climbers/Climber.cpp \
 ../src/treenet/tree/climbers/Robin.cpp \
+../src/treenet/tree/climbers/Magpie.cpp \
+../src/treenet/tree/climbers/Sparrow.cpp \
 ../src/treenet/tree/climbers/Cuckoo.cpp \
 ../src/treenet/tree/climbers/Crow.cpp \
 ../src/treenet/tree/climbers/Cat.cpp \
@@ -14,6 +16,8 @@ CPP_SRCS += \
 OBJS += \
 ./src/treenet/tree/climbers/Climber.o \
 ./src/treenet/tree/climbers/Robin.o \
+./src/treenet/tree/climbers/Magpie.o \
+./src/treenet/tree/climbers/Sparrow.o \
 ./src/treenet/tree/climbers/Cuckoo.o \
 ./src/treenet/tree/climbers/Crow.o \
 ./src/treenet/tree/climbers/Cat.o \
@@ -21,6 +25,8 @@ OBJS += \
 
 CPP_DEPS += \
 ./src/treenet/tree/climbers/Climber.d \
+./src/treenet/tree/climbers/Magpie.d \
+./src/treenet/tree/climbers/Sparrow.d \
 ./src/treenet/tree/climbers/Robin.d \
 ./src/treenet/tree/climbers/Cuckoo.d \
 ./src/treenet/tree/climbers/Crow.d \

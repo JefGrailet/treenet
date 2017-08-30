@@ -108,7 +108,7 @@ unsigned short ClassicGrower::repairRouteOffline(SubnetSite *ss)
             hopBefore = route[i - 1].ip;
         hopAfter = route[i + 1].ip;
         
-        if(hopBefore == InetAddress(0) || hopAfter == InetAddress(0))
+        if((i > 0 && hopBefore == InetAddress(0)) || hopAfter == InetAddress(0))
             continue;
         
         // Lists the options
@@ -472,17 +472,19 @@ void ClassicGrower::prepare()
         
         if(ratioSolved > 0.4)
         {
-            (*out) << "Repaired " << (ratioSolved * 100) << "\% of missing hops. ";
+            (*out) << "Repaired " << (ratioSolved * 100) << "\% of missing hops.";
             
             if(ratioSolved < 1.0)
             {
-                (*out) << "Starting a second opinion..." << endl;
+                (*out) << " Starting a second opinion..." << endl;
                 
                 Thread::invokeSleep(TimeVal(60, 0));
                 
                 checker->reload();
                 checker->probe();
             }
+            else
+                (*out) << endl;
             
             nbRepairments += checker->getTotalSolved();
             fullyRepaired += checker->getTotalFullyRepaired();

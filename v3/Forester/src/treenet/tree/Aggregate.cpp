@@ -10,11 +10,26 @@
 
 #include "Aggregate.h"
 
-Aggregate::Aggregate(InetAddress lastHop, list<InetAddress> interfaces)
+Aggregate::Aggregate(InetAddress lastHop)
 {
     lastHops.push_back(lastHop);
-    for(list<InetAddress>::iterator it = interfaces.begin(); it != interfaces.end(); ++it)
-        candidates.push_back(InetAddress((*it)));
+}
+
+Aggregate::Aggregate(list<InetAddress> hopsList)
+{
+    for(list<InetAddress>::iterator it = hopsList.begin(); it != hopsList.end(); ++it)
+        lastHops.push_back(InetAddress((*it)));
+        
+    // No sorting: in most use cases (e.g. labels of a multi-label node), IPs are already sorted
+}
+
+Aggregate::Aggregate(Router *preAlias)
+{
+    list<RouterInterface*> *interfaces = preAlias->getInterfacesList();
+    for(list<RouterInterface*>::iterator it = interfaces->begin(); it != interfaces->end(); ++it)
+        lastHops.push_back(InetAddress((*it)->ip));
+        
+    // No need for sorting, interfaces should already be sorted in the Router object
 }
 
 Aggregate::~Aggregate()

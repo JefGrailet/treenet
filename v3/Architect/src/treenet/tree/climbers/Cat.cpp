@@ -252,7 +252,22 @@ void Cat::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
             for(list<Aggregate*>::iterator it = aggs->begin(); it != aggs->end(); ++it)
             {
                 list<Fingerprint> *prints = (*it)->getFingerprints();
-                (*out) << "\nLast hop = " << (*it)->getFirstLastHop() << ":\n";
+                list<InetAddress> *hops = (*it)->getLastHops();
+                if(hops->size() > 1)
+                {
+                    (*out) << "\nLast hops = ";
+                    for(list<InetAddress>::iterator k = hops->begin(); k != hops->end(); ++k)
+                    {
+                        if(k != hops->begin())
+                            (*out) << ", ";
+                        (*out) << (*k);
+                    }
+                    (*out) << ":\n";
+                }
+                else
+                {
+                    (*out) << "\nLast hop = " << hops->front() << ":\n";
+                }
                 for(list<Fingerprint>::iterator it2 = prints->begin(); it2 != prints->end(); ++it2)
                     (*out) << (InetAddress) (*((*it2).ipEntry)) << " - " << (*it2) << "\n";
             }

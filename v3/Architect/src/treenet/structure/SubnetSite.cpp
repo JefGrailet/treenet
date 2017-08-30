@@ -210,6 +210,17 @@ bool SubnetSite::hasLiveInterface(InetAddress li)
 
 bool SubnetSite::hasRouteLabel(InetAddress rl, unsigned short TTL)
 {
+    // hasRouteLabel() should only be used for the final route (so, maybe a post-processed one)
+    if(processedRoute != NULL)
+    {
+        if(TTL > this->processedRouteSize)
+            return false;
+    
+        if(processedRoute[TTL - 1].ip == rl)
+            return true;
+        return false;
+    }
+
     if(TTL > this->routeSize)
         return false;
     

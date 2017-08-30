@@ -283,7 +283,7 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
 {
     RSGraph *bipGraphRS = this->RSResult;
     list<NetworkTreeNode*> *children = cur->getChildren();
-    list<InetAddress> *labels = cur->getLabels();
+    list<Aggregate*> *aggs = cur->getAggregates();
     list<Router*> routers = cur->getInferredRouters();
     
     // Puts direct neighbor subnets in a list and puts the T_NEIGHBORHOOD nodes in another one
@@ -304,15 +304,17 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
         this->processRecursiveRS((*i), depth + 1);
     }
     
-    // Case where current node is an hedera (i.e., it has multiple labels)
+    // Case where current node is an hedera (i.e., it has multiple aggregates)
     if(cur->isHedera())
     {
-        for(list<InetAddress>::iterator i = labels->begin(); i != labels->end(); ++i)
+        for(list<Aggregate*>::iterator i = aggs->begin(); i != aggs->end(); ++i)
         {
-            InetAddress ingressInterface = (*i);
+            Aggregate *curAgg = (*i);
+            list<InetAddress> *hops = curAgg->getLastHops();
+            InetAddress firstInterface = hops->front();
             
             bool isMissingInterface = false;
-            if(ingressInterface == InetAddress(0))
+            if(firstInterface == InetAddress(0))
             {
                 /* 
                  * !!! Unique case (fixed on January 31, 2017) !!!
@@ -331,39 +333,46 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
             Router *ingressRouter = NULL;
             if(!isMissingInterface)
             {
-                ingressRouter = cur->getRouterHaving(ingressInterface);
+                ingressRouter = cur->getRouterHaving(firstInterface);
             
                 // The ingress router should exist by construction. If not, we skip to next label.
                 if(ingressRouter == NULL)
                     continue;
             }
             
-            // Lists children subnets which last label in the route is ingressInterface
+            // Lists child subnets which last label in the route is a label of the aggregate
             list<SubnetSite*> curChildrenL;
             for(list<SubnetSite*>::iterator j = childrenL.begin(); j != childrenL.end(); ++j)
             {
-                if((*j)->hasRouteLabel(ingressInterface, depth))
+                for(list<InetAddress>::iterator k = hops->begin(); k != hops->end(); ++k)
                 {
-                    curChildrenL.push_back((*j));
-                    childrenL.erase(j--);
+                    if((*j)->hasRouteLabel((*k), depth))
+                    {
+                        curChildrenL.push_back((*j));
+                        childrenL.erase(j--);
+                        break;
+                    }
                 }
             }
             
             /*
              * Lists children internals which the routes to the leaves contain at least one 
-             * occurrence of ingressInterface at this depth. Indeed, there is no point in creating 
-             * a link between this router and other internals if the traceroutes used to build 
-             * their respective branches do not match.
+             * occurrence of a label of the aggregate at this depth. Indeed, there is no point in 
+             * creating a link between this router and other internals if the traceroutes used to 
+             * build their respective branches do not match.
              */
             
             list<NetworkTreeNode*> curChildrenI;
             for(list<NetworkTreeNode*>::iterator j = childrenI.begin(); j != childrenI.end(); ++j)
             {
-                if((*j)->hasPreviousLabel(ingressInterface))
+                for(list<InetAddress>::iterator k = hops->begin(); k != hops->end(); ++k)
                 {
-                    curChildrenI.push_back((*j));
-                    
-                    // No erasure, because this node might be accessed by another router
+                    if((*j)->hasPreviousLabel((*k)))
+                    {
+                        curChildrenI.push_back((*j));
+                        
+                        // No erasure, because this node might be accessed by another router
+                    }
                 }
             }
             
@@ -433,7 +442,7 @@ void ERSProcesser::processRecursiveRS(NetworkTreeNode *cur, unsigned short depth
     else if(routers.size() > 0)
     {
         list<SubnetSite*> backUpSubnets(childrenL); // Copy of childrenL for last step
-        InetAddress ingressInterface = labels->front();
+        InetAddress ingressInterface = aggs->front()->getFirstLastHop();
         Router *ingressRouter = NULL; // Stays null if an imaginary router is required
         
         // Creates the router (+ links) corresponding to the single label of this node
@@ -511,10 +520,10 @@ void ERSProcesser::processRecursiveER(NetworkTreeNode *cur, unsigned short depth
             this->processRecursiveER((*i), depth + 1);
     }
     
-    // Case where current node is an hedera (i.e., it has multiple labels)
+    // Case where current node is an hedera (i.e., it has multiple aggregates)
     if(cur->isHedera())
     {
-        list<InetAddress> *labels = cur->getLabels();
+        list<Aggregate*> *aggs = cur->getAggregates();
         list<Router*> routers = cur->getInferredRouters();
         
         // Lists child leaves
@@ -526,12 +535,14 @@ void ERSProcesser::processRecursiveER(NetworkTreeNode *cur, unsigned short depth
         }
         
         // Process the hedera, label by label
-        for(list<InetAddress>::iterator i = labels->begin(); i != labels->end(); ++i)
+        for(list<Aggregate*>::iterator i = aggs->begin(); i != aggs->end(); ++i)
         {
-            InetAddress ingressInterface = (*i);
+            Aggregate *curAgg = (*i);
+            list<InetAddress> *hops = curAgg->getLastHops();
+            InetAddress firstInterface = hops->front();
 
             bool isMissingInterface = false;
-            if(ingressInterface == InetAddress(0))
+            if(firstInterface == InetAddress(0))
             {
                 /* 
                  * !!! Unique case (fixed on January 31, 2017) !!!
@@ -546,21 +557,25 @@ void ERSProcesser::processRecursiveER(NetworkTreeNode *cur, unsigned short depth
             Router *ingressRouter = NULL;
             if(!isMissingInterface)
             {
-                ingressRouter = cur->getRouterHaving(ingressInterface);
+                ingressRouter = cur->getRouterHaving(firstInterface);
                 
                 // The ingress router should exist by construction. If not, we skip to next label.
                 if(ingressRouter == NULL)
                     continue;
             }
             
-            // Lists children subnets which last label in the route is ingressInterface
+            // Lists child subnets which last label in the route is a label of the aggregate
             list<SubnetSite*> curChildrenL;
             for(list<SubnetSite*>::iterator j = childrenL.begin(); j != childrenL.end(); ++j)
             {
-                if((*j)->hasRouteLabel(ingressInterface, depth))
+                for(list<InetAddress>::iterator k = hops->begin(); k != hops->end(); ++k)
                 {
-                    curChildrenL.push_back((*j));
-                    childrenL.erase(j--);
+                    if((*j)->hasRouteLabel((*k), depth))
+                    {
+                        curChildrenL.push_back((*j));
+                        childrenL.erase(j--);
+                        break;
+                    }
                 }
             }
             

@@ -70,8 +70,6 @@ void Cuckoo::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
     // Any other case: internal node
     else
     {
-        cur->buildAggregates();
-        
         if(cur->countInterfaces() > 1)
         {
             (*out) << "Collecting alias resolution hints for ";
@@ -89,14 +87,12 @@ void Cuckoo::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
                 
                     (*out) << (*i);
                 }
-                (*out) << "}";
+                (*out) << "}..." << endl;
             }
             else
             {
-                (*out) << "Neighborhood {" << cur->getLabels()->front() << "}";
+                (*out) << "Neighborhood {" << cur->getLabels()->front() << "}... " << std::flush;
             }
-            
-            (*out) << "... " << std::flush;
             
             if(this->ahc->isPrintingSteps())
             {

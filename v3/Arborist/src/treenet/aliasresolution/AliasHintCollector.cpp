@@ -60,6 +60,8 @@ void AliasHintCollector::collect()
     unsigned long int nbIPs = (unsigned long int) this->IPsToProbe.size();
     if(nbIPs == 0)
     {
+        (*out) << "No IP to probe, aggregate only contains the missing hop identifier ";
+        (*out) << "(0.0.0.0)." << endl;
         return;
     }
     unsigned short nbThreads = 1;

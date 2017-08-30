@@ -40,9 +40,18 @@ IPDictionnaryParser::~IPDictionnaryParser()
 list<string> IPDictionnaryParser::explode(string input, char delimiter)
 {
     list<string> result;
+
+    // Checks if delimiter is there; if not return a single-element list
+    size_t pos = input.find(delimiter);
+    if(pos == std::string::npos)
+    {
+        result.push_back(input);
+        return result;
+    }
+    
+    // Splits the input string according to delimiter
     stringstream ss(input);
     string chunk;
-    
     while(std::getline(ss, chunk, delimiter))
         result.push_back(chunk);
     
@@ -211,6 +220,41 @@ bool IPDictionnaryParser::parse(string inputFileName)
             newEntry->setEchoInitialTTL(iTTL);
         }
         
+        /* 
+         * We now look for and remove the " || [IP]" suffix. This corresponds to a pre-alias, a 
+         * feature of TreeNET v3.3 which consists in running alias resolution only on labels of 
+         * multi-label nodes to identify aliases between them, in order to get the best possible 
+         * aggregates for the full alias resolution.
+         */
+        
+        size_t pos4 = ARHintsStr.find(" || ");
+        if(pos4 != std::string::npos)
+        {
+            string preAliasesStr = ARHintsStr.substr(pos4 + 4);
+            ARHintsStr = ARHintsStr.substr(0, pos4);
+            
+            // Parses the pre-aliases
+            list<string> preAliases = explode(preAliasesStr, ',');
+            for(list<string>::iterator it = preAliases.begin(); it != preAliases.end(); ++it)
+            {
+                InetAddress preAlias(0);
+                try
+                {
+                    preAlias.setInetAddress((*it));
+                    newEntry->recordPreAlias(preAlias);
+                }
+                catch (InetAddressException &e)
+                {
+                    if(displayMode >= TreeNETEnvironment::DISPLAY_MODE_SLIGHTLY_VERBOSE)
+                    {
+                        (*out) << "Malformed/Unrecognized pre-alias " << (*it);
+                        (*out) << "\" at line " << nbLine << "." << endl;
+                    }
+                    continue;
+                }
+            }
+        }
+        
         /*
          * Next, we remove the " | [Yes],..." part that can occur at the end of the line, which 
          * corresponds to compliance with ICMP timestamp request and UDP. We also process this 
@@ -218,18 +262,18 @@ bool IPDictionnaryParser::parse(string inputFileName)
          * IP ID-based techniques.
          */
         
-        size_t pos4 = ARHintsStr.find(" | ");
-        if(pos4 != std::string::npos)
+        size_t pos5 = ARHintsStr.find(" | ");
+        if(pos5 != std::string::npos)
         {
-            string complianceStr = ARHintsStr.substr(pos4 + 3);
-            ARHintsStr = ARHintsStr.substr(0, pos4);
+            string complianceStr = ARHintsStr.substr(pos5 + 3);
+            ARHintsStr = ARHintsStr.substr(0, pos5);
             
             // There might be a comma, hinting there is compliance to both UDP and ICMP timestamp
-            size_t pos5 = complianceStr.find(",");
-            if(pos5 != std::string::npos)
+            size_t pos6 = complianceStr.find(",");
+            if(pos6 != std::string::npos)
             {
                 newEntry->setReplyingToTSRequest(); // Anyway
-                string replyingSrcIPStr = complianceStr.substr(pos5 + 1);
+                string replyingSrcIPStr = complianceStr.substr(pos6 + 1);
                 InetAddress replyingSrcIP(0);
                 
                 try

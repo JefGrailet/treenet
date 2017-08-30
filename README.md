@@ -1,6 +1,6 @@
 # TreeNET, a subnet-based topology discovery tool
 
-*By Jean-François Grailet (last edited: August 18, 2017)*
+*By Jean-François Grailet (last edited: August 29, 2017)*
 
 ## Overview
 
@@ -28,7 +28,7 @@ All `TreeNET` versions are exclusively available for Linux and for the IPv4 prot
 
 * **`TreeNET` v2.0 - v2.3:** elaborated in September 2015 and fully implemented as soon as November 2015 (as v2.0), this second version adds a new algorithmic step called "*network pre-scanning*" which aims at speeding up the overall execution. The alias resolution part has also been thoroughly improved, while other steps have been revisited for various but less consequent improvements. It was subsequently upgraded up to v2.3 (April 2016) to speed it up a bit more and also to further deepen alias resolution, notably by introducing a fingerprinting process to study the viability of different state-of-the-art alias resolution techniques and pick the most suited method depending on the context.
 
-* **`TreeNET` v3.0 - v3.2:** elaborated in August 2016, this third version of `TreeNET` consists of a full suite of software with three major components. The first component, nicknamed *Arborist*, is available since October 2016 and is in practice the regular and improved `TreeNET`. It is essentially a major refactoring of the code and the options. Among others, it now provides several degrees of verbosity and the possibility to get the subnets as inferred by `ExploreNET` in an additionnal output file (optional). The two other components, *Forester* and *Architect*, were made available respectively in November and December 2016 and are essentially a re-factoring of `TreeNET Reader`, though *Architect* deepened a lot the graph interpretation of a network tree: it is indeed able to output 5 different types of graph, while `TreeNET Reader` could only output one type.
+* **`TreeNET` v3.0 - v3.3:** elaborated in August 2016, this third version of `TreeNET` consists of a full suite of software with three major components. The first component, nicknamed *Arborist*, is available since October 2016 and is in practice the regular and improved `TreeNET`. It is essentially a major refactoring of the code and the options. Among others, it now provides several degrees of verbosity and the possibility to get the subnets as inferred by `ExploreNET` in an additionnal output file (optional). The two other components, *Forester* and *Architect*, were made available respectively in November and December 2016 and are essentially a re-factoring of `TreeNET Reader`, though *Architect* deepened a lot the graph interpretation of a network tree: it is indeed able to output 5 different types of graph, while `TreeNET Reader` could only output one type.
 
 ## Related software
   
@@ -38,11 +38,11 @@ All `TreeNET` versions are exclusively available for Linux and for the IPv4 prot
 
 ## Content of this folder
 
-As the names suggest, *v1/* contains all files related to `TreeNET` v1.0, while *v2/* and *v3/* provides all sources for `TreeNET` v2.3 and `TreeNET` v3.2 (respectively) along related software and datasets which were collected with it.
+As the names suggest, *v1/* contains all files related to `TreeNET` v1.0, while *v2/* and *v3/* provides all sources for `TreeNET` v2.3 and `TreeNET` v3.3 (respectively) along related software and datasets which were collected with it.
 
 ## Work in progress
 
-`TreeNET` will be upgraded to v3.3 in the coming months in order to improve a bit more the alias resolution step. `traceroute` anomalies are still being studied in the meantime.
+Reverse DNS might be deepened in `TreeNET` in the coming months, possibly justifying a version 3.4. `traceroute` anomalies are still being studied in the meantime.
 
 ## Disclaimer
 

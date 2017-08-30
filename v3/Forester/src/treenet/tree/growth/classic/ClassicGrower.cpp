@@ -501,17 +501,18 @@ void ClassicGrower::prepare()
         
         if(ratioSolved > 0.4)
         {
-            (*out) << "Repaired " << (ratioSolved * 100) << "\% of missing hops. ";
+            (*out) << "Repaired " << (ratioSolved * 100) << "\% of missing hops.";
             
             if(ratioSolved < 1.0)
             {
-                (*out) << "Starting a second opinion..." << endl;
+                (*out) << " Starting a second opinion..." << endl;
                 
                 Thread::invokeSleep(TimeVal(60, 0));
                 
                 checker->reload();
                 checker->probe();
             }
+            (*out) << endl;
             
             nbRepairments += checker->getTotalSolved();
             fullyRepaired += checker->getTotalFullyRepaired();

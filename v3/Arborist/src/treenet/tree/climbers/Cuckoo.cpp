@@ -70,8 +70,6 @@ void Cuckoo::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
     // Any other case: internal node
     else
     {
-        cur->buildAggregates();
-        
         if(cur->countInterfaces() > 1)
         {
             (*out) << "Collecting alias resolution hints for ";
@@ -89,14 +87,12 @@ void Cuckoo::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
                 
                     (*out) << (*i);
                 }
-                (*out) << "}";
+                (*out) << "}..." << endl;
             }
             else
             {
-                (*out) << "Neighborhood {" << cur->getLabels()->front() << "}";
+                (*out) << "Neighborhood {" << cur->getLabels()->front() << "}... " << std::flush;
             }
-            
-            (*out) << "... " << std::flush;
             
             if(this->ahc->isPrintingSteps())
             {
@@ -123,8 +119,25 @@ void Cuckoo::climbRecursive(NetworkTreeNode *cur, unsigned short depth)
                 {
                     Aggregate *curAgg = (*it);
                     InetAddress lastHop = curAgg->getFirstLastHop();
+                    list<InetAddress> *hops = (*it)->getLastHops();
                     
-                    (*out) << "Alias candidates which last hop is " << lastHop << "... " << std::flush;
+                    (*out) << "Alias candidates which " ;
+                    if(hops->size() > 1)
+                    {
+                        (*out) << "last hops are ";
+                        for(list<InetAddress>::iterator k = hops->begin(); k != hops->end(); ++k)
+                        {
+                            if(k != hops->begin())
+                                (*out) << ", ";
+                            (*out) << (*k);
+                        }
+                    }
+                    else
+                    {
+                        (*out) << "last hop is " << hops->front();
+                    }
+                    
+                    (*out) << "... " << std::flush;
                     if(this->ahc->isPrintingSteps()) // Additionnal line break for better output
                         (*out) << endl;
                     

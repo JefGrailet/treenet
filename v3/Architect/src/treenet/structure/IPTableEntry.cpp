@@ -51,6 +51,27 @@ IPTableEntry::~IPTableEntry()
     delete[] delays;
 }
 
+bool IPTableEntry::hasPreAlias(InetAddress IP)
+{
+    for(list<InetAddress>::iterator it = preAliases.begin(); it != preAliases.end(); it++)
+    {
+        if((*it) == IP)
+            return true;
+    }
+    return false;
+}
+
+void IPTableEntry::recordPreAlias(InetAddress IP)
+{
+    for(list<InetAddress>::iterator it = preAliases.begin(); it != preAliases.end(); it++)
+    {
+        if((*it) == IP)
+            return;
+    }
+    preAliases.push_back(IP);
+    preAliases.sort(InetAddress::smaller);
+}
+
 bool IPTableEntry::compare(IPTableEntry *ip1, IPTableEntry *ip2)
 {
     if(ip1->getULongAddress() < ip2->getULongAddress())
@@ -159,6 +180,18 @@ string IPTableEntry::toString()
     // ... | [Unreachable port reply IP] (if available)
     else if(this->portUnreachableSrcIP != InetAddress("0"))
         ss << " | " << this->portUnreachableSrcIP;
+    
+    // ... || [pre-aliases, IPs separated by ,]
+    if(preAliases.size() > 0)
+    {
+        ss << " || ";
+        for(list<InetAddress>::iterator it = preAliases.begin(); it != preAliases.end(); ++it)
+        {
+            if(it != preAliases.begin())
+                ss << ",";
+            ss << (*it);
+        }
+    }
     
     return ss.str();
 }

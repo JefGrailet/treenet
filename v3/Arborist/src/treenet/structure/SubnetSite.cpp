@@ -620,7 +620,7 @@ void SubnetSite::prepareForRefinement()
     {
         // Checks a list a second time to confirm there is only one smallestTTL (= contra-pivot)
         bool foundContrapivot = false;
-        InetAddress tempContrapivot;
+        InetAddress tempContrapivot(0);
         for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
         {
             SubnetSiteNode *cur = (*i);
@@ -635,6 +635,7 @@ void SubnetSite::prepareForRefinement()
                 else
                 {
                     this->refinementStatus = SubnetSite::ODD_SUBNET;
+                    this->refinementContrapivot = tempContrapivot; // Still needed for tree labels
                     return;
                 }
             }
@@ -646,6 +647,17 @@ void SubnetSite::prepareForRefinement()
     else
     {
         this->refinementStatus = SubnetSite::ODD_SUBNET;
+        
+        // Still needs to set the refinementContrapivot field
+        for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
+        {
+            SubnetSiteNode *cur = (*i);
+            if(cur->TTL == shortestTTL)
+            {
+                this->refinementContrapivot = cur->ip;
+                break;
+            }
+        }
     }
 }
 
@@ -690,6 +702,17 @@ void SubnetSite::recomputeRefinementStatus()
     else
     {
         this->refinementStatus = SubnetSite::ODD_SUBNET;
+        
+        // Ensures the refinementContrapivot field is set
+        for(list<SubnetSiteNode*>::iterator i = IPlist.begin(); i != IPlist.end(); ++i)
+        {
+            SubnetSiteNode *cur = (*i);
+            if(cur->TTL == shortestTTL)
+            {
+                this->refinementContrapivot = cur->ip;
+                break;
+            }
+        }
     }
 }
 

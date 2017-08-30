@@ -110,7 +110,7 @@ protected:
     /*
      * Method to select the right labels to get all ingress routers of a child internal node. 
      * When this internal has only one label, it is trivial; however, if it is an hedera, one has 
-     * to remove from the label list redudant labels, i.e., labels which appear on an inferred 
+     * to remove from the label list redundant labels, i.e., labels which appear on an inferred 
      * router which already bears a previous label.
      *
      * @param NetworkTreeNode* child   A pointer to the neighborhood node which the labels should 

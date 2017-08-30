@@ -12,20 +12,36 @@
 
 IPTableEntry::IPTableEntry(InetAddress ip, unsigned short nbIPIDs) : InetAddress(ip)
 {
-    // Default values
+    // Default values for main fields
     this->TTL = NO_KNOWN_TTL;
     this->preferredTimeout = TimeVal(DEFAULT_TIMEOUT_SECONDS, TimeVal::HALF_A_SECOND);
-    this->hostName = "";
     
     if(nbIPIDs > MIN_ALIAS_RESOLUTION_PAIRS)
         this->nbIPIDs = nbIPIDs;
     else
         this->nbIPIDs = MIN_ALIAS_RESOLUTION_PAIRS;
     
+    // Creates arrays for alias resolution hints
     this->probeTokens = new unsigned long[this->nbIPIDs];
     this->IPIdentifiers = new unsigned short[this->nbIPIDs];
     this->echoMask = new bool[this->nbIPIDs];
     this->delays = new unsigned long[this->nbIPIDs - 1];
+    
+    // Resets them with 0, "false", etc.
+    this->resetARHints();
+}
+
+IPTableEntry::~IPTableEntry()
+{
+    delete[] probeTokens;
+    delete[] IPIdentifiers;
+    delete[] echoMask;
+    delete[] delays;
+}
+
+void IPTableEntry::resetARHints()
+{
+    this->hostName = "";
     for(unsigned short i = 0; i < this->nbIPIDs; i++)
     {
         this->probeTokens[i] = 0;
@@ -41,14 +57,6 @@ IPTableEntry::IPTableEntry(InetAddress ip, unsigned short nbIPIDs) : InetAddress
     this->echoInitialTTL = 0;
     this->replyingToTSRequest = false;
     this->portUnreachableSrcIP = InetAddress(0);
-}
-
-IPTableEntry::~IPTableEntry()
-{
-    delete[] probeTokens;
-    delete[] IPIdentifiers;
-    delete[] echoMask;
-    delete[] delays;
 }
 
 bool IPTableEntry::hasHopCount(unsigned char hopCount)
@@ -79,6 +87,27 @@ void IPTableEntry::recordHopCount(unsigned char hopCount)
             hopCounts.push_back(hopCount);
         }
     }
+}
+
+bool IPTableEntry::hasPreAlias(InetAddress IP)
+{
+    for(list<InetAddress>::iterator it = preAliases.begin(); it != preAliases.end(); it++)
+    {
+        if((*it) == IP)
+            return true;
+    }
+    return false;
+}
+
+void IPTableEntry::recordPreAlias(InetAddress IP)
+{
+    for(list<InetAddress>::iterator it = preAliases.begin(); it != preAliases.end(); it++)
+    {
+        if((*it) == IP)
+            return;
+    }
+    preAliases.push_back(IP);
+    preAliases.sort(InetAddress::smaller);
 }
 
 bool IPTableEntry::compare(IPTableEntry *ip1, IPTableEntry *ip2)
@@ -134,7 +163,7 @@ string IPTableEntry::toString()
     ss << (*this) << " - " << (unsigned short) TTL;
     
     // : [Initial echo TTL] - ECHO
-    if(this->IPIDCounterType == ECHO_COUNTER)
+    if(IPIDCounterType == ECHO_COUNTER)
     {
         ss << ": ";
         
@@ -153,18 +182,15 @@ string IPTableEntry::toString()
     {
         ss << ": ";
         
-        unsigned short iTTL = (unsigned short) this->echoInitialTTL;
+        unsigned short iTTL = (unsigned short) echoInitialTTL;
         if(iTTL > 0)
             ss << iTTL << " - ";
         
-        bool first = true;
         for(unsigned short i = 0; i < nbIPIDs; i++)
         {
-            if(first)
-                first = false;
-            else
-                ss << "," << this->delays[i - 1] << ",";
-            ss << this->probeTokens[i] << ";" << this->IPIdentifiers[i];
+            if(i > 0)
+                ss << "," << delays[i - 1] << ",";
+            ss << probeTokens[i] << ";" << IPIdentifiers[i];
         }
         
         // ,[Host name]
@@ -178,17 +204,29 @@ string IPTableEntry::toString()
     }
     
     // ... | [Yes or nothing] (yes ~= replies to ICMP timestamp request)
-    if(this->replyingToTSRequest)
+    if(replyingToTSRequest)
     {
         ss << " | Yes";
         
         // ,[Unreachable port reply IP]
-        if(this->portUnreachableSrcIP != InetAddress("0"))
-            ss << "," << this->portUnreachableSrcIP;
+        if(portUnreachableSrcIP != InetAddress(0))
+            ss << "," << portUnreachableSrcIP;
     }
     // ... | [Unreachable port reply IP] (if available)
-    else if(this->portUnreachableSrcIP != InetAddress("0"))
-        ss << " | " << this->portUnreachableSrcIP;
+    else if(portUnreachableSrcIP != InetAddress(0))
+        ss << " | " << portUnreachableSrcIP;
+    
+    // ... || [pre-aliases, IPs separated by ,]
+    if(preAliases.size() > 0)
+    {
+        ss << " || ";
+        for(list<InetAddress>::iterator it = preAliases.begin(); it != preAliases.end(); ++it)
+        {
+            if(it != preAliases.begin())
+                ss << ",";
+            ss << (*it);
+        }
+    }
     
     return ss.str();
 }

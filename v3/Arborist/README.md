@@ -1,6 +1,6 @@
-# About TreeNET v3.2 "Arborist" (treenet)
+# About TreeNET v3.3 "Arborist" (treenet)
 
-*By Jean-François Grailet, August 18, 2017*
+*By Jean-François Grailet, August 29, 2017*
 
 ## Compilation
 
@@ -27,7 +27,7 @@ If you intent to use `TreeNET` from the PlanetLab testbed, here is some advice.
 
 ## Usage
 
-`TreeNET` v3.2 "*Arborist*" will describe in details its options, flags and how you can use it by running the line:
+`TreeNET` v3.3 "*Arborist*" will describe in details its options, flags and how you can use it by running the line:
 
 ```sh
 ./treenet -h
@@ -63,9 +63,11 @@ If you intent to use `TreeNET` from the PlanetLab testbed, here is some advice.
 
 * **August 18, 2017:** light update of *Arborist* to fix TCP probing. Instead of the SYN+ACK probing method inherited from `ExploreNET`, which is inefficient nowadays, `TreeNET` now uses SYN probing exclusively on the port 80 of the target IPs. This method should be much more successful, but users should keep in mind that this method of probing can be problematic security-wise. In particular, repeated probing towards a same IP (which can occur during alias resolution, for instance) can be identified as SYN flooding, which is a form of denial-of-service (DoS) attack.
 
+* **August 29, 2017:** upgrade of *Arborist*, now in version v3.3. This new version adds a *pre-alias resolution* phase which consists in visiting multi-label nodes of the network tree prior to the typical, full alias resolution. During this visit, alias resolution is being conducted on the labels to verify that they are not alias of each other themselves. If it happens to be the case, the aggregation of IPs in multi-label nodes that will precede the full alias resolution will take account of the *pre-aliases*.
+
 ## Disclaimer
 
-`TreeNET` v3.2 and its different versions were written by Jean-François Grailet, currently Ph. D. student at the University of Liège (Belgium) in the Research Unit in Networking (RUN), using the sources of `ExploreNET` v2.1 as a basis.
+`TreeNET` v3.3 and its different versions were written by Jean-François Grailet, currently Ph. D. student at the University of Liège (Belgium) in the Research Unit in Networking (RUN), using the sources of `ExploreNET` v2.1 as a basis.
 
 `ExploreNET` v2.1 has been elaborated and written by Dr. Mehmet Engin Tozal, currently assistant teacher at the University of Louisiana at Lafayette (USA). The sources of this program can be downloaded at the following address:
 

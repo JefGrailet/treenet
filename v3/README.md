@@ -44,6 +44,12 @@ From version 3.2 and onwards, `TreeNET` offers new improvements for the alias re
 
 ---
 
+### *Pre-alias resolution* to better deal with load-balanced paths
+
+From version 3.3 and onwards, `TreeNET` now conducts a shorter alias resolution phase exclusively on labels of multi-label nodes (in the network tree) to ensure these labels are not alias of each other themselves. If such aliases happen to exist, then `TreeNET` takes them into account for the full alias resolution.
+
+---
+
 ## Content of this folder
 
 Currently, this repository grants access to the source files of `TreeNET` *Arborist*, `TreeNET` *Architect* (dedicated to dataset transformation and analysis) and `TreeNET` *Forester* (dedicated to second opinion probing for existing datasets and dataset merging), respectively found in *Arborist/*, *Architect/* and *Forester/* sub-folders.
@@ -52,7 +58,7 @@ A fourth sub-folder, *Measurements/*, provides datasets obtained by measuring AS
 
 ## Disclaimer
 
-`TreeNET` v3.2 was written by Jean-François Grailet, currently Ph. D. student at the University of Liège (Belgium) in the Research Unit in Networking (RUN). Previous versions of `TreeNET` were written using the sources of `ExploreNET` v2.1 as a basis.
+`TreeNET` v3.3 was written by Jean-François Grailet, currently Ph. D. student at the University of Liège (Belgium) in the Research Unit in Networking (RUN). Previous versions of `TreeNET` were written using the sources of `ExploreNET` v2.1 as a basis.
 
 `ExploreNET` v2.1 has been elaborated and written by Dr. Mehmet Engin Tozal, currently assistant teacher at the University of Louisiana at Lafayette (USA). The sources of this program can be downloaded at the following address:
 

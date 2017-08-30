@@ -24,31 +24,6 @@ AliasResolver::~AliasResolver()
 {
 }
 
-bool AliasResolver::portUnreachableAliasing(IPTableEntry *ip1, IPTableEntry *ip2)
-{
-    // Checks ip1 and ip2 are non null
-    if(ip1 != NULL && ip2 != NULL)
-    {
-        InetAddress srcIP1 = ip1->getPortUnreachableSrcIP();
-        InetAddress srcIP2 = ip2->getPortUnreachableSrcIP();
-        
-        // Multiple cases for aliasing these IPs.
-        if(srcIP1 != InetAddress(0) && srcIP1 == srcIP2)
-        {
-            return true;
-        }
-        else if(srcIP1 != InetAddress(0) && srcIP1 == (InetAddress) (*ip2))
-        {
-            return true;
-        }
-        else if(srcIP2 != InetAddress(0) && srcIP2 == (InetAddress) (*ip1))
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
 unsigned short AliasResolver::Ally(IPTableEntry *ip1, IPTableEntry *ip2, unsigned short maxDiff)
 {
     // The first condition is just in case; normally calling code checks it first
@@ -57,10 +32,10 @@ unsigned short AliasResolver::Ally(IPTableEntry *ip1, IPTableEntry *ip2, unsigne
         unsigned short nbIPIDs = env->getNbIPIDs();
         
         // First, one checks if token intervals overlap each other
-        unsigned short lowerToken1 = ip1->getProbeToken(0);
-        unsigned short upperToken1 = ip1->getProbeToken(nbIPIDs - 1);
-        unsigned short lowerToken2 = ip2->getProbeToken(0);
-        unsigned short upperToken2 = ip2->getProbeToken(nbIPIDs - 1);
+        unsigned long lowerToken1 = ip1->getProbeToken(0);
+        unsigned long upperToken1 = ip1->getProbeToken(nbIPIDs - 1);
+        unsigned long lowerToken2 = ip2->getProbeToken(0);
+        unsigned long upperToken2 = ip2->getProbeToken(nbIPIDs - 1);
         if(!((lowerToken1 < upperToken2) && (upperToken1 > lowerToken2)))
         {
             return ALLY_NO_SEQUENCE;

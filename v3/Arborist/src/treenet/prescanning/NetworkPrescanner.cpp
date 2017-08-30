@@ -84,13 +84,6 @@ void NetworkPrescanner::callback(InetAddress target, bool responsive)
 
 void NetworkPrescanner::probe()
 {
-    /*
-     * N.B.: this implementation is very similar to that of ProbesDispatcher, which was defined 
-     * last year. However, typing has been updated because unsigned short is way too small when 
-     * we want to target large amounts of IPs (for example, entirety of AS224). Unsigned long has 
-     * been used instead.
-     */
-    
     unsigned short maxThreads = env->getMaxThreads();
     unsigned long nbTargets = (unsigned long) targets.size();
     if(nbTargets == 0)
