@@ -39,7 +39,7 @@ if __name__ == "__main__":
     ratiosFullyAliased = []
     ratiosAliased = []
     
-    dataPath = "/home/jefgrailet/PhD/Campaigns/TreeNET"
+    dataPath = "/home/user/path/to/the/dataset" # TODO: change this!
     for i in range(0, len(ASes)):
         prefixPath = dataPath + "/" + ASes[i] + "/" + yearOfMeasurements + "/"
         prefixPath += dateOfMeasurements + "/" + ASes[i] + "_" + dateOfMeasurements
