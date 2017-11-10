@@ -1,6 +1,6 @@
 # TreeNET, a subnet-based topology discovery tool
 
-*By Jean-François Grailet (last edited: August 30, 2017)*
+*By Jean-François Grailet (last edited: November 10, 2017)*
 
 ## Overview
 
@@ -42,7 +42,7 @@ As the names suggest, *v1/* contains all files related to `TreeNET` v1.0, while 
 
 ## Work in progress
 
-Reverse DNS might be deepened in `TreeNET` in the coming months, possibly justifying a version 3.4. `traceroute` anomalies are still being studied in the meantime.
+`TreeNET` will no longer be updated for a least some months, as new ways of discovering and connecting neighborhoods are being investigated, possibly motivating the release of a different software (at least in name). Stay tuned.
 
 ## Disclaimer
 

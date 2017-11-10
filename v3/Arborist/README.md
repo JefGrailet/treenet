@@ -1,6 +1,6 @@
 # About TreeNET v3.3 "Arborist" (treenet)
 
-*By Jean-François Grailet, August 30, 2017*
+*By Jean-François Grailet, November 10, 2017*
 
 ## Compilation
 
@@ -64,6 +64,8 @@ If you intent to use `TreeNET` from the PlanetLab testbed, here is some advice.
 * **August 18, 2017:** light update of *Arborist* to fix TCP probing. Instead of the SYN+ACK probing method inherited from `ExploreNET`, which is inefficient nowadays, `TreeNET` now uses SYN probing exclusively on the port 80 of the target IPs. This method should be much more successful, but users should keep in mind that this method of probing can be problematic security-wise. In particular, repeated probing towards a same IP (which can occur during alias resolution, for instance) can be identified as SYN flooding, which is a form of denial-of-service (DoS) attack.
 
 * **August 30, 2017:** upgrade of *Arborist*, now in version v3.3. This new version adds a *pre-alias resolution* phase which consists in visiting multi-label nodes of the network tree prior to the typical, full alias resolution. During this visit, alias resolution is being conducted on the labels to verify that they are not alias of each other themselves. If it happens to be the case, the aggregation of IPs in multi-label nodes that will precede the full alias resolution will take account of the *pre-aliases*.
+
+* **November 10, 2017:** minor update to fix some light issues with alias resolution. Also, alias resolution has been relaxed with respect to ICMP timestamp request: it is no longer used as a criterion to consider two fingerprints as not similar.
 
 ## Disclaimer
 

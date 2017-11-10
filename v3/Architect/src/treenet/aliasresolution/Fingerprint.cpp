@@ -65,10 +65,10 @@ bool Fingerprint::compare(Fingerprint &f1, Fingerprint &f2)
 
 bool Fingerprint::equals(Fingerprint &f)
 {
+    // Remark (October 2017): ICMP timestamp request no longer considered for the strict equality.
     if(this->initialTTL == f.initialTTL && 
        this->portUnreachableSrcIP == f.portUnreachableSrcIP && 
-       this->IPIDCounterType == f.IPIDCounterType && 
-       this->replyingToTSRequest == f.replyingToTSRequest)
+       this->IPIDCounterType == f.IPIDCounterType)
     {
         return true;
     }

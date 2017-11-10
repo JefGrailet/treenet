@@ -60,6 +60,8 @@ void AliasHintCollector::collect()
     unsigned long int nbIPs = (unsigned long int) this->IPsToProbe.size();
     if(nbIPs == 0)
     {
+        (*out) << "No IP to probe, aggregate only contains the missing hop identifier ";
+        (*out) << "(0.0.0.0)." << endl;
         return;
     }
     unsigned short nbThreads = 1;
@@ -238,24 +240,23 @@ void AliasHintCollector::collect()
                     continue;
                 
                 unsigned short diff = cur.IPID - prev.IPID;
-                if(diff < IPID_MAX_DIFF && cur.probeToken < prev.probeToken)
+                if(diff < IPID_MAX_CONSEC_DIFF && cur.probeToken < prev.probeToken)
                 {
                     reordered++;
-                    // Moves the problematic token backwards
+                    
+                    // Moves the problematic token backwards, using a reverse iterator
                     IPIDTuple *prevBis = &(*it);
-                    for(list<IPIDTuple>::iterator it2 = it; it2 != tuples.begin(); --it2)
+                    for(list<IPIDTuple>::reverse_iterator it2 = tuples.rbegin(); it2 != tuples.rend(); ++it2)
                     {
-                        if(it2 == it)
-                        {
-                            it2--;
-                            continue;
-                        }
                         IPIDTuple *curBis = &(*it2);
+                        if(curBis->IPID >= prevBis->IPID) // Goes up to just before "it"
+                            continue;
+                        
                         if(curBis->echo)
                             break;
                         
                         unsigned short diffBis = prevBis->IPID - curBis->IPID;
-                        if(diffBis < IPID_MAX_DIFF && curBis->probeToken > prevBis->probeToken)
+                        if(diffBis <= IPID_MAX_CONSEC_DIFF && curBis->probeToken > prevBis->probeToken)
                         {
                             unsigned long tempToken = curBis->probeToken;
                             curBis->probeToken = prevBis->probeToken;
@@ -263,9 +264,7 @@ void AliasHintCollector::collect()
                             prevBis = &(*it2);
                         }
                         else
-                        {
                             break;
-                        }
                     }
                 }
             }
@@ -387,7 +386,7 @@ void AliasHintCollector::collect()
             delete[] tuplesArray;
         }
     }
-    IPIDTuples.clear(); // Empties map for next call to collect() (collisions on 0.0.0.0 can occur)
+    IPIDTuples.clear(); // Empties map for next call to collect()
     
     if(printSteps)
     {

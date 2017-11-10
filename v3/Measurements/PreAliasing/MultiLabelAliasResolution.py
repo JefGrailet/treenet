@@ -12,12 +12,16 @@ from matplotlib import pyplot as plt
 if __name__ == "__main__":
 
     if len(sys.argv) < 4:
-        print("Use this command: python MultiLabelAliasResolution.py [year] [date] [path to AS file]")
+        print("Use this command: python MultiLabelAliasResolution.py [year] [date] [path to AS file] [-n (optional) (ASes denoted by indexes)]")
         sys.exit()
     
     yearOfMeasurements = str(sys.argv[1])
     dateOfMeasurements = str(sys.argv[2])
     ASFilePath = str(sys.argv[3])
+    
+    rotatedLabels = True
+    if len(sys.argv) == 5 and sys.argv[4] == '-n':
+        rotatedLabels = False
     
     # Parses AS file
     if not os.path.isfile(ASFilePath):
@@ -39,7 +43,7 @@ if __name__ == "__main__":
     ratiosFullyAliased = []
     ratiosAliased = []
     
-    dataPath = "/home/user/path/to/the/dataset" # TODO: change this!
+    dataPath = "/home/jefgrailet/PhD/Campaigns/TreeNET"
     for i in range(0, len(ASes)):
         prefixPath = dataPath + "/" + ASes[i] + "/" + yearOfMeasurements + "/"
         prefixPath += dateOfMeasurements + "/" + ASes[i] + "_" + dateOfMeasurements
@@ -162,7 +166,12 @@ if __name__ == "__main__":
         ratiosWithAliases.append((float(nbRelevant) / float(nbMultiLabels)) * 100)
         ratiosFullyAliased.append((float(nbFullyCovered) / float(nbMultiLabels)) * 100)
         ratiosAliased.append((float(sumAliasedIPs) / float(sumAliasable)) * 100)
-
+    
+    # Print ASes for which pre-aliases were discovered if -n is provided
+    if not rotatedLabels:
+        for i in range(0, len(correctlyParsedASes)):
+            print(str(i + 1) + " = " + correctlyParsedASes[i])
+    
     ind = np.arange(len(correctlyParsedASes)) # The x locations
     width = 0.3
     center = 0.5
@@ -175,18 +184,25 @@ if __name__ == "__main__":
     
     hfont2 = {'fontname':'serif',
              'fontsize':21}
+    
+    hfont3 = {'fontname':'serif',
+             'fontsize':14}
 
     plt.figure(figsize=(11,7))
 
-    p1 = plt.bar(ind, ratiosWithAliases, width, color='#F0F0F0')
-    p2 = plt.bar(ind + width, ratiosFullyAliased, width, color='#888888')
-    p3 = plt.bar(ind + width * 2, ratiosAliased, width, color='#000000')
+    p1 = plt.bar(ind + padding, ratiosWithAliases, width, color='#F0F0F0')
+    p2 = plt.bar(ind + padding + width, ratiosFullyAliased, width, color='#888888')
+    p3 = plt.bar(ind + padding + width * 2, ratiosAliased, width, color='#000000')
     
     plt.ylabel('Proportion (%)', **hfont)
     plt.xlabel('AS index', **hfont)
     plt.ylim([0,100])
-    plt.xlim([0,len(ASes)])
-    plt.xticks(ind + center, range(1,21,1), **hfont2)
+    plt.xlim([0,len(correctlyParsedASes)])
+    if not rotatedLabels:
+        plt.xticks(ind + center, range(1, len(correctlyParsedASes) + 1, 1), **hfont2)
+    else:
+        plt.xticks(ind + center, correctlyParsedASes, rotation=30, **hfont3)
+        plt.gcf().subplots_adjust(bottom=0.15)
     plt.yticks(np.arange(0, 101, 10), **hfont2)
     
     plt.rc('font', family='serif', size=13)

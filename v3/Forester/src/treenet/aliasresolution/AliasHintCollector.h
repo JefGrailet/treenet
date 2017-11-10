@@ -37,7 +37,7 @@ class AliasHintCollector
 public:
 
     // Threshold for assuming that 2 consecutives IDs after sorting by IDs are from a same device
-    static const unsigned short IPID_MAX_DIFF = 10;
+    static const unsigned short IPID_MAX_CONSEC_DIFF = 100;
 
     // Constructor, destructor
     AliasHintCollector(TreeNETEnvironment *env);
