@@ -1,12 +1,28 @@
 # TreeNET, a subnet-based topology discovery tool
 
-*By Jean-François Grailet (last edited: November 10, 2017)*
+*By Jean-François Grailet (last edited: Augustus 27, 2018)*
 
 ## Overview
 
 `TreeNET` is a subnet-based topology discovery tool which is built upon the subnet inference tool `ExploreNET`. Using the inference mechanics provided by `ExploreNET`, `TreeNET` refines the measured subnets and tries to infer a whole router - subnet topology on that basis. To reach this goal, it builds a tree-like structure which relies on `traceroute` measurements conducted to each measured subnet (using Paris `traceroute`).
 
 The tree-like structure (called *network tree*) aims at highlighting *neighborhoods*, i.e., network locations bordered by subnets which can reach each other using a TTL value of at most 1 in IP packets. These locations typically consist of a single router or a mesh of several routers, possibly implemented with Layer-2 equipment. The knowledge of the subnets surrounding *neighborhoods* can be used to perform alias resolution and discover one or several routers and obtain a (near-)complete topology. Indeed, each subnet, if sound, should contain an interface with a particular distance in TTL value which necessarily belongs to the router giving access to that subnet. Listing such interfaces from all subnets bordering a same *neighborhood* is actually the first step of alias resolution in `TreeNET`.
+
+All `TreeNET` versions are exclusively available for Linux and for the IPv4 protocol. They are also provided as 32-bit applications, in order to ensure compatibility with all PlanetLab computers.
+
+## About development
+
+**`TreeNET` will no longer get major updates nor algorithmical changes. There won't be new datasets released in this repository as well.**
+
+Future updates of `TreeNET` could include:
+
+* Various updates of the probing library (*src/common/*).
+* 64-bit version.
+* Re-newed subnet inference/refinement module, perhaps with IPv6 support.
+
+These updates will be released in the *v3/* sub-repository.
+
+**N.B.:** for a more up-to-date topology discovery tool revolving around the same ideas as `TreeNET`, see the [SAGE](https://github.com/JefGrailet/SAGE) repository.
 
 ## Publications
 
@@ -20,9 +36,7 @@ The tree-like structure (called *network tree*) aims at highlighting *neighborho
   Jean-François Grailet, Benoit Donnet<br />
   [Network Traffic Measurement and Analysis Conference (TMA) 2017](http://tma.ifip.org/2017/), Dublin, 21/06/2017 - 23/06/2017
 
-## Version history (lattest version: v3.2)
-
-All `TreeNET` versions are exclusively available for Linux and for the IPv4 protocol. There is currently no equivalent for IPv6.
+## Version history (lattest version: v3.3)
 
 * **`TreeNET` v1.0:** developped during academic year 2014-2015 for a master thesis, this version implements all major algorithmic steps described in the overview. This version also comes with measurements which were conducted with it from the PlanetLab testbed. It also comes with a companion piece of software (`TreeNET Reader`) which provides additionnal tools for the analysis and merging of the collected datasets.
 
@@ -40,10 +54,6 @@ All `TreeNET` versions are exclusively available for Linux and for the IPv4 prot
 
 As the names suggest, *v1/* contains all files related to `TreeNET` v1.0, while *v2/* and *v3/* provides all sources for `TreeNET` v2.3 and `TreeNET` v3.3 (respectively) along related software and datasets which were collected with it.
 
-## Work in progress
-
-`TreeNET` will no longer be updated for a least some months, as new ways of discovering and connecting neighborhoods are being investigated, possibly motivating the release of a different software (at least in name). Stay tuned.
-
 ## Disclaimer
 
 `TreeNET` and all related programs (`TreeNET Reader`, `ARTest`, `ExploreNET++`) were written by Jean-François Grailet, currently Ph. D. student at the University of Liège (Belgium) in the Research Unit in Networking (RUN), using the sources of `ExploreNET` v2.1 as a basis.
@@ -54,7 +64,7 @@ http://nsrg.louisiana.edu/project/ntmaps/output/explorenet.html
 
 ## Contact
 
-**E-mail address:** Jean-Francois.Grailet@ulg.ac.be
+**E-mail address:** Jean-Francois.Grailet@uliege.be
 
 **Personal website:** http://www.run.montefiore.ulg.ac.be/~grailet/
 

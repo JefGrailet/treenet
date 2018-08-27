@@ -77,7 +77,7 @@ http://nsrg.louisiana.edu/project/ntmaps/output/explorenet.html
 
 ## Contact
 
-**E-mail address:** Jean-Francois.Grailet@ulg.ac.be
+**E-mail address:** Jean-Francois.Grailet@uliege.be
 
 **Personal website:** http://www.run.montefiore.ulg.ac.be/~grailet/
 
