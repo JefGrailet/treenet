@@ -1,6 +1,6 @@
 # TreeNET, a subnet-based topology discovery tool
 
-*By Jean-François Grailet (last edited: Augustus 27, 2018)*
+*By Jean-François Grailet (last edited: August 28, 2018)*
 
 ## Overview
 
@@ -12,13 +12,12 @@ All `TreeNET` versions are exclusively available for Linux and for the IPv4 prot
 
 ## About development
 
-**`TreeNET` will no longer get major updates nor algorithmical changes. There won't be new datasets released in this repository as well.**
+**`TreeNET` will no longer get major algorithmical changes. There won't be new datasets as well.**
 
 Future updates of `TreeNET` could include:
 
-* Various updates of the probing library (*src/common/*).
+* Updates of the basic libraries (*src/common/* and *src/prober/*).
 * 64-bit version.
-* Re-newed subnet inference/refinement module, perhaps with IPv6 support.
 
 These updates will be released in the *v3/* sub-repository.
 
