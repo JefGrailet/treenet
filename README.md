@@ -12,20 +12,15 @@ All `TreeNET` versions are exclusively available for Linux and for the IPv4 prot
 
 ## About development
 
-**`TreeNET` will no longer get major algorithmical changes. There won't be new datasets as well.**
+**`TreeNET` will no longer get any major change. There won't be new datasets as well.**
 
-Future updates of `TreeNET` could include:
-
-* Updates of the basic libraries (*src/common/* and *src/prober/*).
-* 64-bit version.
-
-These updates will be released in the *v3/* sub-repository.
-
-**N.B.:** for a more up-to-date topology discovery tool revolving around the same ideas as `TreeNET`, see the [SAGE](https://github.com/JefGrailet/SAGE) repository.
+However, more recent and improved topology discovery tools revolving around the same ideas are already available and are still part of ongoing work. See the following repositories:
+-[SAGE](https://github.com/JefGrailet/SAGE) repository (last updated in 2018; will be updated in the coming months).
+-[WISE](https://github.com/JefGrailet/WISE) repository (ongoing work).
 
 ## Publications
 
-`TreeNET` and its measurements have been the topics of several publications. People wishing to get a *big picture* on the software free of implementation details are encouraged to read them.
+`TreeNET` and its measurements have been the topics of several peer-reviewed publications. People wishing to get a *big picture* on the software free of implementation details are encouraged to read them.
 
 * [TreeNET: Discovering and Connecting Subnets](http://www.run.montefiore.ulg.ac.be/~grailet/docs/publications/TreeNET_TMA_2016.pdf)<br />
   Jean-François Grailet, Fabien Tarissan, Benoit Donnet<br />
