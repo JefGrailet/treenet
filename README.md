@@ -15,8 +15,8 @@ All `TreeNET` versions are exclusively available for Linux and for the IPv4 prot
 **`TreeNET` will no longer get any major change. There won't be new datasets as well.**
 
 However, more recent and improved topology discovery tools revolving around the same ideas are already available and are still part of ongoing work. See the following repositories:
--[SAGE](https://github.com/JefGrailet/SAGE) repository (last updated in 2018; will be updated in the coming months).
--[WISE](https://github.com/JefGrailet/WISE) repository (ongoing work).
+* [SAGE](https://github.com/JefGrailet/SAGE) repository (last updated in 2018; will be updated in the coming months).
+* [WISE](https://github.com/JefGrailet/WISE) repository (ongoing work).
 
 ## Publications
 
