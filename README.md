@@ -18,6 +18,8 @@ However, more recent and improved topology discovery tools revolving around the 
 * [SAGE](https://github.com/JefGrailet/SAGE) repository (last updated in 2018; will be updated in the coming months).
 * [WISE](https://github.com/JefGrailet/WISE) repository (ongoing work).
 
+Since it needed to be compatible with old environments (e.g. 32-bit machines from the [PlanetLab testbed](https://planet-lab.eu/) running with Fedora 8), `TreeNET` (all versions) is written in an _old-fashioned_ C++, i.e., it doesn't take advantage of the changes brought by C++11 and onwards. This said, after its many campaigns run from PlanetLab towards all kinds of target networks, it is safe to assume `TreeNET` is unlikely to crash or mismanage memory. It has been, on top of that, been extensively tested with `valgrind` on a local network.
+
 ## Publications
 
 `TreeNET` and its measurements have been the topics of several peer-reviewed publications. People wishing to get a *big picture* on the software free of implementation details are encouraged to read them.
